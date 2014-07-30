@@ -12,7 +12,7 @@ MCU = atmega8
 F_CPU = 1000000
 
 # Target file name (without extension).
-TARGET = IronMan
+TARGET = jarvis-2.0
 
 # Programming hardware: type avrdude -c ?
 # to get a full listing.
@@ -76,9 +76,7 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 # Programming support using avrdude. Settings and variables.
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-#AVRDUDE_WRITE_FLASH = -U lfuse:w:0x04:m #run with 8 Mhz clock
-#AVRDUDE_WRITE_FLASH = -U lfuse:w:0x21:m #run with 1 Mhz clock #default clock mode
-#AVRDUDE_WRITE_FLASH = -U lfuse:w:0x01:m #run with 1 Mhz clock no start up time
+#AVRDUDE_WRITE_FLASH = -U lfuse:w:0xe1:m -U hfuse:w:0xd9:m # run with internal 1MHz clock
 
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -B 10 -V
 
@@ -97,7 +95,7 @@ OBJDUMP = avr-objdump
 SIZE = avr-size
 
 # Programming support using avrdude.
-AVRDUDE = avrdude
+AVRDUDE = sudo avrdude
 
 REMOVE = rm -f
 COPY = cp
