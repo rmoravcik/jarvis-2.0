@@ -42,10 +42,10 @@ void power_init()
 	PORTB &= ~_BV(GPIO_EYES);
 
 	// set repuslor pwr pin as an output
-	DDRD |= _BV(GPIO_REPULSOR_PWR);
+	DDRC |= _BV(GPIO_REPULSOR_PWR);
 
 	// set repulsor pwr pin to low
-	PORTD &= ~_BV(GPIO_REPULSOR_PWR);
+	PORTC &= ~_BV(GPIO_REPULSOR_PWR);
 }
 
 void power_on(uint8_t module)

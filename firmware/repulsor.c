@@ -32,10 +32,10 @@ static void repulsor_fade_effect(uint8_t mode);
 void repulsor_init(void)
 {
 	// set repuslor blast and pwr pins as an output
-	DDRD |= _BV(GPIO_REPULSOR_BLAST) | _BV(GPIO_REPULSOR_PWR);
+	DDRC |= _BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT) | _BV(GPIO_REPULSOR_PWR);
 
 	// set repulsor blast and pwr pins to low
-	PORTD &= ~(_BV(GPIO_REPULSOR_BLAST) | _BV(GPIO_REPULSOR_PWR));
+	PORTC &= ~(_BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT) | _BV(GPIO_REPULSOR_PWR));
 }
 
 void repulsor_power_up(void)
@@ -50,22 +50,22 @@ void repulsor_power_down(void)
 
 void repulsor_power_failure(void)
 {
-	PORTD &= ~_BV(GPIO_REPULSOR_PWR);
+	PORTC &= ~_BV(GPIO_REPULSOR_PWR);
 	_delay_ms(50);
-	PORTD |= _BV(GPIO_REPULSOR_PWR);
+	PORTC |= _BV(GPIO_REPULSOR_PWR);
 	_delay_ms(50);
-	PORTD &= ~_BV(GPIO_REPULSOR_PWR);
+	PORTC &= ~_BV(GPIO_REPULSOR_PWR);
 	_delay_ms(50);
-	PORTD |= _BV(GPIO_REPULSOR_PWR);
+	PORTC |= _BV(GPIO_REPULSOR_PWR);
 	_delay_ms(50);
 }
 
 void repulsor_blast(void)
 {
 	// simulate repulsor blast
-	PORTD |= _BV(GPIO_REPULSOR_BLAST);
+	PORTC |= _BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT);
 	_delay_ms(100);
-	PORTD &= ~_BV(GPIO_REPULSOR_BLAST);
+	PORTC &= ~(_BV(GPIO_REPULSOR_LEFT) | ~_BV(GPIO_REPULSOR_RIGHT));
 }
 
 // takes 3000ms
@@ -87,13 +87,13 @@ static void repulsor_fade_effect(uint8_t mode)
 
 		// each PWM step is taking 60ms
 		for (i = 0; i < 30; i++) {
-			PORTD &= ~_BV(GPIO_REPULSOR_PWR);
+			PORTC &= ~_BV(GPIO_REPULSOR_PWR);
 
 			for (time = 0; time < off_time; time++) {
 				_delay_us(20);
 			}
 
-			PORTD |= _BV(GPIO_REPULSOR_PWR);
+			PORTC |= _BV(GPIO_REPULSOR_PWR);
 
 			for (time = 0; time < on_time; time++) {
 				_delay_us(20);
@@ -104,8 +104,8 @@ static void repulsor_fade_effect(uint8_t mode)
 	// if fade in, leave gpio asserted high
 	// else set it low
 	if (mode == FADE_IN) {
-		PORTD |= _BV(GPIO_REPULSOR_PWR);
+		PORTC |= _BV(GPIO_REPULSOR_PWR);
 	} else {
-		PORTD &= ~_BV(GPIO_REPULSOR_PWR);
+		PORTC &= ~_BV(GPIO_REPULSOR_PWR);
 	}
 }

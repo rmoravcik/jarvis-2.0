@@ -35,17 +35,17 @@ static void init(void);
 static void battery_report_capacity(void);
 static void battery_warn_notice(void);
 
-// helmet button
+// func button
 ISR(INT0_vect)
 {
 	uint8_t press_counter = 0;
 
-	while (!(PIND & _BV(GPIO_HELMET_BUTTON)) && press_counter < 10) {
+	while (!(PIND & _BV(GPIO_FUNC_BUTTON)) && press_counter < 10) {
 		_delay_ms(200);
 		press_counter++;
 	}
 
-	// short press of helmet button
+	// short press of func button
 	if (press_counter == 1) {
 		if (helmet_state() == HELMET_CLOSED) {
 			voice_play_sound(SOUND_JARVIS_BATTERY_FULL_2);
@@ -54,7 +54,7 @@ ISR(INT0_vect)
 		}
 	}
 
-	// long press of helmet button
+	// long press of func button
 	if (press_counter == 10) {
 		if (helmet_state() == HELMET_CLOSED) {
 			// turn off eyes
@@ -71,47 +71,6 @@ ISR(INT0_vect)
 
 			// check if battery is not dead
 			battery_warn_notice();
-		}
-	}
-
-	sei();
-}
-
-// repulsor button
-ISR(INT1_vect)
-{
-	uint8_t press_counter = 0;
-
-	while (!(PIND & _BV(GPIO_REPULSOR_BUTTON)) && press_counter < 10) {
-		_delay_ms(200);
-		press_counter++;
-	}
-
-	// short press of repulsor button
-	if (press_counter == 1) {
-		if (helmet_state() == HELMET_CLOSED) {
-			voice_play_sound(SOUND_JARVIS_BATTERY_FULL_3);
-		} else {
-			voice_play_sound(SOUND_JARVIS_ARC_REACTOR_MODE);
-		}
-	}
-
-	// long press of repulsor button
-	if (press_counter == 10) {
-		if (helmet_state() == HELMET_CLOSED) {
-			// helmet is closed, we can shot from repulsor
-			voice_play_sound_no_wait(SOUND_REPULSOR);
-
-			// simulate shot after 1sec
-			_delay_ms(1000);
-
-			repulsor_blast();
-
-			// check if battery is not dead
-			battery_warn_notice();
-		} else {
-			// helmet is open
-			// FIXME: what to do now?
 		}
 	}
 
@@ -151,16 +110,16 @@ static void init(void)
 	DDRC = 0xff;
 
 	DDRD = 0xff;
-	DDRD &= ~(_BV(GPIO_HELMET_BUTTON) | _BV(GPIO_REPULSOR_BUTTON));
+	DDRD &= ~_BV(GPIO_FUNC_BUTTON);
 
-	// enable pull ups on helmet and repulsor inputs
-	PORTD |= _BV(GPIO_HELMET_BUTTON) | _BV(GPIO_REPULSOR_BUTTON);
+	// enable pull up on func button
+	PORTD |= _BV(GPIO_FUNC_BUTTON);
 
-	// falling edge on INT0, falling edge on INT1
-	MCUCR |= _BV(ISC11) | _BV(ISC01);
+	// falling edge on INT0
+	MCUCR |= _BV(ISC01);
 
-	// enable INT0 and INT1 interrupts
-	GIMSK |= _BV(INT1) | _BV(INT0);
+	// enable INT0 interrupt
+	GIMSK |= _BV(INT0);
 
 	sei();
 }
