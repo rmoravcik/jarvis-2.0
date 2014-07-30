@@ -1,6 +1,6 @@
 /*
- *  iron-man-helmet-controller
- *  Copyright (C) 2013 Roman Moravcik
+ *  jarvis-2.0
+ *  Copyright (C) 2014 Roman Moravcik
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
