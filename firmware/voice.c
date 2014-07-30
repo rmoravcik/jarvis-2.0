@@ -29,9 +29,8 @@ void voice_init(void)
 	// set DATA pin as an output
 	DDRD |= _BV(GPIO_WT588_DATA);
 
-	// set BUSY and RESET pins as an inputs
+	// set BUSY pin as an input
 	DDRB &= ~_BV(GPIO_WT588_BUSY);
-	DDRD &= ~_BV(GPIO_WT588_RESET);
 
 	// set DATA pin to high
 	PORTD |= _BV(GPIO_WT588_DATA);
