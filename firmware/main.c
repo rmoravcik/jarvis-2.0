@@ -32,6 +32,7 @@
 #define VOICE_SILENT 1
 
 static void init(void);
+static void configure(void);
 static void battery_report_capacity(void);
 static void battery_warn_notice(void);
 
@@ -48,9 +49,9 @@ ISR(INT0_vect)
 	// short press of func button
 	if (press_counter == 1) {
 		if (helmet_state() == HELMET_CLOSED) {
-			voice_play_sound(SOUND_JARVIS_BATTERY_FULL_2);
+			voice_play_sound(SOUND_COMMANDS_SHOW_ALT);
 		} else {
-			voice_play_sound(SOUND_JARVIS_EARLY_TO_RISE);
+			voice_play_sound(SOUND_TRS4);
 		}
 	}
 
@@ -87,12 +88,20 @@ int main(void)
 	helmet_init();
 	voice_init();
 
-	// enable repulsor
-	repulsor_power_up();
-
 #ifdef VOICE_SILENT
 	voice_set_volume(SOUND_VOLUME_7);
 #endif
+
+	// check if configuration mode was requested
+	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {
+		configure();
+	}
+
+	// enable repulsor
+	repulsor_power_up();
+
+	voice_play_sound(SOUND_LISTENING_ON_4);
+	voice_play_sound(SOUND_LISTENING_ON_6);
 
 	// report battery capacity after power on
 	battery_report_capacity();
@@ -124,28 +133,28 @@ static void init(void)
 	sei();
 }
 
+static void configure(void)
+{
+	voice_play_sound(SOUND_BD_CALIBRATING);
+
+	// FIXME
+
+	voice_play_sound(SOUND_CONFIRM_6);
+
+	// main loop
+	while(1) {
+	}
+}
+
 static void battery_report_capacity(void)
 {
 	// read battery capacity
 	uint8_t capacity = battery_get_capacity();
 
 	if (capacity == 0) {
-		voice_play_sound(SOUND_JARVIS_BATTERY_LOW_1);
+		voice_play_sound(SOUND_BATTERY_LOW_0);
 	} else {
-		voice_play_sound(SOUND_JARVIS_BATTERY_POWER_AT);
-
-		if (capacity <= 20) {
-			voice_play_sound(SOUND_JARVIS_BATTERY_1 + (capacity - 1));
-		} else {
-			uint8_t remainder = capacity % 10;
-
-			voice_play_sound(SOUND_JARVIS_BATTERY_20 + ((capacity / 10) - 2));
-
-			if (remainder > 0) {
-				voice_play_sound(SOUND_JARVIS_BATTERY_1 + (remainder - 1));
-			}
-		}
-		voice_play_sound(SOUND_JARVIS_BATTERY_PERCENT);
+		voice_play_sound(SOUND_BATTERY_CHARGED);
 	}
 }
 
@@ -164,6 +173,6 @@ static void battery_warn_notice(void)
 		repulsor_power_failure();
 
 		// play warn notice that battery is almost dead
-		voice_play_sound(SOUND_JARVIS_BATTERY_LOW_1);
+		voice_play_sound(SOUND_BATTERY_LOW_1);
 	}
 }
