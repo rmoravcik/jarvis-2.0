@@ -17,21 +17,25 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef POWER_H
-#define POWER_H
+#include <avr/eeprom.h>
 
-#include <stdint.h>
+#include "common.h"
+#include "random.h"
 
-enum {
-	EYES = 0,
-	REPULSOR,
-	ALL
+static uint8_t EEMEM conf_seed = 27;
+
+static uint8_t seed;
+
+void random_init(void)
+{
+	seed = eeprom_read_byte(&conf_seed);
+//	srand(seed);
 }
 
-void power_init(void);
-
-void power_on(uint8_t module);
-void power_down(uint8_t module);
-void power_failure(void);
-
-#endif // POWER_H
+uint8_t random_get(uint8_t max)
+{
+//	return rand() % max;
+	seed = (seed * 109 + 89) % max;
+	eeprom_write_byte(&conf_seed, seed);
+	return seed;
+}

@@ -48,17 +48,18 @@ ISR(INT0_vect)
 
 	// short press of func button
 	if (press_counter == 1) {
+		voice_play_sound(SOUND_BUTTON_SOUND_0);
+
 		if (helmet_state() == HELMET_CLOSED) {
-			voice_play_sound(SOUND_COMMANDS_SHOW_ALT);
 		} else {
-//			voice_play_sound(SOUND_TRS4);
-			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3);
-			voice_play_sound(SOUND_ACDC);
+			voice_play_random();
 		}
 	}
 
 	// long press of func button
 	if (press_counter == 10) {
+		voice_play_sound(SOUND_BUTTON_SOUND_0);
+
 		if (helmet_state() == HELMET_CLOSED) {
 			// turn off eyes
 			eyes_power_down();
@@ -102,8 +103,7 @@ int main(void)
 	// enable repulsor
 	repulsor_power_up();
 
-	voice_play_sound(SOUND_LISTENING_ON_4);
-	voice_play_sound(SOUND_LISTENING_ON_6);
+	voice_play_welcome();
 
 	// report battery capacity after power on
 	battery_report_capacity();
