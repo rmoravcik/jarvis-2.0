@@ -51,7 +51,9 @@ ISR(INT0_vect)
 		if (helmet_state() == HELMET_CLOSED) {
 			voice_play_sound(SOUND_COMMANDS_SHOW_ALT);
 		} else {
-			voice_play_sound(SOUND_TRS4);
+//			voice_play_sound(SOUND_TRS4);
+			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3);
+			voice_play_sound(SOUND_ACDC);
 		}
 	}
 
@@ -151,10 +153,10 @@ static void battery_report_capacity(void)
 	// read battery capacity
 	uint8_t capacity = battery_get_capacity();
 
-	if (capacity == 0) {
-		voice_play_sound(SOUND_BATTERY_LOW_0);
-	} else {
+	if (capacity >= 90) {
 		voice_play_sound(SOUND_BATTERY_CHARGED);
+	} else if (capacity < 20) {
+		voice_play_sound(SOUND_BATTERY_LOW_0);
 	}
 }
 
