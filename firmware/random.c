@@ -29,13 +29,20 @@ static uint8_t seed;
 void random_init(void)
 {
 	seed = eeprom_read_byte(&conf_seed);
-//	srand(seed);
 }
 
 uint8_t random_get(uint8_t max)
 {
-//	return rand() % max;
-	seed = (seed * 109 + 89) % max;
+	static uint8_t old = 0;
+	uint8_t new = 0;
+
+	do {
+		seed = (seed * 109 + 89) % 256;
+		new = seed % max;
+	} while (new == old);
+
 	eeprom_write_byte(&conf_seed, seed);
-	return seed;
+	old = new;
+
+	return new;
 }

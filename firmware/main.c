@@ -19,6 +19,8 @@
 
 #include <stdlib.h>
 
+#include <avr/eeprom.h>
+
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
@@ -26,10 +28,13 @@
 #include "battery.h"
 #include "eyes.h"
 #include "helmet.h"
+#include "random.h"
 #include "repulsor.h"
 #include "voice.h"
 
 #define VOICE_SILENT 1
+
+static uint8_t EEMEM conf_configured = 0;
 
 static void init(void);
 static void configure(void);
@@ -83,8 +88,11 @@ ISR(INT0_vect)
 
 int main(void)
 {
+	uint8_t configured = 0;
+
 	init();
 
+	random_init();
 	battery_init();
 	eyes_init();
 	repulsor_init();
@@ -95,6 +103,8 @@ int main(void)
 	voice_set_volume(SOUND_VOLUME_7);
 #endif
 
+	configured = eeprom_read_byte(&conf_configured);
+
 	// check if configuration mode was requested
 	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {
 		configure();
@@ -104,6 +114,11 @@ int main(void)
 	repulsor_power_up();
 
 	voice_play_welcome();
+
+	if (configured) {
+		voice_play_sound(SOUND_INTRO_2);
+		eeprom_write_byte(&conf_configured, 0);
+	}
 
 	// report battery capacity after power on
 	battery_report_capacity();
@@ -141,6 +156,7 @@ static void configure(void)
 
 	// FIXME
 
+	eeprom_write_byte(&conf_configured, 1);
 	voice_play_sound(SOUND_CONFIRM_6);
 
 	// main loop
