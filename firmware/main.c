@@ -26,6 +26,7 @@
 
 #include "common.h"
 #include "battery.h"
+#include "bluetooth.h"
 #include "eyes.h"
 #include "helmet.h"
 #include "random.h"
@@ -57,6 +58,7 @@ ISR(INT0_vect)
 
 		if (helmet_state() == HELMET_CLOSED) {
 		} else {
+			bluetooth_configure();
 			voice_play_random();
 		}
 	}
@@ -92,6 +94,7 @@ int main(void)
 
 	init();
 
+	bluetooth_init();
 	random_init();
 	battery_init();
 	eyes_init();
@@ -100,7 +103,7 @@ int main(void)
 	voice_init();
 
 #ifdef VOICE_SILENT
-	voice_set_volume(SOUND_VOLUME_7);
+	voice_set_volume(SOUND_VOLUME_1);
 #endif
 
 	configured = eeprom_read_byte(&conf_configured);

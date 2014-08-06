@@ -29,7 +29,7 @@ OPT = s
 FORMAT = ihex
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = main.c battery.c eyes.c helmet.c random.c repulsor.c voice.c
+SRC = main.c battery.c bluetooth.c eyes.c helmet.c random.c repulsor.c voice.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
