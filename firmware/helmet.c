@@ -36,7 +36,9 @@ void helmet_init()
 {
 	ICR1 = 20000;
 
+	// Fast PWM, top is ICR1
 	TCCR1A = _BV(WGM11);
+	// clk/1 (No prescaling)
 	TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS10);
 
 	DDRB |= _BV(GPIO_SERVO1) | _BV(GPIO_SERVO2);
