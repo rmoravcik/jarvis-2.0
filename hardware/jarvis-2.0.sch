@@ -14363,7 +14363,7 @@ Source: http://products.nichicon.co.jp/en/pdf/XJA043/e-ud.pdf</description>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
 <part name="C5" library="rcl" deviceset="CPOL-EU" device="E5-5" value="100uF"/>
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
-<part name="R8" library="resistor" deviceset="R-EU_" device="0204/7" value="180"/>
+<part name="R8" library="resistor" deviceset="R-EU_" device="0204/7" value="68"/>
 <part name="R9" library="resistor" deviceset="R-EU_" device="0204/7"/>
 <part name="R10" library="resistor" deviceset="R-EU_" device="0204/7"/>
 <part name="R11" library="resistor" deviceset="R-EU_" device="0204/7"/>
