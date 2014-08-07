@@ -18,36 +18,50 @@
  */
 
 #include <avr/io.h>
+#include <util/delay.h>
 
 #include "common.h"
 #include "bluetooth.h"
 
-#define UART_BAUD 9600
+#define UART_BAUD 38400
 
-const uint8_t at_uart[] = "AT+UART=9600,0,0\r\n";
-const uint8_t at_name[] = "AT+NAME=\"Iron Man Mark IV\"\r\n";
-
-static uint8_t usart_getc()
+static void uart_flush(void)
 {
-	// Wait untill a data are available
+	char tmp __attribute__((unused));
+
+	// Read until data are available
+	while (UCSRA & (1 << RXC))
+		tmp = UDR;
+}
+
+static char uart_getc(void)
+{
+	// Wait until data are available
 	while (!(UCSRA & (1 << RXC)));
 
 	return UDR;
 }
 
-static void usart_putc(const uint8_t c)
+static void uart_putc(char c)
 {
-	// Wait untill the transmitter is ready
+	// Wait until the transmitter is ready
 	while (!(UCSRA & (1 << UDRE)));
 
 	UDR = c;
 }
 
-static void usart_puts(const uint8_t *s)
+static void uart_puts(char *str)
 {
-	while (*s) {
-		usart_putc(*s++);
+	while (*str) {
+		uart_putc(*str++);
 	}
+}
+
+static void hc05_send_cmd(char *cmd)
+{
+	uart_puts(cmd);
+	uart_puts("\r\n");
+	uart_flush();
 }
 
 void bluetooth_init(void)
@@ -63,9 +77,22 @@ void bluetooth_init(void)
 
 	// Enable TX & RX
 	UCSRB = _BV(TXEN) | _BV(RXEN);
+
+	uart_flush();
 }
 
 void bluetooth_configure(void)
 {
-	usart_puts(at_name);
+	hc05_send_cmd("AT");
+	_delay_us(200);
+	hc05_send_cmd("AT+INIT");
+	_delay_us(2000);
+	hc05_send_cmd("AT+NAME=\"Iron Man Mark IV\"");
+	hc05_send_cmd("AT+PSWD=1234");
+	hc05_send_cmd("AT+UART=38400,0,0");
+	hc05_send_cmd("AT+IAC=9e8b33");
+	hc05_send_cmd("AT+CMODE=1");
+	hc05_send_cmd("AT+CLASS=800804");
+	_delay_us(1000);
+	hc05_send_cmd("AT+RESET");
 }

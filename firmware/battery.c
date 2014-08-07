@@ -30,8 +30,8 @@ void battery_init(void)
 	// enable internal 2.56V reference
 	ADMUX |= _BV(REFS1) | _BV(REFS0);
 
-	// enable ADC, set prescaler to 64
-	ADCSRA |= _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1);
+	// enable ADC, set prescaler to 128 (62,5kHz)
+	ADCSRA |= _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 
 	// set MUX channel to GND to measure offset
 	ADMUX |= _BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0);
