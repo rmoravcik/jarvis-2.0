@@ -76,7 +76,7 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 # Programming support using avrdude. Settings and variables.
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-#AVRDUDE_WRITE_FLASH = -U lfuse:w:0xe4:m -U hfuse:w:0xd9:m # run with internal 8MHz clock
+# AVRDUDE_WRITE_FLASH = -U lfuse:w:0xe4:m -U hfuse:w:0xd9:m # run with internal 8MHz clock
 
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -B 10 -V
 

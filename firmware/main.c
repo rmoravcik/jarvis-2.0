@@ -135,11 +135,7 @@ int main(void)
 
 static void init(void)
 {
-//	# avrdude -p atmega8 -t
-//	#  avrdude> dump calibration
-//	# >>> dump calibration
-//	# 0000  89 41 5a 3c                                       |.AZ<            | 
-//	OSCCAL = 0x3c;
+	OSCCAL = 0xb5;
 
 	DDRB = 0xff;
 	DDRC = 0xff;
