@@ -9,7 +9,7 @@
 
 # Microcontroller Type
 MCU = atmega8
-F_CPU = 1000000
+F_CPU = 8000000
 
 # Target file name (without extension).
 TARGET = jarvis-2.0
@@ -76,7 +76,7 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 # Programming support using avrdude. Settings and variables.
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-#AVRDUDE_WRITE_FLASH = -U lfuse:w:0xe1:m -U hfuse:w:0xd9:m # run with internal 1MHz clock
+#AVRDUDE_WRITE_FLASH = -U lfuse:w:0xe4:m -U hfuse:w:0xd9:m # run with internal 8MHz clock
 
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -B 10 -V
 

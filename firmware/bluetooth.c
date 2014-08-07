@@ -22,7 +22,7 @@
 #include "common.h"
 #include "bluetooth.h"
 
-#define UART_BAUD 9600
+#define UART_BAUD 38400
 
 const uint8_t at_uart[] = "AT+UART=9600,0,0\r\n";
 const uint8_t at_name[] = "AT+NAME=\"Iron Man Mark IV\"\r\n";
