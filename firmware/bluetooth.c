@@ -59,9 +59,18 @@ static void uart_puts(char *str)
 
 static void hc05_send_cmd(char *cmd)
 {
+	char buff[40];
+	uint8_t i = 0;
+
 	uart_puts(cmd);
 	uart_puts("\r\n");
-	uart_flush();
+
+	for (i = 0; i < 40; i++) {
+		buff[i] = uart_getc();
+
+		if (buff[i] == '\n')
+			break;
+	}
 }
 
 void bluetooth_init(void)
