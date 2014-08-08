@@ -35,8 +35,6 @@
 
 #define VOICE_SILENT 1
 
-static uint8_t EEMEM conf_configured = 0;
-
 static void init(void);
 static void configure(void);
 static void battery_report_capacity(void);
@@ -58,7 +56,6 @@ ISR(INT0_vect)
 
 		if (helmet_state() == HELMET_CLOSED) {
 		} else {
-			bluetooth_configure();
 			voice_play_random();
 		}
 	}
@@ -106,22 +103,20 @@ int main(void)
 	voice_set_volume(SOUND_VOLUME_1);
 #endif
 
-	configured = eeprom_read_byte(&conf_configured);
-
 	// check if configuration mode was requested
 	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {
 		configure();
+		configured = 1;
 	}
 
 	// enable repulsor
 	repulsor_power_up();
 
-	voice_play_welcome();
-
-	if (configured) {
-		voice_play_sound(SOUND_INTRO_2);
-		eeprom_write_byte(&conf_configured, 0);
+	if (!configured) {
+		voice_play_welcome();
 	}
+
+	_delay_ms(1000);
 
 	// report battery capacity after power on
 	battery_report_capacity();
@@ -159,14 +154,12 @@ static void configure(void)
 {
 	voice_play_sound(SOUND_BD_CALIBRATING);
 
-	// FIXME
+	bluetooth_configure();
 
-	eeprom_write_byte(&conf_configured, 1);
 	voice_play_sound(SOUND_CONFIRM_6);
 
-	// main loop
-	while(1) {
-	}
+	_delay_ms(1000);
+	voice_play_sound(SOUND_INTRO_2);
 }
 
 static void battery_report_capacity(void)

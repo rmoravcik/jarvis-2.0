@@ -59,18 +59,10 @@ static void uart_puts(char *str)
 
 static void hc05_send_cmd(char *cmd)
 {
-	char buff[40];
-	uint8_t i = 0;
-
 	uart_puts(cmd);
 	uart_puts("\r\n");
 
-	for (i = 0; i < 40; i++) {
-		buff[i] = uart_getc();
-
-		if (buff[i] == '\n')
-			break;
-	}
+	_delay_ms(100);
 }
 
 void bluetooth_init(void)
@@ -92,16 +84,15 @@ void bluetooth_init(void)
 
 void bluetooth_configure(void)
 {
+	uart_flush();
+	_delay_ms(500);
+
 	hc05_send_cmd("AT");
-	_delay_us(200);
-	hc05_send_cmd("AT+INIT");
-	_delay_us(2000);
 	hc05_send_cmd("AT+NAME=\"Iron Man Mark IV\"");
 	hc05_send_cmd("AT+PSWD=1234");
 	hc05_send_cmd("AT+UART=38400,0,0");
 	hc05_send_cmd("AT+IAC=9e8b33");
 	hc05_send_cmd("AT+CMODE=1");
 	hc05_send_cmd("AT+CLASS=800804");
-	_delay_us(1000);
 	hc05_send_cmd("AT+RESET");
 }
