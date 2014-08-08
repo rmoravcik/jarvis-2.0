@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -28,11 +29,31 @@
 
 #define UART_BAUD 38400
 
+#define RXBUFF_LEN 40
+char rxbuff[RXBUFF_LEN];
+
 // UART RX complete
 ISR(USART_RXC_vect)
 {
-    uint8_t tmp __attribute__((unused));
-    tmp = UDR;
+//	uint8_t tmp __attribute__((unused));
+	static uint8_t i = 0;
+
+//	tmp = UDR;
+
+	rxbuff[i] = UDR;
+
+	if (rxbuff[i] == '\n') {
+		rxbuff[i] = '\0';
+	} else {
+		i++;
+		if (i == RXBUFF_LEN) {
+			i = 0;
+		}
+	}
+
+	if (strncmp(rxbuff, "HELMET OPEN", i) == 0) {
+		PORTB |= _BV(GPIO_EYES);
+	}
 }
 
 static void uart_flush(void)
@@ -42,14 +63,6 @@ static void uart_flush(void)
 	// Read until data are available
 	while (UCSRA & (1 << RXC))
 		tmp = UDR;
-}
-
-static char uart_getc(void)
-{
-	// Wait until data are available
-	while (!(UCSRA & (1 << RXC)));
-
-	return UDR;
 }
 
 static void uart_putc(char c)
