@@ -17,13 +17,23 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdlib.h>
+
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "common.h"
 #include "bluetooth.h"
 
 #define UART_BAUD 38400
+
+// UART RX complete
+ISR(USART_RXC_vect)
+{
+    uint8_t tmp __attribute__((unused));
+    tmp = UDR;
+}
 
 static void uart_flush(void)
 {
@@ -76,8 +86,8 @@ void bluetooth_init(void)
 	// Asynchronous mode, no parity, 8N1
 	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);
 
-	// Enable TX & RX
-	UCSRB = _BV(TXEN) | _BV(RXEN);
+	// Enable TX & RX, Enable RXC interrupt
+	UCSRB = _BV(TXEN) | _BV(RXEN) | _BV(RXCIE);
 
 	uart_flush();
 }
@@ -88,11 +98,18 @@ void bluetooth_configure(void)
 	_delay_ms(500);
 
 	hc05_send_cmd("AT");
+	_delay_ms(500);
+
 	hc05_send_cmd("AT+NAME=\"Iron Man Mark IV\"");
 	hc05_send_cmd("AT+PSWD=1234");
 	hc05_send_cmd("AT+UART=38400,0,0");
-	hc05_send_cmd("AT+IAC=9e8b33");
 	hc05_send_cmd("AT+CMODE=1");
 	hc05_send_cmd("AT+CLASS=800804");
 	hc05_send_cmd("AT+RESET");
+}
+
+void bluetooth_send(char *str)
+{
+	uart_puts(str);
+	uart_puts("\r\n");
 }
