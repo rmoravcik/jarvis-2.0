@@ -62,10 +62,7 @@ static void uart_puts(char *str)
 // UART RX complete
 ISR(USART_RXC_vect)
 {
-//	uint8_t tmp __attribute__((unused));
 	static uint8_t i = 0;
-
-//	tmp = UDR;
 
 	rxbuff[i] = UDR;
 
