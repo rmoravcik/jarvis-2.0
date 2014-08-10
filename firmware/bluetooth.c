@@ -25,36 +25,15 @@
 #include <util/delay.h>
 
 #include "common.h"
+#include "eyes.h"
+#include "helmet.h"
+
 #include "bluetooth.h"
 
 #define UART_BAUD 38400
 
 #define RXBUFF_LEN 40
 char rxbuff[RXBUFF_LEN];
-
-// UART RX complete
-ISR(USART_RXC_vect)
-{
-//	uint8_t tmp __attribute__((unused));
-	static uint8_t i = 0;
-
-//	tmp = UDR;
-
-	rxbuff[i] = UDR;
-
-	if (rxbuff[i] == '\n') {
-		rxbuff[i] = '\0';
-	} else {
-		i++;
-		if (i == RXBUFF_LEN) {
-			i = 0;
-		}
-	}
-
-	if (strncmp(rxbuff, "HELMET OPEN", i) == 0) {
-		PORTB |= _BV(GPIO_EYES);
-	}
-}
 
 static void uart_flush(void)
 {
@@ -78,6 +57,54 @@ static void uart_puts(char *str)
 	while (*str) {
 		uart_putc(*str++);
 	}
+}
+
+// UART RX complete
+ISR(USART_RXC_vect)
+{
+//	uint8_t tmp __attribute__((unused));
+	static uint8_t i = 0;
+
+//	tmp = UDR;
+
+	rxbuff[i] = UDR;
+
+	// echo back received character
+	UDR = rxbuff[i];
+
+	if (rxbuff[i] == '\r') {
+		UDR = '\n';
+		rxbuff[i] = '\0';
+
+		if (i == 0) {
+			// Do nothing
+		} else if (strncmp(rxbuff, "EYES ON", i) == 0) {
+			eyes_power_up();
+			uart_puts("OK\r\n");
+		} else if (strncmp(rxbuff, "EYES OFF", i) == 0) {
+			eyes_power_down();
+			uart_puts("OK\r\n");
+		} else if (strncmp(rxbuff, "HELMET OPEN", i) == 0) {
+			eyes_power_down();
+			helmet_open();
+			uart_puts("OK\r\n");
+		} else if (strncmp(rxbuff, "HELMET CLOSE", i) == 0) {
+			helmet_close();
+			eyes_power_up();
+			uart_puts("OK\r\n");
+		} else {
+			uart_puts("FAILED\r\n");
+		}
+
+		i = 0;
+		uart_puts("IRONMAN> ");
+	} else {
+		i++;
+		if (i == RXBUFF_LEN) {
+			i = 0;
+		}
+	}
+
 }
 
 static void hc05_send_cmd(char *cmd)
