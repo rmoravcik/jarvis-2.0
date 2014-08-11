@@ -82,46 +82,6 @@ ISR(INT0_vect)
 	}
 }
 
-int main(void)
-{
-	uint8_t configured = 0;
-
-	init();
-	bluetooth_init();
-	random_init();
-	power_init();
-	battery_init();
-	helmet_init();
-	voice_init();
-
-#ifdef VOICE_SILENT
-	voice_set_volume(SOUND_VOLUME_7);
-#endif
-
-	// check if configuration mode was requested
-	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {
-		configure();
-		configured = 1;
-	}
-
-	power_on(ALL);
-
-	if (!configured) {
-		voice_play_welcome();
-	}
-
-	_delay_ms(1000);
-
-	// report battery capacity after power on
-	battery_report_capacity();
-
-	// main loop
-	while(1) {
-	}
-
-	return 0;
-}
-
 static void init(void)
 {
 	OSCCAL = 0xb5;
@@ -185,4 +145,45 @@ static void battery_warn_notice(void)
 		// play warn notice that battery is almost dead
 		voice_play_sound(SOUND_BATTERY_LOW_1);
 	}
+}
+
+int main(void)
+{
+	uint8_t configured = 0;
+
+	init();
+	bluetooth_init();
+	random_init();
+	power_init();
+	battery_init();
+	helmet_init();
+	voice_init();
+
+#ifdef VOICE_SILENT
+	voice_set_volume(SOUND_VOLUME_7);
+#endif
+
+	// check if configuration mode was requested
+	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {
+		configure();
+		configured = 1;
+	}
+
+	// power on repulsors and unibeam
+	power_on(ALL);
+
+	if (!configured) {
+		voice_play_welcome();
+	}
+
+	_delay_ms(1000);
+
+	// report battery capacity after power on
+	battery_report_capacity();
+
+	// main loop
+	while(1) {
+	}
+
+	return 0;
 }
