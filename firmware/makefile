@@ -101,7 +101,7 @@ REMOVE = rm -f
 COPY = cp
 
 HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
-ELFSIZE = $(SIZE) -A $(TARGET).elf
+ELFSIZE = $(SIZE) --mcu=$(MCU) -C $(TARGET).elf
 
 # Define Messages
 # English
