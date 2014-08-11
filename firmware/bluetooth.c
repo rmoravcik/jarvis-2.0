@@ -92,6 +92,9 @@ ISR(USART_RXC_vect)
 			helmet_close();
 			power_on(EYES);
 			uart_puts(BLUETOOTH_RESPONSE_OK);
+		} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, i) == 0) {
+			uart_puts(BLUETOOTH_RESPONSE_VERSION);
+			uart_puts(BLUETOOTH_RESPONSE_OK);
 		} else {
 			uart_puts(BLUETOOTH_RESPONSE_ERROR);
 		}
