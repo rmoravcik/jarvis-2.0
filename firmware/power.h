@@ -17,15 +17,26 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef EYES_H
-#define EYES_H
+#ifndef POWER_H
+#define POWER_H
 
-#include <stdint.h>
+enum {
+	EYES		= 0x0001,
+	REPULSOR_POWER	= 0x0002,
+	REPULSOR_LEFT	= 0x0004,
+	REPULSOR_RIGHT	= 0x0008,
+	UNIBEAM		= 0x0010,
+};
 
-void eyes_init(void);
+#define REPULSORS	REPULSOR_LEFT | REPULSOR_RIGHT
+#define ALL		REPULSOR_POWER | UNIBEAM
 
-void eyes_power_up(void);
-void eyes_power_down(void);
-void eyes_power_failure(void);
+void power_init(void);
 
-#endif // EYES_H
+void power_on(uint8_t device);
+void power_off(uint8_t device);
+void power_failure(uint8_t device);
+
+void power_blast(uint8_t device);
+
+#endif // POWER_H

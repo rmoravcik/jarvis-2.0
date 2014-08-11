@@ -25,8 +25,8 @@
 #include <util/delay.h>
 
 #include "common.h"
-#include "eyes.h"
 #include "helmet.h"
+#include "power.h"
 #include "strings.h"
 
 #include "bluetooth.h"
@@ -79,18 +79,18 @@ ISR(USART_RXC_vect)
 		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, i) == 0) {
 			// FIXME add help
 		} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, i) == 0) {
-			eyes_power_up();
+			power_on(EYES);
 			uart_puts(BLUETOOTH_RESPONSE_OK);
 		} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, i) == 0) {
-			eyes_power_down();
+			power_off(EYES);
 			uart_puts(BLUETOOTH_RESPONSE_OK);
 		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, i) == 0) {
-			eyes_power_down();
+			power_off(EYES);
 			helmet_open();
 			uart_puts(BLUETOOTH_RESPONSE_OK);
 		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, i) == 0) {
 			helmet_close();
-			eyes_power_up();
+			power_on(EYES);
 			uart_puts(BLUETOOTH_RESPONSE_OK);
 		} else {
 			uart_puts(BLUETOOTH_RESPONSE_ERROR);

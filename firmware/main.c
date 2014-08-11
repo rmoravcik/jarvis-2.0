@@ -27,10 +27,9 @@
 #include "common.h"
 #include "battery.h"
 #include "bluetooth.h"
-#include "eyes.h"
 #include "helmet.h"
+#include "power.h"
 #include "random.h"
-#include "repulsor.h"
 #include "voice.h"
 
 #define VOICE_SILENT 1
@@ -66,7 +65,7 @@ ISR(INT0_vect)
 
 		if (helmet_state() == HELMET_CLOSED) {
 			// turn off eyes
-			eyes_power_down();
+			power_off(EYES);
 
 			// open helmet
 			helmet_open();
@@ -75,7 +74,7 @@ ISR(INT0_vect)
 			helmet_close();
 
 			// turn on eyes
-			eyes_power_up();
+			power_on(EYES);
 
 			// check if battery is not dead
 			battery_warn_notice();
@@ -88,12 +87,10 @@ int main(void)
 	uint8_t configured = 0;
 
 	init();
-
 	bluetooth_init();
 	random_init();
+	power_init();
 	battery_init();
-	eyes_init();
-	repulsor_init();
 	helmet_init();
 	voice_init();
 
@@ -107,8 +104,7 @@ int main(void)
 		configured = 1;
 	}
 
-	// enable repulsor
-	repulsor_power_up();
+	power_on(ALL);
 
 	if (!configured) {
 		voice_play_welcome();
@@ -178,13 +174,13 @@ static void battery_warn_notice(void)
 	uint8_t capacity = battery_get_capacity();
 
 	if (capacity < 20) {
-		// blink with eyes if helmet is closed
+		// blink also with eyes if helmet is closed
 		if (helmet_state() == HELMET_CLOSED) {
-			eyes_power_failure();
+			power_failure(ALL | EYES);
+		} else {
+			// blink with all devices
+			power_failure(ALL);
 		}
-
-		// blink with repulsor
-		repulsor_power_failure();
 
 		// play warn notice that battery is almost dead
 		voice_play_sound(SOUND_BATTERY_LOW_1);
