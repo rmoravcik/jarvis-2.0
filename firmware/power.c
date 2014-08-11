@@ -73,17 +73,71 @@ static void device_off(uint8_t device)
 	}
 }
 
+static uint8_t device_get(uint8_t device)
+{
+	if (device & EYES) {
+		if (PORTB & _BV(GPIO_EYES)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (device & REPULSORS_POWER) {
+		if (PORTC & _BV(GPIO_REPULSORS_PWR)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (device & REPULSOR_LEFT) {
+		if (PORTC & _BV(GPIO_REPULSOR_LEFT)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (device & REPULSOR_RIGHT) {
+		if (PORTC & _BV(GPIO_REPULSOR_RIGHT)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	if (device & UNIBEAM) {
+		if (PORTD & _BV(GPIO_UNIBEAM)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+}
+
 // takes 200ms
 static void effect_blink(uint8_t device)
 {
-	device_off(device);
-	_delay_ms(50);
-	device_on(device);
-	_delay_ms(50);
-	device_off(device);
-	_delay_ms(50);
-	device_on(device);
-	_delay_ms(50);
+	if (device_get(device)) {
+		device_off(device);
+		_delay_ms(50);
+		device_on(device);
+		_delay_ms(50);
+		device_off(device);
+		_delay_ms(50);
+		device_on(device);
+		_delay_ms(50);
+	} else {
+		device_on(device);
+		_delay_ms(50);
+		device_off(device);
+		_delay_ms(50);
+		device_on(device);
+		_delay_ms(50);
+		device_off(device);
+		_delay_ms(50);
+	}
 }
 
 // takes 3000ms
