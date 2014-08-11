@@ -56,7 +56,6 @@ ISR(INT0_vect)
 
 		if (helmet_state() == HELMET_CLOSED) {
 		} else {
-			bluetooth_send("J.A.R.V.I.S.#>");
 			voice_play_random();
 		}
 	}

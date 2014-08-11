@@ -17,13 +17,22 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef BLUETOOTH_H
-#define BLUETOOTH_H
+#ifndef STRINGS_H
+#define STRINGS_H
 
 #include <stdint.h>
 
-void bluetooth_init(void);
+#define BLUETOOTH_RESPONSE_PROMPT	"IRONMAN> "
 
-void bluetooth_configure(void);
+#define BLUETOOTH_RESPONSE_OK		"OK\r\n"
+#define BLUETOOTH_RESPONSE_ERROR	"ERROR\r\n"
 
-#endif // BLUETOOTH_H
+#define BLUETOOTH_CMD_HELP		"?"
+
+#define BLUETOOTH_CMD_EYES_ON		"EYES ON"
+#define BLUETOOTH_CMD_EYES_OFF		"EYES OFF"
+
+#define BLUETOOTH_CMD_HELMET_OPEN	"HELMET OPEN"
+#define BLUETOOTH_CMD_HELMET_CLOSE	"HELMET CLOSE"
+
+#endif // STRINGS_H

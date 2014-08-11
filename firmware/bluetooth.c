@@ -27,6 +27,7 @@
 #include "common.h"
 #include "eyes.h"
 #include "helmet.h"
+#include "strings.h"
 
 #include "bluetooth.h"
 
@@ -75,26 +76,28 @@ ISR(USART_RXC_vect)
 
 		if (i == 0) {
 			// Do nothing
-		} else if (strncmp(rxbuff, "EYES ON", i) == 0) {
+		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, i) == 0) {
+			// FIXME add help
+		} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, i) == 0) {
 			eyes_power_up();
-			uart_puts("OK\r\n");
-		} else if (strncmp(rxbuff, "EYES OFF", i) == 0) {
+			uart_puts(BLUETOOTH_RESPONSE_OK);
+		} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, i) == 0) {
 			eyes_power_down();
-			uart_puts("OK\r\n");
-		} else if (strncmp(rxbuff, "HELMET OPEN", i) == 0) {
+			uart_puts(BLUETOOTH_RESPONSE_OK);
+		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, i) == 0) {
 			eyes_power_down();
 			helmet_open();
-			uart_puts("OK\r\n");
-		} else if (strncmp(rxbuff, "HELMET CLOSE", i) == 0) {
+			uart_puts(BLUETOOTH_RESPONSE_OK);
+		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, i) == 0) {
 			helmet_close();
 			eyes_power_up();
-			uart_puts("OK\r\n");
+			uart_puts(BLUETOOTH_RESPONSE_OK);
 		} else {
-			uart_puts("FAILED\r\n");
+			uart_puts(BLUETOOTH_RESPONSE_ERROR);
 		}
 
+		uart_puts(BLUETOOTH_RESPONSE_PROMPT);
 		i = 0;
-		uart_puts("IRONMAN> ");
 	} else {
 		i++;
 		if (i == RXBUFF_LEN) {
@@ -143,10 +146,4 @@ void bluetooth_configure(void)
 	hc05_send_cmd("AT+CMODE=1");
 	hc05_send_cmd("AT+CLASS=800804");
 	hc05_send_cmd("AT+RESET");
-}
-
-void bluetooth_send(char *str)
-{
-	uart_puts(str);
-	uart_puts("\r\n");
 }
