@@ -104,7 +104,7 @@ static void init(void)
 	MCUCR |= _BV(ISC01);
 
 	// enable INT0 interrupt
-	GIMSK |= _BV(INT0);
+	GICR |= _BV(INT0);
 
 	sei();
 }
