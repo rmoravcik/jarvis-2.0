@@ -36,6 +36,14 @@
 #define RXBUFF_LEN 40
 char rxbuff[RXBUFF_LEN];
 
+enum {
+	RESPONSE_OK = 0,
+	RESPONSE_ERROR,
+	RESPONSE_EMPTY,
+};
+
+static void bluetooth_parse_command(uint8_t size);
+
 static void uart_flush(void)
 {
 	char tmp __attribute__((unused));
@@ -71,35 +79,14 @@ ISR(USART_RXC_vect)
 	UDR = rxbuff[i];
 
 	if (rxbuff[i] == '\r') {
+		// send 'new line' character
 		UDR = '\n';
+
+		// replace '\r' character with string termination character
 		rxbuff[i] = '\0';
 
-		if (i == 0) {
-			// Do nothing
-		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, i) == 0) {
-			// FIXME add help
-		} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, i) == 0) {
-			power_on(EYES);
-			uart_puts(BLUETOOTH_RESPONSE_OK);
-		} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, i) == 0) {
-			power_off(EYES);
-			uart_puts(BLUETOOTH_RESPONSE_OK);
-		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, i) == 0) {
-			power_off(EYES);
-			helmet_open();
-			uart_puts(BLUETOOTH_RESPONSE_OK);
-		} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, i) == 0) {
-			helmet_close();
-			power_on(EYES);
-			uart_puts(BLUETOOTH_RESPONSE_OK);
-		} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, i) == 0) {
-			uart_puts(BLUETOOTH_RESPONSE_VERSION);
-			uart_puts(BLUETOOTH_RESPONSE_OK);
-		} else {
-			uart_puts(BLUETOOTH_RESPONSE_ERROR);
-		}
+		bluetooth_parse_command(i);
 
-		uart_puts(BLUETOOTH_RESPONSE_PROMPT);
 		i = 0;
 	} else {
 		i++;
@@ -107,15 +94,74 @@ ISR(USART_RXC_vect)
 			i = 0;
 		}
 	}
-
 }
 
-static void hc05_send_cmd(char *cmd)
+static void bluetooth_parse_command(uint8_t size)
 {
-	uart_puts(cmd);
-	uart_puts("\r\n");
+	uint8_t response = RESPONSE_OK;
 
-	_delay_ms(100);
+	if (size == 0) {
+		response = RESPONSE_EMPTY;
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, size) == 0) {
+		uint8_t i = 0;
+
+		for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i ++) {
+			uart_putc('"');
+			uart_puts(commands[i]);
+			uart_putc('"');
+
+			if (strlen(commands[i]) + 2 > 16) {
+				uart_puts("\t");
+			} else {
+				uart_puts("\t\t");
+			}
+
+			if ((i % 3) == 0) {
+				uart_puts("\r\n");
+			}
+		}
+
+		if (((i - 1) % 3) == 0) {
+			uart_puts("\r\n");
+		}
+
+		response = RESPONSE_EMPTY;
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, size) == 0) {
+		power_on(EYES);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, size) == 0) {
+		power_off(EYES);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, size) == 0) {
+		power_off(EYES);
+		helmet_open();
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, size) == 0) {
+		helmet_close();
+		power_on(EYES);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSORS_ON, size) == 0) {
+		power_on(REPULSORS_POWER);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSORS_OFF, size) == 0) {
+		power_off(REPULSORS_POWER);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR_LEFT, size) == 0) {
+		power_blast(REPULSOR_LEFT);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR_RIGHT, size) == 0) {
+		power_blast(REPULSOR_RIGHT);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM_ON, size) == 0) {
+		power_on(UNIBEAM);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM_OFF, size) == 0) {
+		power_off(UNIBEAM);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, size) == 0) {
+		uart_puts(BLUETOOTH_RESPONSE_VERSION);
+		response = RESPONSE_EMPTY;
+	} else {
+		response = RESPONSE_ERROR;
+	}
+
+	if (response == RESPONSE_OK) {
+		uart_puts(BLUETOOTH_RESPONSE_OK);
+	} else if (response == RESPONSE_ERROR) {
+		uart_puts(BLUETOOTH_RESPONSE_ERROR);
+	}
+
+	uart_puts(BLUETOOTH_RESPONSE_PROMPT);
 }
 
 void bluetooth_init(void)
@@ -133,6 +179,14 @@ void bluetooth_init(void)
 	UCSRB = _BV(TXEN) | _BV(RXEN) | _BV(RXCIE);
 
 	uart_flush();
+}
+
+static void hc05_send_cmd(char *cmd)
+{
+	uart_puts(cmd);
+	uart_puts("\r\n");
+
+	_delay_ms(100);
 }
 
 void bluetooth_configure(void)

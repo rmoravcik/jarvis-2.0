@@ -33,8 +33,8 @@ static void device_on(uint8_t device)
 		PORTB |= _BV(GPIO_EYES);
 	}
 
-	if (device & REPULSOR_POWER) {
-		PORTC |= _BV(GPIO_REPULSOR_PWR);
+	if (device & REPULSORS_POWER) {
+		PORTC |= _BV(GPIO_REPULSORS_PWR);
 	}
 
 	if (device & REPULSOR_LEFT) {
@@ -56,8 +56,8 @@ static void device_off(uint8_t device)
 		PORTB &= ~_BV(GPIO_EYES);
 	}
 
-	if (device & REPULSOR_POWER) {
-		PORTC &= ~_BV(GPIO_REPULSOR_PWR);
+	if (device & REPULSORS_POWER) {
+		PORTC &= ~_BV(GPIO_REPULSORS_PWR);
 	}
 
 	if (device & REPULSOR_LEFT) {
@@ -137,10 +137,10 @@ void power_init(void)
 	PORTB &= ~_BV(GPIO_EYES);
 
 	// set repuslor blast and pwr pins as an output
-	DDRC |= _BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT) | _BV(GPIO_REPULSOR_PWR);
+	DDRC |= _BV(GPIO_REPULSORS_PWR) | _BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT);
 
 	// set power blast and pwr pins to low
-	PORTC &= ~(_BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT) | _BV(GPIO_REPULSOR_PWR));
+	PORTC &= ~(_BV(GPIO_REPULSORS_PWR) | _BV(GPIO_REPULSOR_LEFT) | _BV(GPIO_REPULSOR_RIGHT));
 
 	// set unibeam pin as an output
 	DDRD |= _BV(GPIO_UNIBEAM);
