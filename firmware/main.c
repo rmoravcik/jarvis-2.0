@@ -87,10 +87,15 @@ static void init(void)
 	OSCCAL = 0xb5;
 
 	DDRB = 0xff;
+
 	DDRC = 0xff;
+	DDRC &= ~(_BV(GPIO_REPULSOR_BUTTON_LEFT) | _BV(GPIO_REPULSOR_BUTTON_RIGHT));
 
 	DDRD = 0xff;
 	DDRD &= ~_BV(GPIO_FUNC_BUTTON);
+
+	// enable pull ups on repulsor buttons
+	PORTC |= _BV(GPIO_REPULSOR_BUTTON_LEFT) | _BV(GPIO_REPULSOR_BUTTON_RIGHT);
 
 	// enable pull up on func button
 	PORTD |= _BV(GPIO_FUNC_BUTTON);
@@ -183,6 +188,15 @@ int main(void)
 
 	// main loop
 	while(1) {
+		if (PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT)) {
+			voice_play_sound_no_wait(SOUND_REPULSOR);
+			power_blast(REPULSOR_LEFT);
+		}
+
+		if (PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT)) {
+			voice_play_sound_no_wait(SOUND_REPULSOR);
+			power_blast(REPULSOR_RIGHT);
+		}
 	}
 
 	return 0;
