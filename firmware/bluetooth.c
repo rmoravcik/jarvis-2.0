@@ -49,14 +49,14 @@ static void uart_flush(void)
 	char tmp __attribute__((unused));
 
 	// Read until data are available
-	while (UCSRA & (1 << RXC))
+	while (UCSRA & _BV(RXC))
 		tmp = UDR;
 }
 
 static void uart_putc(char c)
 {
 	// Wait until the transmitter is ready
-	while (!(UCSRA & (1 << UDRE)));
+	while (!(UCSRA & _BV(UDRE)));
 
 	UDR = c;
 }
