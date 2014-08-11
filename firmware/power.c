@@ -114,6 +114,8 @@ static uint8_t device_get(uint8_t device)
 			return 0;
 		}
 	}
+
+	return 0;
 }
 
 // takes 200ms
