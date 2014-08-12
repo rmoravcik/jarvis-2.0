@@ -151,12 +151,12 @@ int main(void)
 
 	// main loop
 	while(1) {
-		if (PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT)) {
+		if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT))) {
 			voice_play_sound_no_wait(SOUND_REPULSOR);
 			power_blast(REPULSOR_LEFT);
 		}
 
-		if (PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT)) {
+		if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT))) {
 			voice_play_sound_no_wait(SOUND_REPULSOR);
 			power_blast(REPULSOR_RIGHT);
 		}
