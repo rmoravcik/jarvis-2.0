@@ -22,6 +22,9 @@
 
 #include <avr/io.h>
 
+#define TRUE				1
+#define FALSE				0
+
 #define GPIO_EYES			PB0
 #define GPIO_SERVO1			PB1
 #define GPIO_SERVO2			PB2

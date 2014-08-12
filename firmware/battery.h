@@ -24,6 +24,6 @@
 
 void battery_init(void);
 
-uint8_t battery_get_capacity(void);
+void battery_report_capacity(uint8_t report_high);
 
 #endif // BATTERY_H
