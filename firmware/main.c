@@ -33,9 +33,6 @@
 
 #define VOICE_SILENT 1
 
-static void init(void);
-static void configure(void);
-
 // func button
 ISR(INT0_vect)
 {
