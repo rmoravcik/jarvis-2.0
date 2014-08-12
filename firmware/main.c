@@ -20,7 +20,6 @@
 #include <stdlib.h>
 
 #include <avr/eeprom.h>
-
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
@@ -36,8 +35,6 @@
 
 static void init(void);
 static void configure(void);
-static void battery_report_capacity(void);
-static void battery_warn_notice(void);
 
 // func button
 ISR(INT0_vect)
@@ -77,7 +74,7 @@ ISR(INT0_vect)
 			power_on(EYES);
 
 			// check if battery is not dead
-			battery_warn_notice();
+			battery_report_capacity(FALSE);
 		}
 	}
 }
@@ -121,37 +118,6 @@ static void configure(void)
 	voice_play_sound(SOUND_INTRO_2);
 }
 
-static void battery_report_capacity(void)
-{
-	// read battery capacity
-	uint8_t capacity = battery_get_capacity();
-
-	if (capacity >= 90) {
-		voice_play_sound(SOUND_BATTERY_CHARGED);
-	} else if (capacity < 20) {
-		voice_play_sound(SOUND_BATTERY_LOW_0);
-	}
-}
-
-static void battery_warn_notice(void)
-{
-	// read battery capacity
-	uint8_t capacity = battery_get_capacity();
-
-	if (capacity < 20) {
-		// blink also with eyes if helmet is closed
-		if (helmet_state() == HELMET_CLOSED) {
-			power_failure(ALL | EYES);
-		} else {
-			// blink with all devices
-			power_failure(ALL);
-		}
-
-		// play warn notice that battery is almost dead
-		voice_play_sound(SOUND_BATTERY_LOW_1);
-	}
-}
-
 int main(void)
 {
 	uint8_t configured = 0;
@@ -184,7 +150,7 @@ int main(void)
 	_delay_ms(1000);
 
 	// report battery capacity after power on
-	battery_report_capacity();
+	battery_report_capacity(TRUE);
 
 	// main loop
 	while(1) {
