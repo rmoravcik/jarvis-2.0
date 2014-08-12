@@ -81,44 +81,48 @@ void voice_play_random(void)
 {
 	uint8_t i = 0;
 
-	i = random_get(8);
+	i = random_get(9);
 
 	switch (i) {
 		case 0:
+			voice_play_sound(SOUND_CLOCK_AFTERNOON);
+			break;
+
+		case 1:
 			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3);
 			voice_play_sound_no_wait(SOUND_ACDC);
 			break;
 
-		case 1:
+		case 2:
 			voice_play_sound(SOUND_CLOCK_LATE_1);
 			break;
 
-		case 2:
+		case 3:
 			voice_play_sound(SOUND_NETWORK_LOST_WIFI);
 			voice_play_sound(SOUND_NETWORK_NO_WIFI);
 			break;
 
-		case 3:
+		case 4:
 			voice_play_sound(SOUND_SELF_DESTRUCT_1);
 			break;
 
-		case 4:
+		case 5:
 			voice_play_sound(SOUND_TRS4);
 			break;
 
-		case 5:
+		case 6:
 			voice_play_sound(SOUND_TRS7_1);
 			break;
 
-		case 6:
+		case 7:
 			voice_play_sound(SOUND_TRS9);
 			break;
 
-		case 7:
+		case 8:
 			voice_play_sound(SOUND_TRS10);
 			break;
 
-		case 8:
+		case 9:
 			voice_play_sound(SOUND_TRS11);
 			voice_play_sound(SOUND_JUST_KIDDING);
 			break;
