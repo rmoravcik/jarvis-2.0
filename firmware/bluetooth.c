@@ -68,6 +68,14 @@ static void uart_puts(char *str)
 	}
 }
 
+static void hc05_send_command(char *command)
+{
+	uart_puts(command);
+	uart_puts("\r\n");
+
+	_delay_ms(100);
+}
+
 // UART RX complete
 ISR(USART_RXC_vect)
 {
@@ -181,26 +189,18 @@ void bluetooth_init(void)
 	uart_flush();
 }
 
-static void hc05_send_cmd(char *cmd)
-{
-	uart_puts(cmd);
-	uart_puts("\r\n");
-
-	_delay_ms(100);
-}
-
 void bluetooth_configure(void)
 {
 	uart_flush();
 	_delay_ms(500);
 
-	hc05_send_cmd("AT");
+	hc05_send_command("AT");
 	_delay_ms(500);
 
-	hc05_send_cmd("AT+NAME=\"Iron Man Mark IV\"");
-	hc05_send_cmd("AT+PSWD=1234");
-	hc05_send_cmd("AT+UART=38400,0,0");
-	hc05_send_cmd("AT+CMODE=1");
-	hc05_send_cmd("AT+CLASS=800804");
-	hc05_send_cmd("AT+RESET");
+	hc05_send_command("AT+NAME=\"Iron Man Mark IV\"");
+	hc05_send_command("AT+PSWD=1234");
+	hc05_send_command("AT+UART=38400,0,0");
+	hc05_send_command("AT+CMODE=1");
+	hc05_send_command("AT+CLASS=800804");
+	hc05_send_command("AT+RESET");
 }
