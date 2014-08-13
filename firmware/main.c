@@ -55,8 +55,6 @@ ISR(INT0_vect)
 
 	// long press of func button
 	if (press_counter == 10) {
-		voice_play_sound(SOUND_BUTTON_SOUND_0);
-
 		if (helmet_state() == HELMET_CLOSED) {
 			// turn off eyes
 			power_off(EYES);
@@ -72,6 +70,55 @@ ISR(INT0_vect)
 
 			// check if battery is not dead
 			battery_report_capacity(FALSE);
+		}
+	}
+}
+
+static void check_repulsor_buttons(void)
+{
+	uint8_t press_counter = 0;
+
+	if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT))) {
+		while (!(PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT)) && press_counter < 10) {
+			_delay_ms(200);
+			press_counter++;
+		}
+
+		// short press of func button
+		if (press_counter == 1) {
+			voice_play_sound(SOUND_BUTTON_SOUND_0);
+		}
+
+		// long press of func button
+		if (press_counter == 10) {
+			voice_play_sound_no_wait(SOUND_REPULSOR);
+
+			// simulate shot after 1sec
+			_delay_ms(1000);
+
+			power_blast(REPULSOR_LEFT);
+		}
+	}
+
+	if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT))) {
+		while (!(PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT)) && press_counter < 10) {
+			_delay_ms(200);
+			press_counter++;
+		}
+
+		// short press of func button
+		if (press_counter == 1) {
+			voice_play_sound(SOUND_BUTTON_SOUND_0);
+		}
+
+		// long press of func button
+		if (press_counter == 10) {
+			voice_play_sound_no_wait(SOUND_REPULSOR);
+
+			// simulate shot after 1sec
+			_delay_ms(1000);
+
+			power_blast(REPULSOR_RIGHT);
 		}
 	}
 }
@@ -151,23 +198,7 @@ int main(void)
 
 	// main loop
 	while(1) {
-		if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT))) {
-			voice_play_sound_no_wait(SOUND_REPULSOR);
-
-			// simulate shot after 1sec
-			_delay_ms(1000);
-
-			power_blast(REPULSOR_LEFT);
-		}
-
-		if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT))) {
-			voice_play_sound_no_wait(SOUND_REPULSOR);
-
-			// simulate shot after 1sec
-			_delay_ms(1000);
-
-			power_blast(REPULSOR_RIGHT);
-		}
+		check_repulsor_buttons();
 	}
 
 	return 0;
