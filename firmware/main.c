@@ -33,6 +33,22 @@
 
 #define VOICE_SILENT 1
 
+// timer0 overflow
+ISR(TIMER0_OVF_vect)
+{
+	static uint8_t counter = 0;
+
+	if (counter == 191) {
+		// reset counter
+		counter = 0;
+
+		// check battery capacity every ~5 seconds
+		battery_report_capacity(FALSE);
+	} else {
+		counter++;
+	}
+}
+
 // func button
 ISR(INT0_vect)
 {
@@ -146,6 +162,12 @@ static void init(void)
 
 	// enable INT0 interrupt
 	GICR |= _BV(INT0);
+
+	// timer0 prescaler clk/1024
+	TCCR0 |= _BV(CS02) | _BV(CS00);
+
+	// timer0 overflow interrupt enable
+	TIMSK |= _BV(TOIE0);
 
 	sei();
 }
