@@ -23,7 +23,35 @@
 #include "random.h"
 #include "voice.h"
 
-static void voice_send_command(uint8_t command);
+#define STOP_PLAYING		0xFE
+
+static void wt588d_send_command(uint8_t command)
+{
+	uint8_t i;
+
+	PORTD &= ~_BV(GPIO_WT588_DATA);
+	_delay_ms(5);
+	PORTD |= _BV(GPIO_WT588_DATA);
+
+	for (i = 0; i < 8; i++) {
+		if (command & 1) {
+			PORTD |= _BV(GPIO_WT588_DATA);
+			_delay_us(600);
+			PORTD &= ~_BV(GPIO_WT588_DATA);
+			_delay_us(200);
+		} else {
+			PORTD |= _BV(GPIO_WT588_DATA);
+			_delay_us(200);
+			PORTD &= ~_BV(GPIO_WT588_DATA);
+			_delay_us(600);
+		}
+
+		command >>= 1;
+	}
+
+	PORTD |= _BV(GPIO_WT588_DATA);
+	_delay_ms(20);
+}
 
 void voice_init(void)
 {
@@ -129,13 +157,22 @@ void voice_play_random(void)
 	}
 }
 
+uint8_t voice_is_playing(void)
+{
+	if (PINB & _BV(GPIO_WT588_BUSY)) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
 void voice_play_sound(uint8_t sound)
 {
 	// send command to play a sound
-	voice_send_command(sound);
+	wt588d_send_command(sound);
 
-	// wait till busy signal is asserted low by voice module
-	while (PINB & _BV(GPIO_WT588_BUSY)) {
+	// wait till voice end playing previous sample
+	while (voice_is_playing()) {
 	}
 
 	// busy signal is held down for 32ms
@@ -145,39 +182,15 @@ void voice_play_sound(uint8_t sound)
 void voice_play_sound_no_wait(uint8_t sound)
 {
 	// send command to play a sound
-	voice_send_command(sound);
+	wt588d_send_command(sound);
 }
 
 void voice_set_volume(uint8_t volume)
 {
-	voice_send_command(volume);
+	wt588d_send_command(volume);
 }
 
-static void voice_send_command(uint8_t command)
+void voice_stop_playback(void)
 {
-	uint8_t i;
-
-	PORTD &= ~_BV(GPIO_WT588_DATA);
-	_delay_ms(5);
-	PORTD |= _BV(GPIO_WT588_DATA);
-
-	for (i = 0; i < 8; i++) {
-		if (command & 1) {
-			PORTD |= _BV(GPIO_WT588_DATA);
-			_delay_us(600);
-			PORTD &= ~_BV(GPIO_WT588_DATA);
-			_delay_us(200);
-		} else {
-			PORTD |= _BV(GPIO_WT588_DATA);
-			_delay_us(200);
-			PORTD &= ~_BV(GPIO_WT588_DATA);
-			_delay_us(600);
-		}
-
-		command >>= 1;
-	}
-
-	PORTD |= _BV(GPIO_WT588_DATA);
-	_delay_ms(20);
+	wt588d_send_command(STOP_PLAYING);
 }
-

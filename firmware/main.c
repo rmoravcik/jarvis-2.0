@@ -61,10 +61,11 @@ ISR(INT0_vect)
 
 	// short press of func button
 	if (press_counter == 1) {
-		voice_play_sound(SOUND_BUTTON_SOUND_0);
-
-		if (helmet_state() == HELMET_CLOSED) {
+		if (voice_is_playing()) {
+			voice_stop_playback();
 		} else {
+			voice_play_sound(SOUND_BUTTON_SOUND_0);
+			_delay_ms(500);
 			voice_play_random();
 		}
 	}
@@ -83,9 +84,6 @@ ISR(INT0_vect)
 
 			// turn on eyes
 			power_on(EYES);
-
-			// check if battery is not dead
-			battery_report_capacity(FALSE);
 		}
 	}
 }
