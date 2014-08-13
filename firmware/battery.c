@@ -87,7 +87,7 @@ void battery_report_capacity(uint8_t report_high)
 	if (last_capacity != capacity) {
 		last_capacity = capacity;
 
-		if (capacity >= 90) {
+		if (report_high & (capacity >= 90)) {
 			voice_play_sound(SOUND_BATTERY_CHARGED);
 		} else if (capacity < 30) {
 			// blink also with eyes if helmet is closed
