@@ -25,6 +25,7 @@
 #include "battery.h"
 
 uint16_t adc_offset = 0;
+uint8_t last_capacity = 0;
 
 void battery_init(void)
 {
@@ -82,24 +83,30 @@ void battery_report_capacity(uint8_t report_high)
 	// read battery capacity
 	uint8_t capacity = battery_get_capacity();
 
-	if (capacity >= 90) {
-		voice_play_sound(SOUND_BATTERY_CHARGED);
-	} else if (capacity < 30) {
-		// blink also with eyes if helmet is closed
-		if (helmet_state() == HELMET_CLOSED) {
-			power_failure(ALL | EYES);
-		} else {
-			// blink with all devices
-			power_failure(ALL);
-		}
+	// report only capacity changes
+	if (last_capacity != capacity) {
+		last_capacity = capacity;
 
-		// play warn notice that battery is almost dead (< 10%, < 20% and < 30%)
-		if (capacity < 10) {
-			voice_play_sound(SOUND_BATTERY_LOW_2);
-		} else if (capacity < 20) {
-			voice_play_sound(SOUND_BATTERY_LOW_1);
-		} else {
-			voice_play_sound(SOUND_BATTERY_LOW_0);
+		if (capacity >= 90) {
+			voice_play_sound(SOUND_BATTERY_CHARGED);
+		} else if (capacity < 30) {
+			// blink also with eyes if helmet is closed
+			if (helmet_state() == HELMET_CLOSED) {
+				power_failure(ALL | EYES);
+			} else {
+				// blink with all devices
+				power_failure(ALL);
+			}
+
+			// play warn notice that battery is almost dead (< 10%, < 20% and < 30%)
+			if (capacity < 10) {
+				voice_play_sound(SOUND_BATTERY_LOW_2);
+			} else if (capacity < 20) {
+				voice_play_sound(SOUND_BATTERY_LOW_1);
+			} else {
+				voice_play_sound(SOUND_BATTERY_LOW_0);
+			}
 		}
 	}
+
 }
