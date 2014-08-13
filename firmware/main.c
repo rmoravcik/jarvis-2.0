@@ -153,11 +153,19 @@ int main(void)
 	while(1) {
 		if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_LEFT))) {
 			voice_play_sound_no_wait(SOUND_REPULSOR);
+
+			// simulate shot after 1sec
+			_delay_ms(1000);
+
 			power_blast(REPULSOR_LEFT);
 		}
 
 		if (!(PINC & _BV(GPIO_REPULSOR_BUTTON_RIGHT))) {
 			voice_play_sound_no_wait(SOUND_REPULSOR);
+
+			// simulate shot after 1sec
+			_delay_ms(1000);
+
 			power_blast(REPULSOR_RIGHT);
 		}
 	}
