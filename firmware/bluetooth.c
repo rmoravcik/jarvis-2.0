@@ -118,18 +118,18 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts(commands[i]);
 			uart_putc('"');
 
-			if (strlen(commands[i]) + 2 > 16) {
-				uart_puts("\t");
-			} else {
-				uart_puts("\t\t");
-			}
-
 			if ((i % 3) == 0) {
 				uart_puts("\r\n");
+			} else {
+				uint8_t padding = 0, j = 0;
+				padding = 24 - strlen(commands[i]) + 2;
+				for (j = 0; j < padding; j++) {
+					uart_putc(' ');
+				}
 			}
 		}
 
-		if (((i - 1) % 3) == 0) {
+		if (((i - 1) % 3) != 0) {
 			uart_puts("\r\n");
 		}
 
