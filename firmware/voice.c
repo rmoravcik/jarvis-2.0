@@ -50,6 +50,8 @@ static void wt588d_send_command(uint8_t command)
 	}
 
 	PORTD |= _BV(GPIO_WT588_DATA);
+
+	// wait till wt588d response to command
 	_delay_ms(20);
 }
 
@@ -159,10 +161,11 @@ void voice_play_random(void)
 
 uint8_t voice_is_playing(void)
 {
+	// busy is held down during the playback
 	if (PINB & _BV(GPIO_WT588_BUSY)) {
-		return TRUE;
-	} else {
 		return FALSE;
+	} else {
+		return TRUE;
 	}
 }
 
@@ -171,12 +174,9 @@ void voice_play_sound(uint8_t sound)
 	// send command to play a sound
 	wt588d_send_command(sound);
 
-	// wait till voice end playing previous sample
+	// wait till wt588d finish playing sample
 	while (voice_is_playing()) {
 	}
-
-	// busy signal is held down for 32ms
-	_delay_ms(40);
 }
 
 void voice_play_sound_no_wait(uint8_t sound)
