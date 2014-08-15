@@ -29,12 +29,6 @@ static void wt588d_send_command(uint8_t command)
 {
 	uint8_t i;
 
-	PORTD &= ~_BV(GPIO_WT588_RESET);
-	_delay_ms(5);
-	PORTD |= _BV(GPIO_WT588_RESET);
-
-	_delay_ms(20);
-
 	PORTD &= ~_BV(GPIO_WT588_DATA);
 	_delay_ms(5);
 	PORTD |= _BV(GPIO_WT588_DATA);
@@ -56,19 +50,20 @@ static void wt588d_send_command(uint8_t command)
 	}
 
 	PORTD |= _BV(GPIO_WT588_DATA);
-	_delay_ms(40);
+	_delay_ms(20);
 }
 
 void voice_init(void)
 {
-	// set DATA and RESET pins as an outputs
-	DDRD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);
+	// set DATA pin as an output
+	DDRD |= _BV(GPIO_WT588_DATA);
 
-	// set BUSY pin as an input
+	// set BUSY and RESET pins as an inputs
 	DDRB &= ~_BV(GPIO_WT588_BUSY);
+	DDRD &= ~_BV(GPIO_WT588_RESET);
 
-	// set DATA and RESET pins to high
-	PORTD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);
+	// set DATA pin to high
+	PORTD |= _BV(GPIO_WT588_DATA);
 
 	_delay_ms(100);
 }
@@ -165,9 +160,9 @@ void voice_play_random(void)
 uint8_t voice_is_playing(void)
 {
 	if (PINB & _BV(GPIO_WT588_BUSY)) {
-		return FALSE;
-	} else {
 		return TRUE;
+	} else {
+		return FALSE;
 	}
 }
 
