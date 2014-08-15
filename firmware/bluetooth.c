@@ -24,6 +24,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "battery.h"
 #include "common.h"
 #include "helmet.h"
 #include "power.h"
@@ -138,6 +139,18 @@ static void bluetooth_parse_command(uint8_t size)
 		if (((i - 1) % 3) != 0) {
 			uart_puts("\r\n");
 		}
+
+		response = RESPONSE_EMPTY;
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_BATTERY, size) == 0) {
+		uint8_t capacity = 0;
+		char resp[16];
+
+		capacity = battery_get_capacity();
+		itoa(capacity, resp, 10);
+
+		uart_puts(BLUETOOTH_RESPONSE_CAPACITY);
+		uart_puts(resp);
+		uart_puts("%\r\n");
 
 		response = RESPONSE_EMPTY;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, size) == 0) {

@@ -55,7 +55,7 @@ void battery_init(void)
 	ADMUX &= ~(_BV(MUX3) | _BV(MUX1));
 }
 
-static uint8_t battery_get_capacity(void)
+uint8_t battery_get_capacity(void)
 {
 	uint8_t capacity = 0;
 
