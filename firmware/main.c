@@ -195,7 +195,7 @@ int main(void)
 	voice_init();
 
 #ifdef VOICE_SILENT
-	voice_set_volume(SOUND_VOLUME_7);
+	voice_set_volume(SOUND_VOLUME_1);
 #endif
 
 	// check if configuration mode was requested
