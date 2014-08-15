@@ -28,6 +28,7 @@
 #include "helmet.h"
 #include "power.h"
 #include "strings.h"
+#include "voice.h"
 
 #include "bluetooth.h"
 
@@ -82,6 +83,11 @@ ISR(USART_RXC_vect)
 	static uint8_t i = 0;
 
 	rxbuff[i] = UDR;
+
+	// uppercase input characters
+	if ((rxbuff[i] >= 'a') && (rxbuff[i] <= 'z')) {
+		rxbuff[i] = rxbuff[i] - 'a' + 'A';
+	}
 
 	// echo back received character
 	UDR = rxbuff[i];
@@ -138,6 +144,8 @@ static void bluetooth_parse_command(uint8_t size)
 		power_on(EYES);
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, size) == 0) {
 		power_off(EYES);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_FORTUNE, size) == 0) {
+		voice_play_random();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, size) == 0) {
 		power_off(EYES);
 		helmet_open();
