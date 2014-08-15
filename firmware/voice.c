@@ -33,7 +33,7 @@ static void wt588d_send_command(uint8_t command)
 	_delay_ms(5);
 	PORTD |= _BV(GPIO_WT588_RESET);
 
-	_delay_ms(20);
+	_delay_ms(17);
 
 	PORTD &= ~_BV(GPIO_WT588_DATA);
 	_delay_ms(5);
@@ -56,9 +56,6 @@ static void wt588d_send_command(uint8_t command)
 	}
 
 	PORTD |= _BV(GPIO_WT588_DATA);
-
-	// wait till wt588d response to command
-	_delay_ms(20);
 }
 
 void voice_init(void)
@@ -179,9 +176,14 @@ void voice_play_sound(uint8_t sound)
 	// send command to play a sound
 	wt588d_send_command(sound);
 
+	// wait till wt588d start playing sample
+	while (!voice_is_playing());
+
 	// wait till wt588d finish playing sample
-	while (voice_is_playing()) {
-	}
+	while (voice_is_playing());
+
+	// busy signal is held down for 32ms
+	_delay_ms(32);
 }
 
 void voice_play_sound_no_wait(uint8_t sound)
