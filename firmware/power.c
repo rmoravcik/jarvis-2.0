@@ -216,11 +216,8 @@ void power_on(uint8_t device)
 
 void power_off(uint8_t device)
 {
-	if (device & EYES) {
+	if (device == EYES) {
 		device_off(EYES);
-
-		// wait for 200ms before opening helmet
-		_delay_ms(200);
 	} else {
 		effect_fade(FADE_OUT, device);
 	}

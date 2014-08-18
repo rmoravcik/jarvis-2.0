@@ -21,6 +21,8 @@
 #include <util/delay.h>
 
 #include "common.h"
+#include "power.h"
+
 #include "helmet.h"
 
 static uint8_t EEMEM state = HELMET_OPEN;
@@ -61,6 +63,12 @@ void helmet_init()
 
 void helmet_open(void)
 {
+	// turn off eyes
+	power_off(EYES);
+
+	// wait for 200ms before opening helmet
+	_delay_ms(200);
+
 	pwm_enable();
 
 	OCR1A = 2200;
@@ -84,6 +92,10 @@ void helmet_close(void)
 	_delay_ms(700);
 
 	pwm_disable();
+
+	// turn on eyes
+	power_on(EYES);
+
 	eeprom_write_byte(&state, HELMET_CLOSED);
 }
 

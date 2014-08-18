@@ -167,17 +167,13 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_FORTUNE, size) == 0) {
 		voice_play_random();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, size) == 0) {
-		power_off(EYES);
 		helmet_open();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, size) == 0) {
 		helmet_close();
-		power_on(EYES);
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
-		power_off(EYES);
-		helmet_open();
 		voice_play_sound(SOUND_SLEEP_0);
 		voice_play_sound_no_wait(SOUND_SLEEP_2);
-		power_off(ALL);
+		power_off(ALL | EYES);
 		wdt_reboot();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSORS_ON, size) == 0) {
 		power_on(REPULSORS_POWER);

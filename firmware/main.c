@@ -73,17 +73,11 @@ ISR(INT0_vect)
 	// long press of func button
 	if (press_counter == 10) {
 		if (helmet_state() == HELMET_CLOSED) {
-			// turn off eyes
-			power_off(EYES);
-
 			// open helmet
 			helmet_open();
 		} else {
 			// close helmet
 			helmet_close();
-
-			// turn on eyes
-			power_on(EYES);
 		}
 	}
 }
@@ -184,7 +178,7 @@ static void configure(void)
 
 int main(void)
 {
-	uint8_t configured = 0;
+	uint8_t configured = FALSE;
 
 	init();
 	bluetooth_init();
@@ -201,11 +195,16 @@ int main(void)
 	// check if configuration mode was requested
 	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {
 		configure();
-		configured = 1;
+		configured = TRUE;
 	}
 
-	// power on repulsors and unibeam
-	power_on(ALL);
+	// power on repulsors, unibeam and eyes
+	// if they were previously on
+	if (helmet_state() == HELMET_CLOSED) {
+		power_on(ALL | EYES);
+	} else {
+		power_on(ALL);
+	}
 
 	if (!configured && (MCUCSR & _BV(PORF))) {
 		voice_play_welcome();
