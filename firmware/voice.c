@@ -17,13 +17,34 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <avr/eeprom.h>
 #include <util/delay.h>
 
 #include "common.h"
-#include "random.h"
+
 #include "voice.h"
 
 #define STOP_PLAYING		0xFE
+
+static uint8_t EEMEM conf_seed = 27;
+
+static uint8_t seed;
+
+uint8_t random_get(uint8_t max)
+{
+	static uint8_t old = 0;
+	uint8_t new = 0;
+
+	do {
+		seed = (seed * 109 + 89) % 256;
+		new = seed % max;
+	} while (new == old);
+
+	eeprom_write_byte(&conf_seed, seed);
+	old = new;
+
+	return new;
+}
 
 static void wt588d_send_command(uint8_t command)
 {
@@ -60,6 +81,8 @@ static void wt588d_send_command(uint8_t command)
 
 void voice_init(void)
 {
+	seed = eeprom_read_byte(&conf_seed);
+
 	// set DATA and RESET pins as an outputs
 	DDRD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);
 

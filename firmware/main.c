@@ -28,7 +28,6 @@
 #include "bluetooth.h"
 #include "helmet.h"
 #include "power.h"
-#include "random.h"
 #include "voice.h"
 
 #define VOICE_SILENT 1
@@ -182,7 +181,6 @@ int main(void)
 
 	init();
 	bluetooth_init();
-	random_init();
 	power_init();
 	battery_init();
 	helmet_init();
