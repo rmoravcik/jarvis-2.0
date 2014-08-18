@@ -17,10 +17,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <avr/eeprom.h>
 #include <util/delay.h>
 
 #include "common.h"
 #include "helmet.h"
+
+static uint8_t EEMEM state = HELMET_OPEN;
 
 static void pwm_enable(void)
 {
@@ -43,7 +46,17 @@ void helmet_init()
 
 	DDRB |= _BV(GPIO_SERVO1) | _BV(GPIO_SERVO2);
 
-	helmet_open();
+	// open helmet only if was power on reset
+	// or only if it was open before reboot
+	if (MCUCSR & _BV(PORF)) {
+		helmet_open();
+	} else {
+		if (eeprom_read_byte(&state) == HELMET_OPEN) {
+			helmet_open();
+		} else {
+			helmet_close();
+		}
+	}
 }
 
 void helmet_open(void)
@@ -57,6 +70,7 @@ void helmet_open(void)
 	_delay_ms(700);
 
 	pwm_disable();
+	eeprom_write_byte(&state, HELMET_OPEN);
 }
 
 void helmet_close(void)
@@ -70,6 +84,7 @@ void helmet_close(void)
 	_delay_ms(700);
 
 	pwm_disable();
+	eeprom_write_byte(&state, HELMET_CLOSED);
 }
 
 uint8_t helmet_state(void)
