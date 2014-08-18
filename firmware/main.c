@@ -207,7 +207,7 @@ int main(void)
 	// power on repulsors and unibeam
 	power_on(ALL);
 
-	if (!configured) {
+	if (!configured && (MCUCSR & _BV(PORF))) {
 		voice_play_welcome();
 	}
 
