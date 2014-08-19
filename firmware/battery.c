@@ -21,7 +21,6 @@
 #include "helmet.h"
 #include "power.h"
 #include "voice.h"
-
 #include "battery.h"
 
 uint16_t adc_offset = 0;
