@@ -21,7 +21,6 @@
 #include <util/delay.h>
 
 #include "common.h"
-
 #include "voice.h"
 
 #define STOP_PLAYING		0xFE
@@ -108,26 +107,27 @@ void voice_play_welcome(void)
 
 		case 1:
 			voice_play_sound(SOUND_LISTENING_ON_4);
-			voice_play_sound(SOUND_LISTENING_ON_6);
+			voice_play_sound(SOUND_ASK_0);
 			break;
 
 		case 2:
-			voice_play_sound(SOUND_WELCOME);
+			voice_play_sound(SOUND_LISTENING_ON_AFTERNOON);
+			voice_play_sound(SOUND_LISTENING_ON_7);
 			break;
 
 		case 3:
-			voice_play_sound(SOUND_LISTENING_ON_AFTERNOON);
-			voice_play_sound(SOUND_ASK_0);
+			voice_play_sound(SOUND_LISTENING_ON_EVENING);
+			voice_play_sound(SOUND_LISTENING_ON_7);
 			break;
 
 		case 4:
-			voice_play_sound(SOUND_LISTENING_ON_EVENING);
-			voice_play_sound(SOUND_ASK_0);
+			voice_play_sound(SOUND_LISTENING_ON_MORNING);
+			voice_play_sound(SOUND_LISTENING_ON_7);
 			break;
 
 		case 5:
-			voice_play_sound(SOUND_LISTENING_ON_MORNING);
-			voice_play_sound(SOUND_ASK_0);
+			voice_play_sound(SOUND_WELCOME);
+			voice_play_sound(SOUND_LISTENING_ON_3);
 			break;
 	}
 }
@@ -136,7 +136,7 @@ void voice_play_random(void)
 {
 	uint8_t i = 0;
 
-	i = random_get(9);
+	i = random_get(24);
 
 	switch (i) {
 		case 0:
@@ -144,42 +144,120 @@ void voice_play_random(void)
 			break;
 
 		case 1:
+			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_0);
+			break;
+
+		case 2:
+			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_2);
+			break;
+
+		case 3:
 			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3);
 			voice_play_sound_no_wait(SOUND_ACDC);
 			break;
 
-		case 2:
+		case 4:
+			voice_play_sound(SOUND_CLOCK_LATE_0);
+			break;
+
+		case 5:
 			voice_play_sound(SOUND_CLOCK_LATE_1);
 			break;
 
-		case 3:
+		case 6:
+			voice_play_sound(SOUND_LISTENING_OFF_2);
+			break;
+
+		case 7:
+			voice_play_sound(SOUND_MESSAGE_NEW_6);
+			break;
+
+		case 8:
+			voice_play_sound(SOUND_MESSAGE_NEW_7);
+			break;
+
+		case 9:
 			voice_play_sound(SOUND_NETWORK_LOST_WIFI);
 			voice_play_sound(SOUND_NETWORK_NO_WIFI);
 			break;
 
-		case 4:
+		case 10:
+			voice_play_sound(SOUND_REPEAT_1);
+			break;
+
+		case 11:
+			voice_play_sound(SOUND_REPEAT_2);
+			break;
+
+		case 12:
+			voice_play_sound(SOUND_REPEAT_3);
+			break;
+
+		case 13:
 			voice_play_sound(SOUND_SELF_DESTRUCT_1);
 			break;
 
-		case 5:
+		case 14:
+			voice_play_sound(SOUND_SUITS_DECRYPT_1);
+			_delay_ms(1500);
+			voice_play_sound(SOUND_SUITS_DECRYPT_2);
+			_delay_ms(2000);
+			voice_play_sound(SOUND_SUITS_DECRYPT_3);
+			_delay_ms(1000);
+			voice_play_sound(SOUND_SUITS_DECRYPT_4);
+			_delay_ms(200);
+			voice_play_sound(SOUND_SUITS_DECRYPT_5);
+			_delay_ms(300);
+			voice_play_sound(SOUND_SUITS_DECRYPT_6);
+			_delay_ms(100);
+
+			i = random_get(1);
+			if (i == 1) {
+				voice_play_sound(SOUND_SUITS_DECRYPT_8);
+			} else {
+				voice_play_sound(SOUND_SUITS_DECRYPT_7);
+			}
+			break;
+
+		case 15:
+			voice_play_sound(SOUND_TRS3_0);
+			break;
+
+		case 16:
 			voice_play_sound(SOUND_TRS4);
 			break;
 
-		case 6:
+		case 17:
+			voice_play_sound(SOUND_TRS6);
+			break;
+
+		case 18:
 			voice_play_sound(SOUND_TRS7_1);
 			break;
 
-		case 7:
+		case 19:
+			voice_play_sound(SOUND_TRS8);
+			break;
+
+		case 20:
 			voice_play_sound(SOUND_TRS9);
 			break;
 
-		case 8:
+		case 21:
 			voice_play_sound(SOUND_TRS10);
 			break;
 
-		case 9:
+		case 22:
 			voice_play_sound(SOUND_TRS11);
 			voice_play_sound(SOUND_JUST_KIDDING);
+			break;
+
+		case 23:
+			voice_play_sound(SOUND_UNAVAILABLE_0);
+			break;
+
+		case 24:
+			voice_play_sound(SOUND_UNAVAILABLE_3);
 			break;
 	}
 }
