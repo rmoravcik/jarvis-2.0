@@ -26,7 +26,7 @@
 
 #define STOP_PLAYING		0xFE
 
-static uint8_t EEMEM conf_seed = 27;
+static uint8_t EEMEM eeprom_seed = 27;
 
 static uint8_t seed;
 
@@ -40,7 +40,7 @@ uint8_t random_get(uint8_t max)
 		new = seed % max;
 	} while (new == old);
 
-	eeprom_write_byte(&conf_seed, seed);
+	eeprom_write_byte(&eeprom_seed, seed);
 	old = new;
 
 	return new;
@@ -81,7 +81,7 @@ static void wt588d_send_command(uint8_t command)
 
 void voice_init(void)
 {
-	seed = eeprom_read_byte(&conf_seed);
+	seed = eeprom_read_byte(&eeprom_seed);
 
 	// set DATA and RESET pins as an outputs
 	DDRD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);
