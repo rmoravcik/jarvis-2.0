@@ -22,7 +22,7 @@
 
 #include "common.h"
 #include "power.h"
-
+#include "voice.h"
 #include "helmet.h"
 
 static uint8_t EEMEM state = HELMET_OPEN;
@@ -68,6 +68,8 @@ void helmet_open(void)
 
 	// wait for 200ms before opening helmet
 	_delay_ms(200);
+
+	voice_play_sound(SOUND_IM_SUIT_03);
 
 	pwm_enable();
 
