@@ -25,7 +25,8 @@
 
 #include "helmet.h"
 
-static uint8_t EEMEM state = HELMET_OPEN;
+static uint8_t EEMEM eeprom_state = HELMET_OPEN;
+static uint8_t state = HELMET_OPEN;
 
 static void pwm_enable(void)
 {
@@ -48,15 +49,19 @@ void helmet_init()
 
 	DDRB |= _BV(GPIO_SERVO1) | _BV(GPIO_SERVO2);
 
+	state = eeprom_read_byte(&eeprom_state);
+
 	// open helmet only if was power on reset
 	// or only if it was open before reboot
 	if (MCUCSR & _BV(PORF)) {
 		helmet_open();
 	} else {
-		if (eeprom_read_byte(&state) == HELMET_OPEN) {
-			helmet_open();
+		if (state == HELMET_OPEN) {
+			OCR1A = 2200;
+			OCR1B = 900;
 		} else {
-			helmet_close();
+			OCR1A = 900;
+			OCR1B = 2200;
 		}
 	}
 }
@@ -78,7 +83,9 @@ void helmet_open(void)
 	_delay_ms(700);
 
 	pwm_disable();
-	eeprom_write_byte(&state, HELMET_OPEN);
+
+	state = HELMET_OPEN;
+	eeprom_write_byte(&eeprom_state, state);
 }
 
 void helmet_close(void)
@@ -96,12 +103,13 @@ void helmet_close(void)
 	// turn on eyes
 	power_on(EYES);
 
-	eeprom_write_byte(&state, HELMET_CLOSED);
+	state = HELMET_CLOSED;
+	eeprom_write_byte(&eeprom_state, state);
 }
 
 uint8_t helmet_state(void)
 {
-	if ((OCR1A == 900) && (OCR1B == 2200)) {
+	if (state == HELMET_CLOSED) {
 		return HELMET_CLOSED;
 	} else {
 		return HELMET_OPEN;
