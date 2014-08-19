@@ -74,7 +74,7 @@ void helmet_open(void)
 	// wait for 200ms before opening helmet
 	_delay_ms(200);
 
-	voice_play_sound(SOUND_IM_SUIT_03);
+	voice_play_sound_no_wait(SOUND_IM_SUIT_03);
 
 	pwm_enable();
 
