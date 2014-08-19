@@ -180,8 +180,8 @@ int main(void)
 	bluetooth_init();
 	power_init();
 	battery_init();
-	helmet_init();
 	voice_init();
+	helmet_init();
 
 #ifdef VOICE_SILENT
 	voice_set_volume(SOUND_VOLUME_1);
