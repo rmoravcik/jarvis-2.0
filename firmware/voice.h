@@ -112,7 +112,7 @@ uint8_t voice_is_playing(void);
 void voice_play_sound(uint8_t sound);
 void voice_play_sound_no_wait(uint8_t sound);
 
-void voice_set_volume(uint8_t volume);
+void voice_set_volume(uint8_t value);
 
 void voice_stop_playback(void);
 

@@ -30,8 +30,6 @@
 #include "power.h"
 #include "voice.h"
 
-#define VOICE_SILENT 1
-
 uint8_t mcucsr __attribute__((section(".noinit")));
 
 void get_mcucsr(void) __attribute__((naked)) __attribute__((section(".init3")));
@@ -192,10 +190,6 @@ int main(void)
 	battery_init();
 	voice_init();
 	helmet_init();
-
-#ifdef VOICE_SILENT
-	voice_set_volume(SOUND_VOLUME_1);
-#endif
 
 	// check if configuration mode was requested
 	if (!(PIND & _BV(GPIO_FUNC_BUTTON))) {

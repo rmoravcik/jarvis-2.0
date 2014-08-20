@@ -26,8 +26,10 @@
 #define STOP_PLAYING		0xFE
 
 static uint8_t EEMEM eeprom_seed = 27;
+static uint8_t EEMEM eeprom_volume = SOUND_VOLUME_7;
 
 static uint8_t seed;
+static uint8_t volume;
 
 uint8_t random_get(uint8_t max)
 {
@@ -45,15 +47,18 @@ uint8_t random_get(uint8_t max)
 	return new;
 }
 
-static void wt588d_send_command(uint8_t command)
+static void wt588d_reset(void)
 {
-	uint8_t i;
-
 	PORTD &= ~_BV(GPIO_WT588_RESET);
 	_delay_ms(5);
 	PORTD |= _BV(GPIO_WT588_RESET);
 
 	_delay_ms(17);
+}
+
+static void wt588d_send_command(uint8_t command)
+{
+	uint8_t i;
 
 	PORTD &= ~_BV(GPIO_WT588_DATA);
 	_delay_ms(5);
@@ -81,6 +86,7 @@ static void wt588d_send_command(uint8_t command)
 void voice_init(void)
 {
 	seed = eeprom_read_byte(&eeprom_seed);
+	volume = eeprom_read_byte(&eeprom_volume);
 
 	// set DATA and RESET pins as an outputs
 	DDRD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);
@@ -92,6 +98,10 @@ void voice_init(void)
 	PORTD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);
 
 	_delay_ms(100);
+
+	wt588d_reset();
+
+	wt588d_send_command(volume);
 }
 
 void voice_play_welcome(void)
@@ -293,9 +303,15 @@ void voice_play_sound_no_wait(uint8_t sound)
 	wt588d_send_command(sound);
 }
 
-void voice_set_volume(uint8_t volume)
+void voice_set_volume(uint8_t value)
 {
-	wt588d_send_command(volume);
+	if (volume != value) {
+		volume = value;
+		eeprom_write_byte(&eeprom_volume, value);
+	}
+
+	wt588d_send_command(value);
+
 }
 
 void voice_stop_playback(void)
