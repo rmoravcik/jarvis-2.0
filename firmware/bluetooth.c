@@ -240,4 +240,5 @@ void bluetooth_configure(void)
 void bluetooth_send(char *str)
 {
 	uart_puts(str);
+	uart_puts("\r\n");
 }
