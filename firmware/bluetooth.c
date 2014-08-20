@@ -195,6 +195,19 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, size) == 0) {
 		uart_puts(BLUETOOTH_RESPONSE_VERSION);
 		response = RESPONSE_EMPTY;
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VOLUME, strlen(BLUETOOTH_CMD_VOLUME)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_VOLUME) + 2) {
+			// convert number in ascii to integer
+			uint8_t volume = rxbuff[size - 1] - '0';
+
+			if ((volume >= 0) && (volume <=7 )) {
+				voice_set_volume(SOUND_VOLUME_0 + volume);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else {
+			response = RESPONSE_ERROR;
+		}
 	} else {
 		response = RESPONSE_ERROR;
 	}
