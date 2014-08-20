@@ -32,6 +32,16 @@
 
 #define VOICE_SILENT 1
 
+uint8_t mcucsr __attribute__((section(".noinit")));
+
+void get_mcucsr(void) __attribute__((naked)) __attribute__((section(".init3")));
+
+void get_mcucsr(void)
+{
+	mcucsr = MCUCSR;
+	MCUCSR = 0;
+}
+
 // timer0 overflow
 ISR(TIMER0_OVF_vect)
 {
@@ -202,7 +212,7 @@ int main(void)
 	}
 
 	if (!configured) {
-		if (MCUCSR & _BV(PORF)) {
+		if (mcucsr & _BV(PORF)) {
 			voice_play_welcome();
 
 			// wait a little bit

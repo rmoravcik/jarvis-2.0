@@ -28,6 +28,8 @@
 static uint8_t EEMEM eeprom_state = HELMET_OPEN;
 static uint8_t state = HELMET_OPEN;
 
+extern uint8_t mcucsr;
+
 static void pwm_enable(void)
 {
 	TCCR1A |= _BV(COM1A1) | _BV(COM1B1);
@@ -52,8 +54,7 @@ void helmet_init()
 	state = eeprom_read_byte(&eeprom_state);
 
 	// open helmet only if was power on reset
-	// or only if it was open before reboot
-	if (MCUCSR & _BV(PORF)) {
+	if (mcucsr & _BV(PORF)) {
 		helmet_open();
 	} else {
 		if (state == HELMET_OPEN) {
