@@ -26,4 +26,6 @@ void bluetooth_init(void);
 
 void bluetooth_configure(void);
 
+void bluetooth_send(char *str);
+
 #endif // BLUETOOTH_H

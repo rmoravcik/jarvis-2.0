@@ -236,3 +236,8 @@ void bluetooth_configure(void)
 	hc05_send_command("AT+CLASS=800804");
 	hc05_send_command("AT+RESET");
 }
+
+void bluetooth_send(char *str)
+{
+	uart_puts(str);
+}
