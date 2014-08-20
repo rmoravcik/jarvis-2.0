@@ -44,6 +44,8 @@ ASRC =
 #     Each directory must be seperated by a space.
 EXTRAINCDIRS = 
 
+VERSION=\"$(shell git describe --abbrev=8)\"
+
 # Optional compiler flags.
 #  -g:        generate debugging information (for GDB, or for COFF conversion)
 #  -O*:       optimization level
@@ -51,7 +53,7 @@ EXTRAINCDIRS =
 #  -Wall...:  warning level
 #  -Wa,...:   tell GCC to pass this to the assembler.
 #    -ahlms:  create assembler listing
-CFLAGS = -g -O$(OPT) -DF_CPU=$(F_CPU) -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wall -Wstrict-prototypes -Wa,-adhlns=$(<:.c=.lst) $(patsubst %,-I%,$(EXTRAINCDIRS))
+CFLAGS = -g -O$(OPT) -DF_CPU=$(F_CPU) -DVERSION=$(VERSION) -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wall -Wstrict-prototypes -Wa,-adhlns=$(<:.c=.lst) $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 # Set a "language standard" compiler flag.
 #   Unremark just one line below to set the language standard to use.

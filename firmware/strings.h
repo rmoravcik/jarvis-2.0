@@ -27,7 +27,7 @@
 #define BLUETOOTH_RESPONSE_OK		"OK\r\n"
 #define BLUETOOTH_RESPONSE_ERROR	"ERROR\r\n"
 #define BLUETOOTH_RESPONSE_CAPACITY	"CAPACITY: "
-#define BLUETOOTH_RESPONSE_VERSION	"Iron Man Mark IV, HW Rev. 2.0, SW Rev. 1.0\r\nBuild: " __DATE__ " " __TIME__ "\r\n"
+#define BLUETOOTH_RESPONSE_VERSION	"Iron Man Mark IV, HW Rev. v2.0, SW Rev. " VERSION "\r\nBuild: " __DATE__ " " __TIME__ "\r\n"
 
 #define BLUETOOTH_CMD_BATTERY		"BATTERY"
 
