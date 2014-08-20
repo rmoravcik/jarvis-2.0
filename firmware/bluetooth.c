@@ -31,7 +31,6 @@
 #include "power.h"
 #include "strings.h"
 #include "voice.h"
-
 #include "bluetooth.h"
 
 #define UART_BAUD 38400
@@ -172,7 +171,9 @@ static void bluetooth_parse_command(uint8_t size)
 		helmet_close();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		voice_play_sound(SOUND_SLEEP_0);
-		voice_play_sound_no_wait(SOUND_SLEEP_2);
+		_delay_ms(1000);
+		voice_play_sound(SOUND_SLEEP_2);
+		voice_play_sound_no_wait(SOUND_POWER_DOWN);
 		power_off(ALL | EYES);
 		wdt_reboot();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSORS_ON, size) == 0) {

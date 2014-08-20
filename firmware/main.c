@@ -169,10 +169,7 @@ static void configure(void)
 
 	bluetooth_configure();
 
-	voice_play_sound(SOUND_CONFIRM_6);
-
-	_delay_ms(1000);
-	voice_play_sound(SOUND_INTRO_2);
+	voice_play_sound(SOUND_SETUP_COMPLETE);
 }
 
 int main(void)
@@ -183,8 +180,8 @@ int main(void)
 	bluetooth_init();
 	power_init();
 	battery_init();
-	helmet_init();
 	voice_init();
+	helmet_init();
 
 #ifdef VOICE_SILENT
 	voice_set_volume(SOUND_VOLUME_1);
@@ -204,14 +201,21 @@ int main(void)
 		power_on(ALL);
 	}
 
-	if (!configured && (MCUCSR & _BV(PORF))) {
-		voice_play_welcome();
+	if (!configured) {
+		if (MCUCSR & _BV(PORF)) {
+			voice_play_welcome();
+
+			// wait a little bit
+			_delay_ms(1000);
+
+			// report battery capacity after power on
+			battery_report_capacity(TRUE);
+		} else {
+			voice_play_sound(SOUND_LISTENING_ON_6);
+		}
+	} else {
+		voice_play_sound(SOUND_INTRO_2);
 	}
-
-	_delay_ms(1000);
-
-	// report battery capacity after power on
-	battery_report_capacity(TRUE);
 
 	// main loop
 	while(1) {
