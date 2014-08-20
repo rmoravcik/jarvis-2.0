@@ -126,16 +126,14 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, size) == 0) {
 		uint8_t i = 0;
 
-		for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i ++) {
-			uart_putc('"');
+		for (i = 1; i < sizeof(commands) / sizeof(commands[0]); i ++) {
 			uart_puts(commands[i]);
-			uart_putc('"');
 
 			if ((i % 3) == 0) {
 				uart_puts("\r\n");
 			} else {
 				uint8_t padding = 0, j = 0;
-				padding = 24 - strlen(commands[i]) + 2;
+				padding = 32 - strlen(commands[i]);
 				for (j = 0; j < padding; j++) {
 					uart_putc(' ');
 				}
@@ -170,11 +168,17 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, size) == 0) {
 		helmet_close();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
+		response = RESPONSE_EMPTY;
+
 		voice_play_sound(SOUND_SLEEP_0);
 		_delay_ms(1000);
 		voice_play_sound(SOUND_SLEEP_2);
 		voice_play_sound_no_wait(SOUND_POWER_DOWN);
+
+		// turn off all devices
 		power_off(ALL | EYES);
+
+		// restart mcu
 		wdt_reboot();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSORS_ON, size) == 0) {
 		power_on(REPULSORS_POWER);
