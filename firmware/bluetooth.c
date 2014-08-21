@@ -267,10 +267,36 @@ static void bluetooth_parse_command(uint8_t size)
 		power_blast(REPULSOR_LEFT);
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR_RIGHT, size) == 0) {
 		power_blast(REPULSOR_RIGHT);
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM_ON, size) == 0) {
-		power_on(UNIBEAM);
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM_OFF, size) == 0) {
-		power_off(UNIBEAM);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM, strlen(BLUETOOTH_CMD_UNIBEAM)) == 0) {
+		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_UNIBEAM) + 1;
+
+		if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_CMD_ON) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_ON, strlen(BLUETOOTH_CMD_ON)) == 0) {
+				power_on(REPULSORS_POWER);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_CMD_OFF) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_OFF, strlen(BLUETOOTH_CMD_OFF)) == 0) {
+				power_off(REPULSORS_POWER);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_UNIBEAM)) {
+			uint8_t state = power_state(REPULSORS_POWER);
+
+			uart_puts(BLUETOOTH_CMD_UNIBEAM);
+			uart_puts(": ");
+
+			if (state == POWER_ON) {
+				uart_puts(BLUETOOTH_CMD_ON);
+			} else {
+				uart_puts(BLUETOOTH_CMD_OFF);
+			}
+			uart_puts("\r\n");
+		} else {
+			response = RESPONSE_ERROR;
+		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, size) == 0) {
 		uart_puts(BLUETOOTH_RESPONSE_VERSION);
 		response = RESPONSE_NO_RESPONSE;
