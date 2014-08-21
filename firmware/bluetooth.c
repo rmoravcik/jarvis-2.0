@@ -159,16 +159,16 @@ static void bluetooth_parse_command(uint8_t size)
 
 		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES, strlen(BLUETOOTH_CMD_EYES)) == 0) {
-		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_EYES) + 1;
+		char *param = rxbuff + strlen(BLUETOOTH_CMD_EYES) + 1;
 
-		if (size == strlen(BLUETOOTH_CMD_EYES) + strlen(BLUETOOTH_CMD_ON) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_ON, strlen(BLUETOOTH_CMD_ON)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_EYES) + strlen(BLUETOOTH_PARAM_ON) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_ON, strlen(BLUETOOTH_PARAM_ON)) == 0) {
 				power_on(EYES);
 			} else {
 				response = RESPONSE_ERROR;
 			}
-		} else if (size == strlen(BLUETOOTH_CMD_EYES) + strlen(BLUETOOTH_CMD_OFF) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_OFF, strlen(BLUETOOTH_CMD_OFF)) == 0) {
+		} else if (size == strlen(BLUETOOTH_CMD_EYES) + strlen(BLUETOOTH_PARAM_OFF) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_OFF, strlen(BLUETOOTH_PARAM_OFF)) == 0) {
 				power_off(EYES);
 			} else {
 				response = RESPONSE_ERROR;
@@ -180,9 +180,9 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts(": ");
 
 			if (state == POWER_ON) {
-				uart_puts(BLUETOOTH_CMD_ON);
+				uart_puts(BLUETOOTH_PARAM_ON);
 			} else {
-				uart_puts(BLUETOOTH_CMD_OFF);
+				uart_puts(BLUETOOTH_PARAM_OFF);
 			}
 			uart_puts("\r\n");
 		} else {
@@ -191,16 +191,16 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_FORTUNE, size) == 0) {
 		voice_play_random();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET, strlen(BLUETOOTH_CMD_HELMET)) == 0) {
-		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_HELMET) + 1;
+		char *param = rxbuff + strlen(BLUETOOTH_CMD_HELMET) + 1;
 
-		if (size == strlen(BLUETOOTH_CMD_HELMET) + strlen(BLUETOOTH_CMD_OPEN) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_OPEN, strlen(BLUETOOTH_CMD_OPEN)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_HELMET) + strlen(BLUETOOTH_PARAM_OPEN) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_OPEN, strlen(BLUETOOTH_PARAM_OPEN)) == 0) {
 				helmet_open();
 			} else {
 				response = RESPONSE_ERROR;
 			}
-		} else if (size == strlen(BLUETOOTH_CMD_HELMET) + strlen(BLUETOOTH_CMD_CLOSE) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_CLOSE, strlen(BLUETOOTH_CMD_CLOSE)) == 0) {
+		} else if (size == strlen(BLUETOOTH_CMD_HELMET) + strlen(BLUETOOTH_PARAM_CLOSE) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_CLOSE, strlen(BLUETOOTH_PARAM_CLOSE)) == 0) {
 				helmet_close();
 			} else {
 				response = RESPONSE_ERROR;
@@ -212,9 +212,9 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts(": ");
 
 			if (state == HELMET_OPEN) {
-				uart_puts(BLUETOOTH_CMD_OPEN);
+				uart_puts(BLUETOOTH_PARAM_OPEN);
 			} else {
-				uart_puts(BLUETOOTH_CMD_CLOSE);
+				uart_puts(BLUETOOTH_PARAM_CLOSE);
 			}
 			uart_puts("\r\n");
 		} else {
@@ -234,16 +234,16 @@ static void bluetooth_parse_command(uint8_t size)
 		// restart mcu
 		wdt_reboot();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSORS, strlen(BLUETOOTH_CMD_REPULSORS)) == 0) {
-		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_REPULSORS) + 1;
+		char *param = rxbuff + strlen(BLUETOOTH_CMD_REPULSORS) + 1;
 
-		if (size == strlen(BLUETOOTH_CMD_REPULSORS) + strlen(BLUETOOTH_CMD_ON) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_ON, strlen(BLUETOOTH_CMD_ON)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_REPULSORS) + strlen(BLUETOOTH_PARAM_ON) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_ON, strlen(BLUETOOTH_PARAM_ON)) == 0) {
 				power_on(REPULSORS_POWER);
 			} else {
 				response = RESPONSE_ERROR;
 			}
-		} else if (size == strlen(BLUETOOTH_CMD_REPULSORS) + strlen(BLUETOOTH_CMD_OFF) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_OFF, strlen(BLUETOOTH_CMD_OFF)) == 0) {
+		} else if (size == strlen(BLUETOOTH_CMD_REPULSORS) + strlen(BLUETOOTH_PARAM_OFF) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_OFF, strlen(BLUETOOTH_PARAM_OFF)) == 0) {
 				power_off(REPULSORS_POWER);
 			} else {
 				response = RESPONSE_ERROR;
@@ -255,25 +255,25 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts(": ");
 
 			if (state == POWER_ON) {
-				uart_puts(BLUETOOTH_CMD_ON);
+				uart_puts(BLUETOOTH_PARAM_ON);
 			} else {
-				uart_puts(BLUETOOTH_CMD_OFF);
+				uart_puts(BLUETOOTH_PARAM_OFF);
 			}
 			uart_puts("\r\n");
 		} else {
 			response = RESPONSE_ERROR;
 		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR, strlen(BLUETOOTH_CMD_REPULSOR)) == 0) {
-		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_REPULSOR) + 1;
+		char *param = rxbuff + strlen(BLUETOOTH_CMD_REPULSOR) + 1;
 
-		if (size == strlen(BLUETOOTH_CMD_REPULSOR) + strlen(BLUETOOTH_CMD_LEFT) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_LEFT, strlen(BLUETOOTH_CMD_LEFT)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_REPULSOR) + strlen(BLUETOOTH_PARAM_LEFT) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_LEFT, strlen(BLUETOOTH_PARAM_LEFT)) == 0) {
 				power_blast(REPULSOR_LEFT);
 			} else {
 				response = RESPONSE_ERROR;
 			}
-		} else if (size == strlen(BLUETOOTH_CMD_REPULSOR) + strlen(BLUETOOTH_CMD_RIGHT) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_RIGHT, strlen(BLUETOOTH_CMD_RIGHT)) == 0) {
+		} else if (size == strlen(BLUETOOTH_CMD_REPULSOR) + strlen(BLUETOOTH_PARAM_RIGHT) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_RIGHT, strlen(BLUETOOTH_PARAM_RIGHT)) == 0) {
 				power_blast(REPULSOR_RIGHT);
 			} else {
 				response = RESPONSE_ERROR;
@@ -282,16 +282,16 @@ static void bluetooth_parse_command(uint8_t size)
 			response = RESPONSE_ERROR;
 		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM, strlen(BLUETOOTH_CMD_UNIBEAM)) == 0) {
-		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_UNIBEAM) + 1;
+		char *param = rxbuff + strlen(BLUETOOTH_CMD_UNIBEAM) + 1;
 
-		if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_CMD_ON) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_ON, strlen(BLUETOOTH_CMD_ON)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_PARAM_ON) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_ON, strlen(BLUETOOTH_PARAM_ON)) == 0) {
 				power_on(REPULSORS_POWER);
 			} else {
 				response = RESPONSE_ERROR;
 			}
-		} else if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_CMD_OFF) + 1) {
-			if (strncmp(cmd, BLUETOOTH_CMD_OFF, strlen(BLUETOOTH_CMD_OFF)) == 0) {
+		} else if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_PARAM_OFF) + 1) {
+			if (strncmp(param, BLUETOOTH_PARAM_OFF, strlen(BLUETOOTH_PARAM_OFF)) == 0) {
 				power_off(REPULSORS_POWER);
 			} else {
 				response = RESPONSE_ERROR;
@@ -303,9 +303,9 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts(": ");
 
 			if (state == POWER_ON) {
-				uart_puts(BLUETOOTH_CMD_ON);
+				uart_puts(BLUETOOTH_PARAM_ON);
 			} else {
-				uart_puts(BLUETOOTH_CMD_OFF);
+				uart_puts(BLUETOOTH_PARAM_OFF);
 			}
 			uart_puts("\r\n");
 		} else {
