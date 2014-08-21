@@ -164,10 +164,36 @@ static void bluetooth_parse_command(uint8_t size)
 		power_off(EYES);
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_FORTUNE, size) == 0) {
 		voice_play_random();
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_OPEN, size) == 0) {
-		helmet_open();
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, size) == 0) {
-		helmet_close();
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET, strlen(BLUETOOTH_CMD_HELMET)) == 0) {
+		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_HELMET) + 1;
+
+		if (size == strlen(BLUETOOTH_CMD_HELMET) + strlen(BLUETOOTH_CMD_OPEN) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_OPEN, strlen(BLUETOOTH_CMD_OPEN)) == 0) {
+				helmet_open();
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_HELMET) + strlen(BLUETOOTH_CMD_CLOSE) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_CLOSE, strlen(BLUETOOTH_CMD_CLOSE)) == 0) {
+				helmet_close();
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_HELMET)) {
+			uint8_t state = helmet_state();
+
+			uart_puts(BLUETOOTH_CMD_HELMET);
+			uart_puts(": ");
+
+			if (state == HELMET_OPEN) {
+				uart_puts(BLUETOOTH_CMD_OPEN);
+			} else {
+				uart_puts(BLUETOOTH_CMD_CLOSE);
+			}
+			uart_puts("\r\n");
+		} else {
+			response = RESPONSE_ERROR;
+		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		response = RESPONSE_NO_RESPONSE;
 
@@ -228,7 +254,7 @@ static void bluetooth_parse_command(uint8_t size)
 		uart_puts(BLUETOOTH_RESPONSE_ERROR);
 	}
 
-	uart_puts(BLUETOOTH_RESPONSE_PROMPT);
+	uart_puts(BLUETOOTH_PROMPT);
 }
 
 void bluetooth_init(void)
