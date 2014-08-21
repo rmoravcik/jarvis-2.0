@@ -41,7 +41,7 @@ char rxbuff[RXBUFF_LEN];
 enum {
 	RESPONSE_OK = 0,
 	RESPONSE_ERROR,
-	RESPONSE_EMPTY,
+	RESPONSE_NO_RESPONSE,
 };
 
 static void bluetooth_parse_command(uint8_t size);
@@ -122,7 +122,7 @@ static void bluetooth_parse_command(uint8_t size)
 	uint8_t response = RESPONSE_OK;
 
 	if (size == 0) {
-		response = RESPONSE_EMPTY;
+		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, size) == 0) {
 		uint8_t i = 0;
 
@@ -144,7 +144,7 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts("\r\n");
 		}
 
-		response = RESPONSE_EMPTY;
+		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_BATTERY, size) == 0) {
 		uint8_t capacity = 0;
 		char resp[16];
@@ -152,11 +152,12 @@ static void bluetooth_parse_command(uint8_t size)
 		capacity = battery_get_capacity();
 		itoa(capacity, resp, 10);
 
-		uart_puts(BLUETOOTH_RESPONSE_CAPACITY);
+		uart_puts(BLUETOOTH_CMD_BATTERY);
+		uart_puts(": ");
 		uart_puts(resp);
 		uart_puts("%\r\n");
 
-		response = RESPONSE_EMPTY;
+		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, size) == 0) {
 		power_on(EYES);
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, size) == 0) {
@@ -168,7 +169,7 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET_CLOSE, size) == 0) {
 		helmet_close();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
-		response = RESPONSE_EMPTY;
+		response = RESPONSE_NO_RESPONSE;
 
 		voice_play_sound(SOUND_SLEEP_0);
 		_delay_ms(1000);
@@ -194,7 +195,7 @@ static void bluetooth_parse_command(uint8_t size)
 		power_off(UNIBEAM);
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, size) == 0) {
 		uart_puts(BLUETOOTH_RESPONSE_VERSION);
-		response = RESPONSE_EMPTY;
+		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VOLUME, strlen(BLUETOOTH_CMD_VOLUME)) == 0) {
 		if (size == strlen(BLUETOOTH_CMD_VOLUME) + 2) {
 			// convert number in ascii to integer
@@ -205,6 +206,15 @@ static void bluetooth_parse_command(uint8_t size)
 			} else {
 				response = RESPONSE_ERROR;
 			}
+		} else if (size == strlen(BLUETOOTH_CMD_VOLUME)) {
+			uint8_t volume = voice_get_volume() - SOUND_VOLUME_0;
+
+			uart_puts(BLUETOOTH_CMD_VOLUME);
+			uart_puts(": ");
+			uart_putc('0' + volume);
+			uart_puts("\r\n");
+
+			response = RESPONSE_NO_RESPONSE;
 		} else {
 			response = RESPONSE_ERROR;
 		}
