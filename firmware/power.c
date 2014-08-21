@@ -77,45 +77,45 @@ static uint8_t device_get(uint8_t device)
 {
 	if (device & EYES) {
 		if (PORTB & _BV(GPIO_EYES)) {
-			return 1;
+			return TRUE;
 		} else {
-			return 0;
+			return FALSE;
 		}
 	}
 
 	if (device & REPULSORS_POWER) {
 		if (PORTC & _BV(GPIO_REPULSORS_PWR)) {
-			return 1;
+			return TRUE;
 		} else {
-			return 0;
+			return FALSE;
 		}
 	}
 
 	if (device & REPULSOR_LEFT) {
 		if (PORTC & _BV(GPIO_REPULSOR_LEFT)) {
-			return 1;
+			return TRUE;
 		} else {
-			return 0;
+			return FALSE;
 		}
 	}
 
 	if (device & REPULSOR_RIGHT) {
 		if (PORTC & _BV(GPIO_REPULSOR_RIGHT)) {
-			return 1;
+			return TRUE;
 		} else {
-			return 0;
+			return FALSE;
 		}
 	}
 
 	if (device & UNIBEAM) {
 		if (PORTD & _BV(GPIO_UNIBEAM)) {
-			return 1;
+			return TRUE;
 		} else {
-			return 0;
+			return FALSE;
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
 // takes 200ms
@@ -235,4 +235,13 @@ void power_blast(uint8_t device)
 	device_on(device);
 	_delay_ms(100);
 	device_off(device);
+}
+
+uint8_t power_state(uint8_t device)
+{
+	if (device_get(device)) {
+		return POWER_ON;
+	} else {
+		return POWER_OFF;
+	}
 }

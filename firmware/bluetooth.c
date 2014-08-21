@@ -158,10 +158,36 @@ static void bluetooth_parse_command(uint8_t size)
 		uart_puts("%\r\n");
 
 		response = RESPONSE_NO_RESPONSE;
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_ON, size) == 0) {
-		power_on(EYES);
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES_OFF, size) == 0) {
-		power_off(EYES);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES, strlen(BLUETOOTH_CMD_EYES)) == 0) {
+		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_EYES) + 1;
+
+		if (size == strlen(BLUETOOTH_CMD_EYES) + strlen(BLUETOOTH_CMD_ON) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_ON, strlen(BLUETOOTH_CMD_ON)) == 0) {
+				power_on(EYES);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_EYES) + strlen(BLUETOOTH_CMD_OFF) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_OFF, strlen(BLUETOOTH_CMD_OFF)) == 0) {
+				power_off(EYES);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_EYES)) {
+			uint8_t state = power_state(EYES);
+
+			uart_puts(BLUETOOTH_CMD_EYES);
+			uart_puts(": ");
+
+			if (state == POWER_ON) {
+				uart_puts(BLUETOOTH_CMD_ON);
+			} else {
+				uart_puts(BLUETOOTH_CMD_OFF);
+			}
+			uart_puts("\r\n");
+		} else {
+			response = RESPONSE_ERROR;
+		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_FORTUNE, size) == 0) {
 		voice_play_random();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET, strlen(BLUETOOTH_CMD_HELMET)) == 0) {

@@ -28,14 +28,22 @@ enum {
 	UNIBEAM		= 0x0010,
 };
 
+enum {
+	POWER_OFF = 0,
+	POWER_ON
+};
+
 #define ALL		REPULSORS_POWER | UNIBEAM
 
 void power_init(void);
 
 void power_on(uint8_t device);
 void power_off(uint8_t device);
+
 void power_failure(uint8_t device);
 
 void power_blast(uint8_t device);
+
+uint8_t power_state(uint8_t device);
 
 #endif // POWER_H
