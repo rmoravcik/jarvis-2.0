@@ -303,15 +303,20 @@ void voice_play_sound_no_wait(uint8_t sound)
 	wt588d_send_command(sound);
 }
 
-void voice_set_volume(uint8_t value)
+void voice_set_volume(uint8_t level)
 {
-	if (volume != value) {
-		volume = value;
-		eeprom_write_byte(&eeprom_volume, value);
+	if (volume != level) {
+		volume = level;
+		eeprom_write_byte(&eeprom_volume, volume);
 	}
 
-	wt588d_send_command(value);
+	wt588d_send_command(level);
 
+}
+
+uint8_t voice_get_volume(void)
+{
+	return volume;
 }
 
 void voice_stop_playback(void)
