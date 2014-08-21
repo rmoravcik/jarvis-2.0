@@ -133,7 +133,7 @@ static void bluetooth_parse_command(uint8_t size)
 				uart_puts("\r\n");
 			} else {
 				uint8_t padding = 0, j = 0;
-				padding = 32 - strlen(commands[i]);
+				padding = 26 - strlen(commands[i]);
 				for (j = 0; j < padding; j++) {
 					uart_putc(' ');
 				}
@@ -263,10 +263,24 @@ static void bluetooth_parse_command(uint8_t size)
 		} else {
 			response = RESPONSE_ERROR;
 		}
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR_LEFT, size) == 0) {
-		power_blast(REPULSOR_LEFT);
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR_RIGHT, size) == 0) {
-		power_blast(REPULSOR_RIGHT);
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REPULSOR, strlen(BLUETOOTH_CMD_REPULSOR)) == 0) {
+		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_REPULSOR) + 1;
+
+		if (size == strlen(BLUETOOTH_CMD_REPULSOR) + strlen(BLUETOOTH_CMD_LEFT) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_LEFT, strlen(BLUETOOTH_CMD_LEFT)) == 0) {
+				power_blast(REPULSOR_LEFT);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_REPULSOR) + strlen(BLUETOOTH_CMD_RIGHT) + 1) {
+			if (strncmp(cmd, BLUETOOTH_CMD_RIGHT, strlen(BLUETOOTH_CMD_RIGHT)) == 0) {
+				power_blast(REPULSOR_RIGHT);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else {
+			response = RESPONSE_ERROR;
+		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_UNIBEAM, strlen(BLUETOOTH_CMD_UNIBEAM)) == 0) {
 		char *cmd = rxbuff + strlen(BLUETOOTH_CMD_UNIBEAM) + 1;
 
