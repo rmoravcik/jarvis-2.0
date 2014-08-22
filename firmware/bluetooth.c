@@ -109,6 +109,10 @@ ISR(USART_RXC_vect)
 		bluetooth_parse_command(i);
 
 		i = 0;
+	} else if (rxbuff[i] == '\b') {
+		if (i > 0) {
+			i--;
+		}
 	} else {
 		i++;
 		if (i == RXBUFF_LEN) {
