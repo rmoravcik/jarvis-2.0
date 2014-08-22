@@ -185,6 +185,8 @@ static void bluetooth_parse_command(uint8_t size)
 				uart_puts(BLUETOOTH_PARAM_OFF);
 			}
 			uart_puts("\r\n");
+
+			response = RESPONSE_NO_RESPONSE;
 		} else {
 			response = RESPONSE_ERROR;
 		}
@@ -217,6 +219,8 @@ static void bluetooth_parse_command(uint8_t size)
 				uart_puts(BLUETOOTH_PARAM_CLOSE);
 			}
 			uart_puts("\r\n");
+
+			response = RESPONSE_NO_RESPONSE;
 		} else {
 			response = RESPONSE_ERROR;
 		}
@@ -260,6 +264,8 @@ static void bluetooth_parse_command(uint8_t size)
 				uart_puts(BLUETOOTH_PARAM_OFF);
 			}
 			uart_puts("\r\n");
+
+			response = RESPONSE_NO_RESPONSE;
 		} else {
 			response = RESPONSE_ERROR;
 		}
@@ -308,6 +314,8 @@ static void bluetooth_parse_command(uint8_t size)
 				uart_puts(BLUETOOTH_PARAM_OFF);
 			}
 			uart_puts("\r\n");
+
+			response = RESPONSE_NO_RESPONSE;
 		} else {
 			response = RESPONSE_ERROR;
 		}
