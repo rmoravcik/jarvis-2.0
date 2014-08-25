@@ -111,11 +111,11 @@ ISR(USART_RXC_vect)
 		i = 0;
 	} else if (rxbuff[i] == '\b') {
 		if (i > 0) {
-			rxbuff[i] = '';
+			rxbuff[i] = 0;
 			i--;
 
 			// clear deleted character
-			UDR = ' ';
+			UDR = 0x20;
 			UDR = '\b';
 		}
 	} else {
