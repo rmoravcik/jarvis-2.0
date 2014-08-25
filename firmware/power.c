@@ -219,6 +219,15 @@ void power_off(uint8_t device)
 	if (device == EYES) {
 		device_off(EYES);
 	} else {
+		// do not try to fade out device, if it's already off
+		if ((device & EYES) && !device_get(EYES)) {
+			device &= ~EYES;
+		} else if ((device & REPULSORS_POWER) && !device_get(REPULSORS_POWER)) {
+			device &= ~REPULSORS_POWER;
+		} else if ((device & UNIBEAM) && !device_get(UNIBEAM)) {
+			device &= ~UNIBEAM;
+		}
+
 		effect_fade(FADE_OUT, device);
 	}
 
