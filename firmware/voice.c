@@ -259,6 +259,7 @@ void voice_play_random(void)
 
 		case 22:
 			voice_play_sound(SOUND_TRS11);
+			_delay_ms(1000);
 			voice_play_sound(SOUND_JUST_KIDDING);
 			break;
 
