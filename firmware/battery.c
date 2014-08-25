@@ -24,7 +24,7 @@
 #include "battery.h"
 
 uint16_t adc_offset = 0;
-uint8_t last_capacity = 0;
+uint8_t last_capacity = 100;
 
 void battery_init(void)
 {
@@ -83,7 +83,7 @@ void battery_report_capacity(uint8_t report_high)
 	uint8_t capacity = battery_get_capacity();
 
 	// report only capacity changes
-	if (last_capacity != capacity) {
+	if ((last_capacity - capacity) >= 5) {
 		last_capacity = capacity;
 
 		if (report_high & (capacity >= 90)) {
