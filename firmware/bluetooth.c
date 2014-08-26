@@ -115,8 +115,7 @@ ISR(USART_RXC_vect)
 			i--;
 
 			// clear deleted character
-			UDR = 0x20;
-			UDR = '\b';
+			uart_puts(" \b");
 		}
 	} else {
 		i++;
