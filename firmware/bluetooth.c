@@ -301,18 +301,18 @@ static void bluetooth_parse_command(uint8_t size)
 
 		if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_PARAM_ON) + 1) {
 			if (strncmp(param, BLUETOOTH_PARAM_ON, strlen(BLUETOOTH_PARAM_ON)) == 0) {
-				power_on(REPULSORS_POWER);
+				power_on(UNIBEAM);
 			} else {
 				response = RESPONSE_ERROR;
 			}
 		} else if (size == strlen(BLUETOOTH_CMD_UNIBEAM) + strlen(BLUETOOTH_PARAM_OFF) + 1) {
 			if (strncmp(param, BLUETOOTH_PARAM_OFF, strlen(BLUETOOTH_PARAM_OFF)) == 0) {
-				power_off(REPULSORS_POWER);
+				power_off(UNIBEAM);
 			} else {
 				response = RESPONSE_ERROR;
 			}
 		} else if (size == strlen(BLUETOOTH_CMD_UNIBEAM)) {
-			uint8_t state = power_state(REPULSORS_POWER);
+			uint8_t state = power_state(UNIBEAM);
 
 			uart_puts(BLUETOOTH_CMD_UNIBEAM);
 			uart_puts(": ");
