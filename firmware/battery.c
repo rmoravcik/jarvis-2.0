@@ -107,6 +107,14 @@ void battery_report_capacity(uint8_t report_high)
 				if (!emergency_backup_reported) {
 					emergency_backup_reported = TRUE;
 					voice_play_sound(SOUND_BATTERY_LOW_2);
+
+					// going to turn off all devices
+					_delay_ms(1000);
+					voice_play_sound(SOUND_SLEEP_2);
+					voice_play_sound_no_wait(SOUND_POWER_DOWN);
+
+					// turn off all devices
+					power_off(ALL | EYES);
 				}
 			} else if (capacity < 20) {
 				if (!dangerously_low_reported) {
