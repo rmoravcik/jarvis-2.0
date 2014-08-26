@@ -24,7 +24,12 @@
 #include "battery.h"
 
 uint16_t adc_offset = 0;
+
 uint8_t last_capacity = 100;
+
+uint8_t low_reported = FALSE;
+uint8_t dangerously_low_reported = FALSE;
+uint8_t emergency_backup_reported = FALSE;
 
 void battery_init(void)
 {
@@ -83,7 +88,7 @@ void battery_report_capacity(uint8_t report_high)
 	uint8_t capacity = battery_get_capacity();
 
 	// report only capacity changes
-	if ((last_capacity - capacity) >= 5) {
+	if (last_capacity != capacity) {
 		last_capacity = capacity;
 
 		if (report_high & (capacity >= 90)) {
@@ -99,13 +104,30 @@ void battery_report_capacity(uint8_t report_high)
 
 			// play warn notice that battery is almost dead (< 10%, < 20% and < 30%)
 			if (capacity < 10) {
-				voice_play_sound(SOUND_BATTERY_LOW_2);
+				if (!emergency_backup_reported) {
+					emergency_backup_reported = TRUE;
+					voice_play_sound(SOUND_BATTERY_LOW_2);
+				}
 			} else if (capacity < 20) {
-				voice_play_sound(SOUND_BATTERY_LOW_1);
+				if (!dangerously_low_reported) {
+					dangerously_low_reported = TRUE;
+					voice_play_sound(SOUND_BATTERY_LOW_1);
+				}
+
+				emergency_backup_reported = FALSE;
 			} else {
-				voice_play_sound(SOUND_BATTERY_LOW_0);
+				if (!low_reported) {
+					low_reported = TRUE;
+					voice_play_sound(SOUND_BATTERY_LOW_0);
+				}
+
+				dangerously_low_reported = FALSE;
+				emergency_backup_reported = FALSE;
 			}
+		} else {
+			low_reported = FALSE;
+			dangerously_low_reported = FALSE;
+			emergency_backup_reported = FALSE;
 		}
 	}
-
 }
