@@ -22,6 +22,11 @@
 
 #include <stdint.h>
 
+#define BATTERY_HIGH_CAPACITY			90
+#define BATTERY_LOW_CAPACITY			30
+#define BATTERY_DAUNGEROUSLY_LOW_CAPACITY	20
+#define BATTERY_BACKUP_CAPACITY			10
+
 void battery_init(void);
 
 uint8_t battery_get_capacity(void);

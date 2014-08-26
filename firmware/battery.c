@@ -93,9 +93,9 @@ void battery_report_capacity(uint8_t report_high)
 	if (last_capacity != capacity) {
 		last_capacity = capacity;
 
-		if (report_high & (capacity >= 90)) {
+		if (report_high & (capacity >= BATTERY_HIGH_CAPACITY)) {
 			voice_play_sound(SOUND_BATTERY_CHARGED);
-		} else if (capacity < 30) {
+		} else if (capacity < BATTERY_LOW_CAPACITY) {
 			// blink also with eyes if helmet is closed
 			if (helmet_state() == HELMET_CLOSED) {
 				power_failure(ALL | EYES);
@@ -105,7 +105,7 @@ void battery_report_capacity(uint8_t report_high)
 			}
 
 			// play warn notice that battery is almost dead (< 10%, < 20% and < 30%)
-			if (capacity < 10) {
+			if (capacity < BATTERY_BACKUP_CAPACITY) {
 				if (!emergency_backup_reported) {
 					emergency_backup_reported = TRUE;
 					voice_play_sound(SOUND_BATTERY_LOW_2);
@@ -118,7 +118,7 @@ void battery_report_capacity(uint8_t report_high)
 					// turn off all devices
 					power_off(ALL | EYES);
 				}
-			} else if (capacity < 20) {
+			} else if (capacity < BATTERY_DAUNGEROUSLY_LOW_CAPACITY) {
 				if (!dangerously_low_reported) {
 					dangerously_low_reported = TRUE;
 					voice_play_sound(SOUND_BATTERY_LOW_1);
