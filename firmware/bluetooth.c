@@ -96,12 +96,9 @@ ISR(USART_RXC_vect)
 		rxbuff[i] = rxbuff[i] - 'a' + 'A';
 	}
 
-	// echo back received character
-	UDR = rxbuff[i];
-
 	if (rxbuff[i] == '\r') {
 		// send 'new line' character
-		UDR = '\n';
+		uart_puts("\r\n");
 
 		// replace '\r' character with string termination character
 		rxbuff[i] = '\0';
@@ -111,13 +108,16 @@ ISR(USART_RXC_vect)
 		i = 0;
 	} else if (rxbuff[i] == '\b') {
 		if (i > 0) {
+			// clear deleted character
+			uart_puts("\b \b");
+
 			rxbuff[i] = 0;
 			i--;
-
-			// clear deleted character
-			uart_puts(" \b");
 		}
 	} else {
+		// echo back received character
+		uart_putc(rxbuff[i]);
+
 		i++;
 		if (i == RXBUFF_LEN) {
 			i = 0;
