@@ -199,10 +199,12 @@ int main(void)
 
 	// power on repulsors, unibeam and eyes
 	// if they were previously on
-	if (helmet_state() == HELMET_CLOSED) {
-		power_on(ALL | EYES);
-	} else {
-		power_on(ALL);
+	if (battery_get_capacity() >= BATTERY_BACKUP_CAPACITY) {
+		if (helmet_state() == HELMET_CLOSED) {
+			power_on(ALL | EYES);
+		} else {
+			power_on(ALL);
+		}
 	}
 
 	if (!configured) {
