@@ -17,15 +17,42 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "common.h"
 #include "power.h"
 
+static uint8_t status = 0;
+
 enum {
 	FADE_IN = 0,
 	FADE_OUT
 };
+
+// timer2 overflow
+ISR(TIMER2_OVF_vect)
+{
+	if (status & EYES) {
+		PORTB ^= _BV(GPIO_EYES);
+	}
+
+	if (status & REPULSORS_POWER) {
+		PORTC ^= _BV(GPIO_REPULSORS_PWR);
+	}
+
+	if (status & REPULSOR_LEFT) {
+		PORTC ^= _BV(GPIO_REPULSOR_LEFT);
+	}
+
+	if (status & REPULSOR_RIGHT) {
+		PORTC ^= _BV(GPIO_REPULSOR_RIGHT);
+	}
+
+	if (status & UNIBEAM) {
+		PORTD ^= _BV(GPIO_UNIBEAM);
+	}
+}
 
 static void device_on(uint8_t device)
 {
@@ -76,7 +103,7 @@ static void device_off(uint8_t device)
 static uint8_t device_get(uint8_t device)
 {
 	if (device & EYES) {
-		if (PORTB & _BV(GPIO_EYES)) {
+		if (status & EYES) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -84,7 +111,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSORS_POWER) {
-		if (PORTC & _BV(GPIO_REPULSORS_PWR)) {
+		if (status & REPULSORS_POWER) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -92,7 +119,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSOR_LEFT) {
-		if (PORTC & _BV(GPIO_REPULSOR_LEFT)) {
+		if (status & REPULSOR_LEFT) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -100,7 +127,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSOR_RIGHT) {
-		if (PORTC & _BV(GPIO_REPULSOR_RIGHT)) {
+		if (status & REPULSOR_RIGHT) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -108,7 +135,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & UNIBEAM) {
-		if (PORTD & _BV(GPIO_UNIBEAM)) {
+		if (status & UNIBEAM) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -218,6 +245,12 @@ void power_init(void)
 
 	// set unibeam pin to low
 	PORTD &= ~_BV(GPIO_UNIBEAM);
+
+	// timer2 prescaler clk/128
+	TCCR2 |= _BV(CS22) | _BV(CS20);
+
+	// timer2 overflow interrupt enable
+	TIMSK |= _BV(TOIE2);
 }
 
 void power_on(uint8_t device)
@@ -227,11 +260,15 @@ void power_on(uint8_t device)
 	}
 
 	effect_fade(FADE_IN, device);
+
+	status |= device;
 }
 
 void power_off(uint8_t device)
 {
+
 	if (device == EYES) {
+		status &= ~EYES;
 		device_off(EYES);
 	} else {
 		// do not try to fade out device, if it's already off
@@ -243,9 +280,9 @@ void power_off(uint8_t device)
 			device &= ~UNIBEAM;
 		}
 
+		status &= ~device;
 		effect_fade(FADE_OUT, device);
 	}
-
 }
 
 void power_failure(uint8_t device)
