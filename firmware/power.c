@@ -142,10 +142,10 @@ static void effect_blink(uint8_t device)
 	}
 }
 
-// takes 3000ms
+// takes 1500ms
 static void effect_fade(uint8_t mode, uint8_t device)
 {
-	uint8_t step, i = 0;
+	uint8_t step, i, stop = 0;
 	uint8_t time, off_time, on_time;
 
 	// do fade effect in 50 steps
@@ -154,13 +154,25 @@ static void effect_fade(uint8_t mode, uint8_t device)
 		if (mode == FADE_IN) {
 			on_time = 2 * step;
 			off_time = 100 - on_time;
+
+			if (step < 25) {
+				stop = 20;
+			} else {
+				stop = 10;
+			}
 		} else {
 			off_time = 2 * step;
 			on_time = 100 - off_time;
+
+			if (step < 25) {
+				stop = 10;
+			} else {
+				stop = 20;
+			}
 		}
 
-		// each PWM step is taking 60ms
-		for (i = 0; i < 30; i++) {
+		// each PWM step is taking 40/20ms
+		for (i = 0; i < stop; i++) {
 			device_off(device);
 
 			for (time = 0; time < off_time; time++) {
