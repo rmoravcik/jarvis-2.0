@@ -131,14 +131,17 @@ static void effect_blink(uint8_t device)
 		device_on(device);
 		_delay_ms(50);
 	} else {
-		device_on(device);
-		_delay_ms(50);
-		device_off(device);
-		_delay_ms(50);
-		device_on(device);
-		_delay_ms(50);
-		device_off(device);
-		_delay_ms(50);
+		// inverse blinking for eyes power on
+		if (device == EYES) {
+			device_on(device);
+			_delay_ms(50);
+			device_off(device);
+			_delay_ms(50);
+			device_on(device);
+			_delay_ms(50);
+			device_off(device);
+			_delay_ms(50);
+		}
 	}
 }
 
