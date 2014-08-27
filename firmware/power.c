@@ -148,7 +148,11 @@ static uint8_t device_get(uint8_t device)
 // takes 200ms
 static void effect_blink(uint8_t device)
 {
+	uint8_t tmp = status;
+
 	if (device_get(device)) {
+		status = 0;
+
 		device_off(device);
 		_delay_ms(50);
 		device_on(device);
@@ -160,6 +164,8 @@ static void effect_blink(uint8_t device)
 	} else {
 		// inverse blinking for eyes power on
 		if (device == EYES) {
+			status = 0;
+
 			device_on(device);
 			_delay_ms(50);
 			device_off(device);
@@ -170,6 +176,8 @@ static void effect_blink(uint8_t device)
 			_delay_ms(50);
 		}
 	}
+
+	status = tmp;
 }
 
 // takes 1500ms
