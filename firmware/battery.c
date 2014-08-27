@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "common.h"
@@ -32,6 +33,22 @@ uint8_t last_capacity = 100;
 uint8_t low_reported = FALSE;
 uint8_t dangerously_low_reported = FALSE;
 uint8_t emergency_backup_reported = FALSE;
+
+// timer0 overflow
+ISR(TIMER0_OVF_vect)
+{
+	static uint8_t counter = 0;
+
+	if (counter == 191) {
+		// reset counter
+		counter = 0;
+
+		// check battery capacity every ~5 seconds
+		battery_report_capacity(FALSE);
+	} else {
+		counter++;
+	}
+}
 
 void battery_init(void)
 {
@@ -59,6 +76,12 @@ void battery_init(void)
 	// set MUX channel to ADC5 (battery sense pin)
 	ADMUX |= _BV(MUX2) | _BV(MUX0);
 	ADMUX &= ~(_BV(MUX3) | _BV(MUX1));
+
+	// timer0 prescaler clk/1024
+	TCCR0 |= _BV(CS02) | _BV(CS00);
+
+	// timer0 overflow interrupt enable
+	TIMSK |= _BV(TOIE0);
 }
 
 uint8_t battery_get_capacity(void)
