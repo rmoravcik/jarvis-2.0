@@ -129,6 +129,8 @@ static void bluetooth_parse_command(uint8_t size)
 {
 	uint8_t response = RESPONSE_OK;
 
+	sei();
+
 	if (size == 0) {
 		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELP, size) == 0) {

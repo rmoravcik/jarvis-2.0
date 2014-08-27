@@ -35,7 +35,7 @@ uint8_t dangerously_low_reported = FALSE;
 uint8_t emergency_backup_reported = FALSE;
 
 // timer0 overflow
-ISR(TIMER0_OVF_vect)
+ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
 {
 	static uint8_t counter = 0;
 

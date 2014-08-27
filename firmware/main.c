@@ -41,7 +41,7 @@ void get_mcucsr(void)
 }
 
 // func button
-ISR(INT0_vect)
+ISR(INT0_vect, ISR_NOBLOCK)
 {
 	uint8_t press_counter = 0;
 
