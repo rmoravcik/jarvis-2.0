@@ -88,7 +88,9 @@ enum {
 	SOUND_IM_SUIT_05,		// Remove?
 	SOUND_IM_SUIT_06,		// Remove?
 	SOUND_IM_SUIT_07,		// Remove?
-	SOUND_REPULSOR
+	SOUND_REPULSOR,
+	SOUND_BUTTON_SOUND_ALARM_5,
+	SOUND_TITLE_U_S
 };
 
 enum {
