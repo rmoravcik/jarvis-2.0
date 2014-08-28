@@ -23,7 +23,7 @@
 #include "common.h"
 #include "power.h"
 
-static uint8_t status = 0;
+static uint8_t enabled = 0;
 
 enum {
 	FADE_IN = 0,
@@ -33,23 +33,23 @@ enum {
 // timer2 overflow
 ISR(TIMER2_OVF_vect)
 {
-	if (status & EYES) {
+	if (enabled & EYES) {
 		PORTB ^= _BV(GPIO_EYES);
 	}
 
-	if (status & REPULSORS_POWER) {
+	if (enabled & REPULSORS_POWER) {
 		PORTC ^= _BV(GPIO_REPULSORS_PWR);
 	}
 
-	if (status & REPULSOR_LEFT) {
+	if (enabled & REPULSOR_LEFT) {
 		PORTC ^= _BV(GPIO_REPULSOR_LEFT);
 	}
 
-	if (status & REPULSOR_RIGHT) {
+	if (enabled & REPULSOR_RIGHT) {
 		PORTC ^= _BV(GPIO_REPULSOR_RIGHT);
 	}
 
-	if (status & UNIBEAM) {
+	if (enabled & UNIBEAM) {
 		PORTD ^= _BV(GPIO_UNIBEAM);
 	}
 }
@@ -103,7 +103,7 @@ static void device_off(uint8_t device)
 static uint8_t device_get(uint8_t device)
 {
 	if (device & EYES) {
-		if (status & EYES) {
+		if (enabled & EYES) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -111,7 +111,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSORS_POWER) {
-		if (status & REPULSORS_POWER) {
+		if (enabled & REPULSORS_POWER) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -119,7 +119,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSOR_LEFT) {
-		if (status & REPULSOR_LEFT) {
+		if (enabled & REPULSOR_LEFT) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -127,7 +127,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSOR_RIGHT) {
-		if (status & REPULSOR_RIGHT) {
+		if (enabled & REPULSOR_RIGHT) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -135,7 +135,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & UNIBEAM) {
-		if (status & UNIBEAM) {
+		if (enabled & UNIBEAM) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -148,10 +148,10 @@ static uint8_t device_get(uint8_t device)
 // takes 200ms
 static void effect_blink(uint8_t device)
 {
-	uint8_t tmp = status;
+	uint8_t tmp = enabled;
 
 	if (device_get(device)) {
-		status = 0;
+		enabled = 0;
 
 		device_off(device);
 		_delay_ms(50);
@@ -164,7 +164,7 @@ static void effect_blink(uint8_t device)
 	} else {
 		// inverse blinking for eyes power on
 		if (device == EYES) {
-			status = 0;
+			enabled = 0;
 
 			device_on(device);
 			_delay_ms(50);
@@ -177,7 +177,7 @@ static void effect_blink(uint8_t device)
 		}
 	}
 
-	status = tmp;
+	enabled = tmp;
 }
 
 // takes 1500ms
@@ -269,14 +269,14 @@ void power_on(uint8_t device)
 
 	effect_fade(FADE_IN, device);
 
-	status |= device;
+	enabled |= device;
 }
 
 void power_off(uint8_t device)
 {
 
 	if (device == EYES) {
-		status &= ~EYES;
+		enabled &= ~EYES;
 		device_off(EYES);
 	} else {
 		// do not try to fade out device, if it's already off
@@ -288,7 +288,7 @@ void power_off(uint8_t device)
 			device &= ~UNIBEAM;
 		}
 
-		status &= ~device;
+		enabled &= ~device;
 		effect_fade(FADE_OUT, device);
 	}
 }
