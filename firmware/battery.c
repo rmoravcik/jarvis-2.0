@@ -26,13 +26,13 @@
 #include "voice.h"
 #include "battery.h"
 
-uint16_t adc_offset = 0;
+static uint16_t adc_offset = 0;
 
-uint8_t last_capacity = 100;
+static uint8_t last_capacity = 100;
 
-uint8_t low_reported = FALSE;
-uint8_t dangerously_low_reported = FALSE;
-uint8_t emergency_backup_reported = FALSE;
+static uint8_t low_reported = FALSE;
+static uint8_t dangerously_low_reported = FALSE;
+static uint8_t emergency_backup_reported = FALSE;
 
 // timer0 overflow
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
@@ -129,10 +129,15 @@ void battery_report_capacity(uint8_t report_high)
 				}
 			}
 
+			// play alarm battery is low
+			voice_play_sound(SOUND_BUTTON_SOUND_ALARM_5);
+
 			// play warn notice that battery is almost dead (< 10%, < 20% and < 30%)
 			if (capacity < BATTERY_BACKUP_CAPACITY) {
 				if (!emergency_backup_reported) {
 					emergency_backup_reported = TRUE;
+
+					voice_play_sound(SOUND_TITLE_U_S);
 					voice_play_sound(SOUND_BATTERY_LOW_2);
 
 					// going to turn off all devices
@@ -146,11 +151,15 @@ void battery_report_capacity(uint8_t report_high)
 			} else if (capacity < BATTERY_DAUNGEROUSLY_LOW_CAPACITY) {
 				if (!dangerously_low_reported) {
 					dangerously_low_reported = TRUE;
+
+					voice_play_sound(SOUND_TITLE_U_S);
 					voice_play_sound(SOUND_BATTERY_LOW_1);
 				}
 			} else {
 				if (!low_reported) {
 					low_reported = TRUE;
+
+					voice_play_sound(SOUND_TITLE_U_S);
 					voice_play_sound(SOUND_BATTERY_LOW_0);
 				}
 			}
