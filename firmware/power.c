@@ -146,42 +146,40 @@ static uint8_t device_get(uint8_t device)
 }
 
 // takes 200ms
-static void effect_blink(uint8_t device)
+static void effect_blink(uint8_t devices)
 {
-	uint8_t tmp = enabled;
+	if (device_get(devices)) {
+		// temporary disable PWM on requested devices
+		enabled &= ~devices;
 
-	if (device_get(device)) {
-		enabled = 0;
+		device_off(devices);
+		_delay_ms(50);
+		device_on(devices);
+		_delay_ms(50);
+		device_off(devices);
+		_delay_ms(50);
+		device_on(devices);
+		_delay_ms(50);
 
-		device_off(device);
-		_delay_ms(50);
-		device_on(device);
-		_delay_ms(50);
-		device_off(device);
-		_delay_ms(50);
-		device_on(device);
-		_delay_ms(50);
+		// re-enable disabled PWM
+		enabled |= devices;
 	} else {
-		// inverse blinking for eyes power on
-		if (device == EYES) {
-			enabled = 0;
-
-			device_on(device);
+		// inverse blinking is used only eyes power on effect
+		if (devices == EYES) {
+			device_on(devices);
 			_delay_ms(50);
-			device_off(device);
+			device_off(devices);
 			_delay_ms(50);
-			device_on(device);
+			device_on(devices);
 			_delay_ms(50);
-			device_off(device);
+			device_off(devices);
 			_delay_ms(50);
 		}
 	}
-
-	enabled = tmp;
 }
 
 // takes 1500ms
-static void effect_fade(uint8_t mode, uint8_t device)
+static void effect_fade(uint8_t mode, uint8_t devices)
 {
 	uint8_t step, i, stop = 0;
 	uint8_t time, off_time, on_time;
@@ -211,13 +209,13 @@ static void effect_fade(uint8_t mode, uint8_t device)
 
 		// each PWM step is taking 40/20ms
 		for (i = 0; i < stop; i++) {
-			device_off(device);
+			device_off(devices);
 
 			for (time = 0; time < off_time; time++) {
 				_delay_us(20);
 			}
 
-			device_on(device);
+			device_on(devices);
 
 			for (time = 0; time < on_time; time++) {
 				_delay_us(20);
@@ -228,9 +226,9 @@ static void effect_fade(uint8_t mode, uint8_t device)
 	// if fade in, leave gpio asserted high
 	// else set it low
 	if (mode == FADE_IN) {
-		device_on(device);
+		device_on(devices);
 	} else {
-		device_off(device);
+		device_off(devices);
 	}
 }
 
@@ -261,41 +259,41 @@ void power_init(void)
 	TIMSK |= _BV(TOIE2);
 }
 
-void power_on(uint8_t device)
+void power_on(uint8_t devices)
 {
-	if (device & EYES) {
-		effect_blink(device);
+	if (devices & EYES) {
+		effect_blink(devices);
 	}
 
-	effect_fade(FADE_IN, device);
+	effect_fade(FADE_IN, devices);
 
-	enabled |= device;
+	enabled |= devices;
 }
 
-void power_off(uint8_t device)
+void power_off(uint8_t devices)
 {
 
-	if (device == EYES) {
+	if (devices == EYES) {
 		enabled &= ~EYES;
 		device_off(EYES);
 	} else {
 		// do not try to fade out device, if it's already off
-		if ((device & EYES) && !device_get(EYES)) {
-			device &= ~EYES;
-		} else if ((device & REPULSORS_POWER) && !device_get(REPULSORS_POWER)) {
-			device &= ~REPULSORS_POWER;
-		} else if ((device & UNIBEAM) && !device_get(UNIBEAM)) {
-			device &= ~UNIBEAM;
+		if ((devices & EYES) && !device_get(EYES)) {
+			devices &= ~EYES;
+		} else if ((devices & REPULSORS_POWER) && !device_get(REPULSORS_POWER)) {
+			devices &= ~REPULSORS_POWER;
+		} else if ((devices & UNIBEAM) && !device_get(UNIBEAM)) {
+			devices &= ~UNIBEAM;
 		}
 
-		enabled &= ~device;
-		effect_fade(FADE_OUT, device);
+		enabled &= ~devices;
+		effect_fade(FADE_OUT, devices);
 	}
 }
 
-void power_failure(uint8_t device)
+void power_failure(uint8_t devices)
 {
-	effect_blink(device);
+	effect_blink(devices);
 }
 
 void power_blast(uint8_t device)
