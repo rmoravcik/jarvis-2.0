@@ -26,7 +26,7 @@
 #include "voice.h"
 #include "battery.h"
 
-static uint16_t adc_offset = 0;
+static uint16_t offset_error = 0;
 
 static uint8_t last_capacity = 100;
 
@@ -139,7 +139,7 @@ void battery_init(void)
 	while (ADCSRA & _BV(ADSC)) {
 	}
 
-	adc_offset = ADCW;
+	offset_error = ADCW;
 
 	// set MUX channel to ADC5 (battery sense pin)
 	ADMUX |= _BV(MUX2) | _BV(MUX0);
@@ -157,14 +157,14 @@ uint8_t battery_get_capacity(void)
 	// start ADC conversion
 	ADCSRA |= _BV(ADSC);
 
-	// wait will ADC complete
+	// wait will ADC complete (~200us)
 	while (ADCSRA & _BV(ADSC)) {
 	}
 
 	// calc capacity of battery
 	// 100% is 4.8 - 5.6V
 	//   0% is 4V
-	capacity = (ADCW - 654 - adc_offset) * 100 / 130;
+	capacity = (ADCW - 654 - offset_error) * 100 / 130;
 
 	// return maximum capacity 100%
 	if (capacity > 100)
