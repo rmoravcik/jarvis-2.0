@@ -30,84 +30,12 @@ static uint16_t adc_offset = 0;
 
 static uint8_t last_capacity = 100;
 
+static uint8_t high_reported = FALSE;
 static uint8_t low_reported = FALSE;
 static uint8_t dangerously_low_reported = FALSE;
 static uint8_t emergency_backup_reported = FALSE;
 
-// timer0 overflow
-ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
-{
-	static uint8_t counter = 0;
-
-	if (counter == 191) {
-		// reset counter
-		counter = 0;
-
-		// check battery capacity every ~5 seconds
-		battery_report_capacity(FALSE);
-	} else {
-		counter++;
-	}
-}
-
-void battery_init(void)
-{
-	// set battery sense pin as an input
-	DDRC &= ~_BV(GPIO_BATTERY_SENSE);
-
-	// enable internal 2.56V reference
-	ADMUX |= _BV(REFS1) | _BV(REFS0);
-
-	// enable ADC, set prescaler to 128 (62,5kHz)
-	ADCSRA |= _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
-
-	// set MUX channel to GND to measure offset
-	ADMUX |= _BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0);
-
-	// measure ADC offset
-	ADCSRA |= _BV(ADSC);
-
-	// wait will ADC complete
-	while (ADCSRA & _BV(ADSC)) {
-	}
-
-	adc_offset = ADCW;
-
-	// set MUX channel to ADC5 (battery sense pin)
-	ADMUX |= _BV(MUX2) | _BV(MUX0);
-	ADMUX &= ~(_BV(MUX3) | _BV(MUX1));
-
-	// timer0 prescaler clk/1024
-	TCCR0 |= _BV(CS02) | _BV(CS00);
-
-	// timer0 overflow interrupt enable
-	TIMSK |= _BV(TOIE0);
-}
-
-uint8_t battery_get_capacity(void)
-{
-	uint8_t capacity = 0;
-
-	// start ADC conversion
-	ADCSRA |= _BV(ADSC);
-
-	// wait will ADC complete
-	while (ADCSRA & _BV(ADSC)) {
-	}
-
-	// calc capacity of battery
-	// 100% is 4.8 - 5.6V
-	//   0% is 4V
-	capacity = (ADCW - 654 - adc_offset) * 100 / 130;
-
-	// return maximum capacity 100%
-	if (capacity > 100)
-		capacity = 100;
-
-	return capacity;
-}
-
-void battery_report_capacity(uint8_t report_high)
+static void report_battery_status(void)
 {
 	// read battery capacity
 	uint8_t capacity = battery_get_capacity();
@@ -116,7 +44,9 @@ void battery_report_capacity(uint8_t report_high)
 	if (last_capacity != capacity) {
 		last_capacity = capacity;
 
-		if (report_high & (capacity >= BATTERY_HIGH_CAPACITY)) {
+		if (!high_reported & (capacity >= BATTERY_HIGH_CAPACITY)) {
+			high_reported = TRUE;
+
 			voice_play_sound(SOUND_BATTERY_CHARGED);
 		} else if (capacity < BATTERY_LOW_CAPACITY) {
 			if ((capacity >= BATTERY_BACKUP_CAPACITY) && (capacity < BATTERY_LOW_CAPACITY)) {
@@ -170,4 +100,87 @@ void battery_report_capacity(uint8_t report_high)
 			emergency_backup_reported = FALSE;
 		}
 	}
+}
+
+// timer0 overflow
+ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
+{
+	static uint8_t counter = 0;
+
+	if (counter == 191) {
+		// reset counter
+		counter = 0;
+
+		// check battery capacity every ~5 seconds
+		report_battery_status();
+	} else {
+		counter++;
+	}
+}
+
+void battery_init(void)
+{
+	// set battery sense pin as an input
+	DDRC &= ~_BV(GPIO_BATTERY_SENSE);
+
+	// enable internal 2.56V reference
+	ADMUX |= _BV(REFS1) | _BV(REFS0);
+
+	// enable ADC, set prescaler to 128 (62,5kHz)
+	ADCSRA |= _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+
+	// set MUX channel to GND to measure offset
+	ADMUX |= _BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0);
+
+	// measure ADC offset
+	ADCSRA |= _BV(ADSC);
+
+	// wait will ADC complete
+	while (ADCSRA & _BV(ADSC)) {
+	}
+
+	adc_offset = ADCW;
+
+	// set MUX channel to ADC5 (battery sense pin)
+	ADMUX |= _BV(MUX2) | _BV(MUX0);
+	ADMUX &= ~(_BV(MUX3) | _BV(MUX1));
+
+	// timer0 prescaler clk/1024
+	TCCR0 |= _BV(CS02) | _BV(CS00);
+
+}
+
+uint8_t battery_get_capacity(void)
+{
+	uint8_t capacity = 0;
+
+	// start ADC conversion
+	ADCSRA |= _BV(ADSC);
+
+	// wait will ADC complete
+	while (ADCSRA & _BV(ADSC)) {
+	}
+
+	// calc capacity of battery
+	// 100% is 4.8 - 5.6V
+	//   0% is 4V
+	capacity = (ADCW - 654 - adc_offset) * 100 / 130;
+
+	// return maximum capacity 100%
+	if (capacity > 100)
+		capacity = 100;
+
+	return capacity;
+}
+
+void battery_reporting_start(void)
+{
+	// timer0 overflow interrupt enable
+	TIMSK |= _BV(TOIE0);
+}
+
+void battery_reporting_stop(void)
+{
+	// timer0 overflow interrupt disable
+	TIMSK &= ~_BV(TOIE0);
 }

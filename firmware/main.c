@@ -188,18 +188,15 @@ int main(void)
 	if (!configured) {
 		if (mcucsr & _BV(PORF)) {
 			voice_play_welcome();
-
-			// wait a little bit
-			_delay_ms(1000);
-
-			// report battery capacity after power on
-			battery_report_capacity(TRUE);
 		} else {
 			voice_play_sound(SOUND_LISTENING_ON_6);
 		}
 	} else {
 		voice_play_sound(SOUND_INTRO_2);
 	}
+
+	// start reporting of battery status
+	battery_reporting_start();
 
 	// main loop
 	while(1) {

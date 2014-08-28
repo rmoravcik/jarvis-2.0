@@ -237,6 +237,9 @@ static void bluetooth_parse_command(uint8_t size)
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		response = RESPONSE_NO_RESPONSE;
 
+		// stop reporting of battery status
+		battery_reporting_stop();
+
 		voice_play_sound(SOUND_SLEEP_0);
 		_delay_ms(1000);
 		voice_play_sound(SOUND_SLEEP_2);
