@@ -26,13 +26,13 @@
 #include "voice.h"
 #include "battery.h"
 
-uint16_t adc_offset = 0;
+static uint16_t adc_offset = 0;
 
-uint8_t last_capacity = 100;
+static uint8_t last_capacity = 100;
 
-uint8_t low_reported = FALSE;
-uint8_t dangerously_low_reported = FALSE;
-uint8_t emergency_backup_reported = FALSE;
+static uint8_t low_reported = FALSE;
+static uint8_t dangerously_low_reported = FALSE;
+static uint8_t emergency_backup_reported = FALSE;
 
 // timer0 overflow
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
