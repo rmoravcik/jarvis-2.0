@@ -49,7 +49,7 @@ static void report_battery_status(void)
 
 			voice_play_sound(SOUND_BATTERY_CHARGED);
 		} else if (capacity < BATTERY_LOW_CAPACITY) {
-			if ((capacity >= BATTERY_BACKUP_CAPACITY) && (capacity < BATTERY_LOW_CAPACITY)) {
+			if (capacity >= BATTERY_BACKUP_CAPACITY) {
 				// blink also with eyes if helmet is closed
 				if (helmet_state() == HELMET_CLOSED) {
 					power_failure(ALL | EYES);
