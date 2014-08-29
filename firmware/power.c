@@ -100,19 +100,19 @@ ISR(TIMER2_OVF_vect)
 	static uint8_t cycle = 0;
 
 	if (cycle == 0) {
-		if (duty[DUTY_EYES] > 0) {
+		if ((duty[DUTY_EYES] > 0) && (curr[DUTY_EYES]) > 0) {
 			PORTB |= _BV(GPIO_EYES);
 		} else {
 			PORTB &= ~_BV(GPIO_EYES);
 		}
 
-		if (duty[DUTY_REPULSORS] > 0) {
+		if ((duty[DUTY_REPULSORS] > 0) && (curr[DUTY_REPULSORS]) > 0) {
 			PORTC |= _BV(GPIO_REPULSORS_PWR);
 		} else {
 			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
 		}
 
-		if (duty[DUTY_UNIBEAM] > 0) {
+		if ((duty[DUTY_UNIBEAM] > 0) && (curr[DUTY_UNIBEAM]) > 0) {
 			PORTD |= _BV(GPIO_UNIBEAM);
 		} else {
 			PORTD &= ~_BV(GPIO_UNIBEAM);
