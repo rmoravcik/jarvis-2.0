@@ -133,28 +133,28 @@ ISR(TIMER2_OVF_vect)
 	static uint8_t cycle = 0;
 
 	if (cycle == 0) {
-		if (device_get(EYES)) {
-			device_on(EYES);
+		if (enabled & EYES) {
+			PORTB |= _BV(GPIO_EYES);
 		}
 
-		if (device_get(REPULSORS_POWER)) {
-			device_on(REPULSORS_POWER);
+		if (enabled & REPULSORS_POWER) {
+			PORTC |= _BV(GPIO_REPULSORS_PWR);
 		}
 
-		if (device_get(UNIBEAM)) {
-			device_on(UNIBEAM);
+		if (enabled & UNIBEAM) {
+			PORTD |= _BV(GPIO_UNIBEAM);
 		}
 	} else if (cycle == duty[DUTY_EYES]) {
-		if (device_get(EYES)) {
-			device_off(EYES);
+		if (enabled & EYES) {
+			PORTB &= ~_BV(GPIO_EYES);
 		}
 	} else if (cycle == duty[DUTY_REPULSORS]) {
-		if (device_get(REPULSORS_POWER)) {
-			device_off(REPULSORS_POWER);
+		if (enabled & REPULSORS_POWER) {
+			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
 		}
 	} else if (cycle == duty[DUTY_UNIBEAM]) {
-		if (device_get(UNIBEAM)) {
-			device_off(UNIBEAM);
+		if (enabled & UNIBEAM) {
+			PORTD &= ~_BV(GPIO_UNIBEAM);
 		}
 	}
 
@@ -201,62 +201,40 @@ static void effect_blink(uint8_t devices)
 // takes 1500ms
 static void effect_fade(uint8_t mode, uint8_t devices)
 {
-	uint8_t start, stop, step, i, end = 0;
-	uint8_t time, off_time, on_time;
+	uint8_t step;
 
-	if (mode == FADE_IN) {
-		start = 0;
-		stop = 50;
-	} else {
-		start = 50;
-		stop = 100;
-	}
+	enabled |= devices;
 
 	// do fade effect in 50 steps
-	for (step = start; step <= stop; step = step + 2) {
-		// calculate on/off times for PWM with period 1kHz
-		if (mode == FADE_IN) {
-			on_time = step;
-			off_time = 100 - on_time;
+	for (step = 0; step <= 100; step = step + 2) {
 
-			if (step < 50) {
-				end = 20;
-			} else {
-				end = 10;
+		if (mode == FADE_IN) {
+			if (devices & EYES) {
+				duty[DUTY_EYES] = step;
+			}
+
+			if (devices & REPULSORS_POWER) {
+				duty[DUTY_REPULSORS] = step;
+			}
+
+			if (devices & UNIBEAM) {
+				duty[DUTY_UNIBEAM] = step;
 			}
 		} else {
-			off_time = step;
-			on_time = 100 - off_time;
+			if (devices & EYES) {
+				duty[DUTY_EYES] = 100 - step;
+			}
 
-			if (step < 50) {
-				end = 10;
-			} else {
-				end = 20;
+			if (devices & REPULSORS_POWER) {
+				duty[DUTY_REPULSORS] = 100 - step;
+			}
+
+			if (devices & UNIBEAM) {
+				duty[DUTY_UNIBEAM] = 100 - step;
 			}
 		}
 
-		// each PWM step is taking 40/20ms
-		for (i = 0; i < end; i++) {
-			device_off(devices);
-
-			for (time = 0; time < off_time; time++) {
-				_delay_us(20);
-			}
-
-			device_on(devices);
-
-			for (time = 0; time < on_time; time++) {
-				_delay_us(20);
-			}
-		}
-	}
-
-	// if fade in, leave gpio asserted high
-	// else set it low
-	if (mode == FADE_IN) {
-		device_on(devices);
-	} else {
-		device_off(devices);
+		_delay_ms(15);
 	}
 }
 
@@ -280,8 +258,8 @@ void power_init(void)
 	// set unibeam pin to low
 	PORTD &= ~_BV(GPIO_UNIBEAM);
 
-	// timer2 prescaler clk/128
-	TCCR2 |= _BV(CS22) | _BV(CS20);
+	// timer2 prescaler clk (no prescaler)
+	TCCR2 |= _BV(CS20);
 
 	// timer2 overflow interrupt enable
 	TIMSK |= _BV(TOIE2);
@@ -294,8 +272,6 @@ void power_on(uint8_t devices)
 	}
 
 	effect_fade(FADE_IN, devices);
-
-	enabled |= devices;
 }
 
 void power_off(uint8_t devices)
@@ -314,7 +290,6 @@ void power_off(uint8_t devices)
 			devices &= ~UNIBEAM;
 		}
 
-		enabled &= ~devices;
 		effect_fade(FADE_OUT, devices);
 	}
 }
