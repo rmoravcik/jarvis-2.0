@@ -25,34 +25,16 @@
 
 static uint8_t enabled = 0;
 
+static uint8_t duty[3] = {0, 0, 0};
+
+#define DUTY_EYES	0
+#define DUTY_REPULSORS	1
+#define DUTY_UNIBEAM	2
+
 enum {
 	FADE_IN = 0,
 	FADE_OUT
 };
-
-// timer2 overflow
-ISR(TIMER2_OVF_vect)
-{
-	if (enabled & EYES) {
-		PORTB ^= _BV(GPIO_EYES);
-	}
-
-	if (enabled & REPULSORS_POWER) {
-		PORTC ^= _BV(GPIO_REPULSORS_PWR);
-	}
-
-	if (enabled & REPULSOR_LEFT) {
-		PORTC ^= _BV(GPIO_REPULSOR_LEFT);
-	}
-
-	if (enabled & REPULSOR_RIGHT) {
-		PORTC ^= _BV(GPIO_REPULSOR_RIGHT);
-	}
-
-	if (enabled & UNIBEAM) {
-		PORTD ^= _BV(GPIO_UNIBEAM);
-	}
-}
 
 static void device_on(uint8_t device)
 {
@@ -143,6 +125,44 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	return FALSE;
+}
+
+// timer2 overflow
+ISR(TIMER2_OVF_vect)
+{
+	static uint8_t cycle = 0;
+
+	if (cycle == 0) {
+		if (device_get(EYES)) {
+			device_on(EYES);
+		}
+
+		if (device_get(REPULSORS_POWER)) {
+			device_on(REPULSORS_POWER);
+		}
+
+		if (device_get(UNIBEAM)) {
+			device_on(UNIBEAM);
+		}
+	} else if (cycle == duty[DUTY_EYES]) {
+		if (device_get(EYES)) {
+			device_off(EYES);
+		}
+	} else if (cycle == duty[DUTY_REPULSORS]) {
+		if (device_get(REPULSORS_POWER)) {
+			device_off(REPULSORS_POWER);
+		}
+	} else if (cycle == duty[DUTY_UNIBEAM]) {
+		if (device_get(UNIBEAM)) {
+			device_off(UNIBEAM);
+		}
+	}
+
+	cycle++;
+
+	if (cycle >= 100) {
+		cycle = 0;
+	}
 }
 
 // takes 200ms
