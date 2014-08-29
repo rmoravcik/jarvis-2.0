@@ -35,6 +35,17 @@ static uint8_t low_reported = FALSE;
 static uint8_t dangerously_low_reported = FALSE;
 static uint8_t emergency_backup_reported = FALSE;
 
+static void simulate_power_failing(void)
+{
+	// blink also with eyes if helmet is closed
+	if (helmet_state() == HELMET_CLOSED) {
+		power_failure(ALL | EYES);
+	} else {
+		// blink with all devices
+		power_failure(ALL);
+	}
+}
+
 static void report_battery_status(void)
 {
 	// read battery capacity
@@ -49,24 +60,14 @@ static void report_battery_status(void)
 
 			voice_play_sound(SOUND_BATTERY_CHARGED);
 		} else if (capacity < BATTERY_LOW_CAPACITY) {
-			if (capacity >= BATTERY_BACKUP_CAPACITY) {
-				// blink also with eyes if helmet is closed
-				if (helmet_state() == HELMET_CLOSED) {
-					power_failure(ALL | EYES);
-				} else {
-					// blink with all devices
-					power_failure(ALL);
-				}
-			}
-
-			// play alarm battery is low
-			voice_play_sound(SOUND_BUTTON_SOUND_ALARM_5);
-
 			// play warn notice that battery is almost dead (< 10%, < 20% and < 30%)
 			if (capacity < BATTERY_BACKUP_CAPACITY) {
 				if (!emergency_backup_reported) {
 					emergency_backup_reported = TRUE;
 
+					simulate_power_failing();
+
+					voice_play_sound(SOUND_BUTTON_SOUND_ALARM_5);
 					voice_play_sound(SOUND_TITLE_U_S);
 					voice_play_sound(SOUND_BATTERY_LOW_2);
 
@@ -82,6 +83,9 @@ static void report_battery_status(void)
 				if (!dangerously_low_reported) {
 					dangerously_low_reported = TRUE;
 
+					simulate_power_failing();
+
+					voice_play_sound(SOUND_BUTTON_SOUND_ALARM_5);
 					voice_play_sound(SOUND_TITLE_U_S);
 					voice_play_sound(SOUND_BATTERY_LOW_1);
 				}
@@ -89,6 +93,9 @@ static void report_battery_status(void)
 				if (!low_reported) {
 					low_reported = TRUE;
 
+					simulate_power_failing();
+
+					voice_play_sound(SOUND_BUTTON_SOUND_ALARM_5);
 					voice_play_sound(SOUND_TITLE_U_S);
 					voice_play_sound(SOUND_BATTERY_LOW_0);
 				}
