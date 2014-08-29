@@ -46,14 +46,6 @@ static void device_on(uint8_t device)
 		PORTC |= _BV(GPIO_REPULSORS_PWR);
 	}
 
-	if (device & REPULSOR_LEFT) {
-		PORTC |= _BV(GPIO_REPULSOR_LEFT);
-	}
-
-	if (device & REPULSOR_RIGHT) {
-		PORTC |= _BV(GPIO_REPULSOR_RIGHT);
-	}
-
 	if (device & UNIBEAM) {
 		PORTD |= _BV(GPIO_UNIBEAM);
 	}
@@ -67,14 +59,6 @@ static void device_off(uint8_t device)
 
 	if (device & REPULSORS_POWER) {
 		PORTC &= ~_BV(GPIO_REPULSORS_PWR);
-	}
-
-	if (device & REPULSOR_LEFT) {
-		PORTC &= ~_BV(GPIO_REPULSOR_LEFT);
-	}
-
-	if (device & REPULSOR_RIGHT) {
-		PORTC &= ~_BV(GPIO_REPULSOR_RIGHT);
 	}
 
 	if (device & UNIBEAM) {
@@ -94,22 +78,6 @@ static uint8_t device_get(uint8_t device)
 
 	if (device & REPULSORS_POWER) {
 		if (enabled & REPULSORS_POWER) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	if (device & REPULSOR_LEFT) {
-		if (enabled & REPULSOR_LEFT) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	if (device & REPULSOR_RIGHT) {
-		if (enabled & REPULSOR_RIGHT) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -301,10 +269,23 @@ void power_failure(uint8_t devices)
 
 void power_blast(uint8_t device)
 {
-	// simulate power blast
-	device_on(device);
+	if (device & REPULSOR_LEFT) {
+		PORTC |= _BV(GPIO_REPULSOR_LEFT);
+	}
+
+	if (device & REPULSOR_RIGHT) {
+		PORTC |= _BV(GPIO_REPULSOR_RIGHT);
+	}
+
 	_delay_ms(100);
-	device_off(device);
+
+	if (device & REPULSOR_LEFT) {
+		PORTC &= ~_BV(GPIO_REPULSOR_LEFT);
+	}
+
+	if (device & REPULSOR_RIGHT) {
+		PORTC &= ~_BV(GPIO_REPULSOR_RIGHT);
+	}
 }
 
 uint8_t power_state(uint8_t device)
