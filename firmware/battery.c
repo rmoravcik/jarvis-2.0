@@ -171,7 +171,7 @@ uint8_t battery_get_capacity(void)
 	// calc capacity of battery
 	// 100% is 4.8 - 5.6V
 	//   0% is 4V
-	capacity = (ADCW - 654 - offset_error) * 100 / 130;
+	capacity = (ADCW - 627 - offset_error) * 100 / 126;
 
 	// return maximum capacity 100%
 	if (capacity > 100)
