@@ -69,7 +69,7 @@ void helmet_init()
 
 void helmet_open(void)
 {
-	if (state == HELMET_CLOSE) {
+	if (state == HELMET_CLOSED) {
 		// turn off eyes
 		power_off(EYES);
 
