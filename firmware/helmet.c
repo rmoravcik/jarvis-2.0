@@ -104,6 +104,7 @@ void helmet_close(void)
 	pwm_disable();
 
 	// turn on eyes
+	power_failure(EYES);
 	power_on(EYES);
 
 	state = HELMET_CLOSED;
