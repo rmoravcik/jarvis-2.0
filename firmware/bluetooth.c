@@ -234,6 +234,28 @@ static void bluetooth_parse_command(uint8_t size)
 		} else {
 			response = RESPONSE_ERROR;
 		}
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_INTENSITY, strlen(BLUETOOTH_CMD_INTENSITY)) == 0) {
+		if (size == strlen(BLUETOOTH_CMD_INTENSITY) + 2) {
+			// convert number in ascii to integer
+			uint8_t intensity = rxbuff[size - 1] - '0';
+
+			if ((intensity >= 0) && (intensity <= 9)) {
+				power_set_intensity(intensity);
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (size == strlen(BLUETOOTH_CMD_INTENSITY)) {
+			uint8_t intensity = power_get_intensity();
+
+			uart_puts(BLUETOOTH_CMD_INTENSITY);
+			uart_puts(": ");
+			uart_putc('0' + intensity);
+			uart_puts("\r\n");
+
+			response = RESPONSE_NO_RESPONSE;
+		} else {
+			response = RESPONSE_ERROR;
+		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		response = RESPONSE_NO_RESPONSE;
 
@@ -340,7 +362,7 @@ static void bluetooth_parse_command(uint8_t size)
 			// convert number in ascii to integer
 			uint8_t volume = rxbuff[size - 1] - '0';
 
-			if ((volume >= 0) && (volume <=7 )) {
+			if ((volume >= 0) && (volume <= 7)) {
 				voice_set_volume(SOUND_VOLUME_0 + volume);
 			} else {
 				response = RESPONSE_ERROR;

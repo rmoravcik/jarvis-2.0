@@ -46,4 +46,7 @@ void power_blast(uint8_t device);
 
 uint8_t power_state(uint8_t device);
 
+void power_set_intensity(uint8_t value);
+uint8_t power_get_intensity(void);
+
 #endif // POWER_H
