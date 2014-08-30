@@ -23,53 +23,28 @@
 #include "common.h"
 #include "power.h"
 
-static uint8_t enabled = 0;
+static uint8_t intensity = 50;
+
+static uint8_t curr[3] = { 0, 0, 0};
+static uint8_t duty[3] = { 0, 0, 0};
+
+#define DUTY_EYES	0
+#define DUTY_REPULSORS	1
+#define DUTY_UNIBEAM	2
 
 enum {
 	FADE_IN = 0,
 	FADE_OUT
 };
 
-// timer2 overflow
-ISR(TIMER2_OVF_vect)
-{
-	if (enabled & EYES) {
-		PORTB ^= _BV(GPIO_EYES);
-	}
-
-	if (enabled & REPULSORS_POWER) {
-		PORTC ^= _BV(GPIO_REPULSORS_PWR);
-	}
-
-	if (enabled & REPULSOR_LEFT) {
-		PORTC ^= _BV(GPIO_REPULSOR_LEFT);
-	}
-
-	if (enabled & REPULSOR_RIGHT) {
-		PORTC ^= _BV(GPIO_REPULSOR_RIGHT);
-	}
-
-	if (enabled & UNIBEAM) {
-		PORTD ^= _BV(GPIO_UNIBEAM);
-	}
-}
-
 static void device_on(uint8_t device)
 {
-	if (device & EYES) {
+	if (device) {
 		PORTB |= _BV(GPIO_EYES);
 	}
 
 	if (device & REPULSORS_POWER) {
 		PORTC |= _BV(GPIO_REPULSORS_PWR);
-	}
-
-	if (device & REPULSOR_LEFT) {
-		PORTC |= _BV(GPIO_REPULSOR_LEFT);
-	}
-
-	if (device & REPULSOR_RIGHT) {
-		PORTC |= _BV(GPIO_REPULSOR_RIGHT);
 	}
 
 	if (device & UNIBEAM) {
@@ -87,14 +62,6 @@ static void device_off(uint8_t device)
 		PORTC &= ~_BV(GPIO_REPULSORS_PWR);
 	}
 
-	if (device & REPULSOR_LEFT) {
-		PORTC &= ~_BV(GPIO_REPULSOR_LEFT);
-	}
-
-	if (device & REPULSOR_RIGHT) {
-		PORTC &= ~_BV(GPIO_REPULSOR_RIGHT);
-	}
-
 	if (device & UNIBEAM) {
 		PORTD &= ~_BV(GPIO_UNIBEAM);
 	}
@@ -103,7 +70,7 @@ static void device_off(uint8_t device)
 static uint8_t device_get(uint8_t device)
 {
 	if (device & EYES) {
-		if (enabled & EYES) {
+		if (duty[DUTY_EYES] > 0) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -111,23 +78,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSORS_POWER) {
-		if (enabled & REPULSORS_POWER) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	if (device & REPULSOR_LEFT) {
-		if (enabled & REPULSOR_LEFT) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	if (device & REPULSOR_RIGHT) {
-		if (enabled & REPULSOR_RIGHT) {
+		if (duty[DUTY_REPULSORS] > 0) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -135,7 +86,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & UNIBEAM) {
-		if (enabled & UNIBEAM) {
+		if (duty[DUTY_UNIBEAM] > 0) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -145,98 +96,109 @@ static uint8_t device_get(uint8_t device)
 	return FALSE;
 }
 
-// takes 200ms
-static void effect_blink(uint8_t devices)
+// timer2 overflow
+ISR(TIMER2_OVF_vect)
 {
-	if (device_get(devices)) {
-		// temporary disable PWM on requested devices
-		enabled &= ~devices;
+	static uint8_t cycle = 0;
 
-		device_off(devices);
-		_delay_ms(50);
-		device_on(devices);
-		_delay_ms(50);
-		device_off(devices);
-		_delay_ms(50);
-		device_on(devices);
-		_delay_ms(50);
-
-		// re-enable disabled PWM
-		enabled |= devices;
-	} else {
-		// inverse blinking is used only eyes power on effect
-		if (devices == EYES) {
-			device_on(devices);
-			_delay_ms(50);
-			device_off(devices);
-			_delay_ms(50);
-			device_on(devices);
-			_delay_ms(50);
-			device_off(devices);
-			_delay_ms(50);
+	if (cycle == 0) {
+		if ((duty[DUTY_EYES] > 0) && (curr[DUTY_EYES]) > 0) {
+			PORTB |= _BV(GPIO_EYES);
+		} else {
+			PORTB &= ~_BV(GPIO_EYES);
 		}
+
+		if ((duty[DUTY_REPULSORS] > 0) && (curr[DUTY_REPULSORS]) > 0) {
+			PORTC |= _BV(GPIO_REPULSORS_PWR);
+		} else {
+			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
+		}
+
+		if ((duty[DUTY_UNIBEAM] > 0) && (curr[DUTY_UNIBEAM]) > 0) {
+			PORTD |= _BV(GPIO_UNIBEAM);
+		} else {
+			PORTD &= ~_BV(GPIO_UNIBEAM);
+		}
+	} else if (cycle == curr[DUTY_EYES]) {
+		if (duty[DUTY_EYES] > 0) {
+			PORTB &= ~_BV(GPIO_EYES);
+		}
+	} else if (cycle == curr[DUTY_REPULSORS]) {
+		if (duty[DUTY_REPULSORS] > 0) {
+			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
+		}
+	} else if (cycle == curr[DUTY_UNIBEAM]) {
+		if (duty[DUTY_UNIBEAM] > 0) {
+			PORTD &= ~_BV(GPIO_UNIBEAM);
+		}
+	}
+
+	cycle++;
+
+	if (cycle >= 100) {
+		cycle = 0;
 	}
 }
 
 // takes 1500ms
 static void effect_fade(uint8_t mode, uint8_t devices)
 {
-	uint8_t start, stop, step, i, end = 0;
-	uint8_t time, off_time, on_time;
-
-	if (mode == FADE_IN) {
-		start = 0;
-		stop = 50;
-	} else {
-		start = 50;
-		stop = 100;
-	}
+	uint8_t step;
 
 	// do fade effect in 50 steps
-	for (step = start; step <= stop; step = step + 2) {
-		// calculate on/off times for PWM with period 1kHz
-		if (mode == FADE_IN) {
-			on_time = step;
-			off_time = 100 - on_time;
+	for (step = 0; step <= 100; step = step + 2) {
 
-			if (step < 50) {
-				end = 20;
-			} else {
-				end = 10;
+		if (mode == FADE_IN) {
+			if (devices & EYES) {
+				if (step > duty[DUTY_EYES]) {
+					curr[DUTY_EYES] = duty[DUTY_EYES];
+				} else {
+					curr[DUTY_EYES] = step;
+				}
+			}
+
+			if (devices & REPULSORS_POWER) {
+				if (step > duty[DUTY_REPULSORS]) {
+					curr[DUTY_REPULSORS] = duty[DUTY_REPULSORS];
+				} else {
+					curr[DUTY_REPULSORS] = step;
+				}
+			}
+
+			if (devices & UNIBEAM) {
+				if (step > duty[DUTY_UNIBEAM]) {
+					curr[DUTY_UNIBEAM] = duty[DUTY_UNIBEAM];
+				} else {
+					curr[DUTY_UNIBEAM] = step;
+				}
 			}
 		} else {
-			off_time = step;
-			on_time = 100 - off_time;
+			if (devices & EYES) {
+				if (100 - step > duty[DUTY_EYES]) {
+					curr[DUTY_EYES] = duty[DUTY_EYES];
+				} else {
+					curr[DUTY_EYES] = 100 - step;
+				}
+			}
 
-			if (step < 50) {
-				end = 10;
-			} else {
-				end = 20;
+			if (devices & REPULSORS_POWER) {
+				if (100 - step > duty[DUTY_REPULSORS]) {
+					curr[DUTY_REPULSORS] = duty[DUTY_REPULSORS];
+				} else {
+					curr[DUTY_REPULSORS] = 100 - step;
+				}
+			}
+
+			if (devices & UNIBEAM) {
+				if (100 - step > duty[DUTY_UNIBEAM]) {
+					curr[DUTY_UNIBEAM] = duty[DUTY_UNIBEAM];
+				} else {
+					curr[DUTY_UNIBEAM] = 100 - step;
+				}
 			}
 		}
 
-		// each PWM step is taking 40/20ms
-		for (i = 0; i < end; i++) {
-			device_off(devices);
-
-			for (time = 0; time < off_time; time++) {
-				_delay_us(20);
-			}
-
-			device_on(devices);
-
-			for (time = 0; time < on_time; time++) {
-				_delay_us(20);
-			}
-		}
-	}
-
-	// if fade in, leave gpio asserted high
-	// else set it low
-	if (mode == FADE_IN) {
-		device_on(devices);
-	} else {
-		device_off(devices);
+		_delay_ms(15);
 	}
 }
 
@@ -260,8 +222,8 @@ void power_init(void)
 	// set unibeam pin to low
 	PORTD &= ~_BV(GPIO_UNIBEAM);
 
-	// timer2 prescaler clk/128
-	TCCR2 |= _BV(CS22) | _BV(CS20);
+	// timer2 prescaler clk (no prescaler)
+	TCCR2 |= _BV(CS20);
 
 	// timer2 overflow interrupt enable
 	TIMSK |= _BV(TOIE2);
@@ -270,46 +232,119 @@ void power_init(void)
 void power_on(uint8_t devices)
 {
 	if (devices & EYES) {
-		effect_blink(devices);
+		duty[DUTY_EYES] = intensity;
+	}
+
+	if (devices & REPULSORS_POWER) {
+		duty[DUTY_REPULSORS] = intensity;
+	}
+
+	if (devices & UNIBEAM) {
+		duty[DUTY_UNIBEAM] = intensity;
 	}
 
 	effect_fade(FADE_IN, devices);
-
-	enabled |= devices;
 }
 
 void power_off(uint8_t devices)
 {
 
 	if (devices == EYES) {
-		enabled &= ~EYES;
+		duty[DUTY_EYES] = 0;
 		device_off(EYES);
 	} else {
-		// do not try to fade out device, if it's already off
-		if ((devices & EYES) && !device_get(EYES)) {
-			devices &= ~EYES;
-		} else if ((devices & REPULSORS_POWER) && !device_get(REPULSORS_POWER)) {
-			devices &= ~REPULSORS_POWER;
-		} else if ((devices & UNIBEAM) && !device_get(UNIBEAM)) {
-			devices &= ~UNIBEAM;
+		effect_fade(FADE_OUT, devices);
+
+		if (devices & EYES) {
+			duty[DUTY_EYES] = 0;
 		}
 
-		enabled &= ~devices;
-		effect_fade(FADE_OUT, devices);
+		if (devices & REPULSORS_POWER) {
+			duty[DUTY_REPULSORS] = 0;
+		}
+
+		if (devices & UNIBEAM) {
+			duty[DUTY_UNIBEAM] = 0;
+		}
 	}
 }
 
 void power_failure(uint8_t devices)
 {
-	effect_blink(devices);
+	if (device_get(devices)) {
+		uint8_t tmp_eyes, tmp_repulsors, tmp_unibeam;
+
+		// temporary disable PWM on requested devices
+		if (devices & EYES) {
+			tmp_eyes = duty[DUTY_EYES];
+			duty[DUTY_EYES] = 0;
+		}
+
+		if (devices & REPULSORS_POWER) {
+			tmp_repulsors = duty[DUTY_REPULSORS];
+			duty[DUTY_REPULSORS] = 0;
+		}
+
+		if (devices & UNIBEAM) {
+			tmp_unibeam = duty[DUTY_UNIBEAM];
+			duty[DUTY_UNIBEAM] = 0;
+		}
+
+		device_off(devices);
+		_delay_ms(50);
+		device_on(devices);
+		_delay_ms(50);
+		device_off(devices);
+		_delay_ms(50);
+		device_on(devices);
+		_delay_ms(50);
+
+		// re-enable previously disabled PWM
+		if (devices & EYES) {
+			duty[DUTY_EYES] = tmp_eyes;
+		}
+
+		if (devices & REPULSORS_POWER) {
+			duty[DUTY_REPULSORS] = tmp_repulsors;
+		}
+
+		if (devices & UNIBEAM) {
+			duty[DUTY_UNIBEAM] = tmp_unibeam;
+		}
+	} else {
+		// inverse blinking is used only eyes power on effect
+		if (devices == EYES) {
+			device_on(EYES);
+			_delay_ms(50);
+			device_off(EYES);
+			_delay_ms(50);
+			device_on(EYES);
+			_delay_ms(50);
+			device_off(EYES);
+			_delay_ms(50);
+		}
+	}
 }
 
 void power_blast(uint8_t device)
 {
-	// simulate power blast
-	device_on(device);
+	if (device & REPULSOR_LEFT) {
+		PORTC |= _BV(GPIO_REPULSOR_LEFT);
+	}
+
+	if (device & REPULSOR_RIGHT) {
+		PORTC |= _BV(GPIO_REPULSOR_RIGHT);
+	}
+
 	_delay_ms(100);
-	device_off(device);
+
+	if (device & REPULSOR_LEFT) {
+		PORTC &= ~_BV(GPIO_REPULSOR_LEFT);
+	}
+
+	if (device & REPULSOR_RIGHT) {
+		PORTC &= ~_BV(GPIO_REPULSOR_RIGHT);
+	}
 }
 
 uint8_t power_state(uint8_t device)
@@ -319,4 +354,30 @@ uint8_t power_state(uint8_t device)
 	} else {
 		return POWER_OFF;
 	}
+}
+
+void power_set_intensity(uint8_t value)
+{
+	intensity = (value + 1) * 10;
+
+	if (duty[DUTY_EYES] > 0) {
+		duty[DUTY_EYES] = intensity;
+		curr[DUTY_EYES] = intensity;
+	}
+
+	if (duty[DUTY_REPULSORS] > 0) {
+		duty[DUTY_REPULSORS] = intensity;
+		curr[DUTY_REPULSORS] = intensity;
+	}
+
+	if (duty[DUTY_UNIBEAM] > 0) {
+		duty[DUTY_UNIBEAM] = intensity;
+		curr[DUTY_UNIBEAM] = intensity;
+	}
+
+}
+
+uint8_t power_get_intensity(void)
+{
+	return (intensity / 10) - 1;
 }

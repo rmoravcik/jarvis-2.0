@@ -69,45 +69,50 @@ void helmet_init()
 
 void helmet_open(void)
 {
-	// turn off eyes
-	power_off(EYES);
+	if (state == HELMET_CLOSED) {
+		// turn off eyes
+		power_off(EYES);
 
-	// wait for 200ms before opening helmet
-	_delay_ms(200);
+		// wait for 200ms before opening helmet
+		_delay_ms(200);
 
-	voice_play_sound_no_wait(SOUND_IM_SUIT_03);
+		voice_play_sound_no_wait(SOUND_IM_SUIT_03);
 
-	pwm_enable();
+		pwm_enable();
 
-	OCR1A = 2200;
-	OCR1B = 900;
+		OCR1A = 2200;
+		OCR1B = 900;
 
-	// wait till helmet is open
-	_delay_ms(700);
+		// wait till helmet is open
+		_delay_ms(700);
 
-	pwm_disable();
+		pwm_disable();
 
-	state = HELMET_OPEN;
-	eeprom_write_byte(&eeprom_state, state);
+		state = HELMET_OPEN;
+		eeprom_write_byte(&eeprom_state, state);
+	}
 }
 
 void helmet_close(void)
 {
-	pwm_enable();
+	if (state == HELMET_OPEN) {
+		pwm_enable();
 
-	OCR1A = 900;
-	OCR1B = 2200;
+		OCR1A = 900;
+		OCR1B = 2200;
 
-	// wait till helmet is closed
-	_delay_ms(700);
+		// wait till helmet is closed
+		_delay_ms(700);
 
-	pwm_disable();
+		pwm_disable();
 
-	// turn on eyes
-	power_on(EYES);
+		// turn on eyes
+		power_failure(EYES);
+		power_on(EYES);
 
-	state = HELMET_CLOSED;
-	eeprom_write_byte(&eeprom_state, state);
+		state = HELMET_CLOSED;
+		eeprom_write_byte(&eeprom_state, state);
+	}
 }
 
 uint8_t helmet_state(void)
