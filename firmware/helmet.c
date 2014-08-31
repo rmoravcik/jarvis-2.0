@@ -20,6 +20,8 @@
 #include <avr/eeprom.h>
 #include <util/delay.h>
 
+#include "bluetooth.h"
+
 #include "common.h"
 #include "power.h"
 #include "voice.h"
@@ -69,7 +71,7 @@ void helmet_init()
 
 void helmet_open(void)
 {
-	if (state == HELMET_CLOSED) {
+//	if (state == HELMET_CLOSED) {
 		// turn off eyes
 		power_off(EYES);
 
@@ -90,12 +92,12 @@ void helmet_open(void)
 
 		state = HELMET_OPEN;
 		eeprom_write_byte(&eeprom_state, state);
-	}
+//	}
 }
 
 void helmet_close(void)
 {
-	if (state == HELMET_OPEN) {
+//	if (state == HELMET_OPEN) {
 		pwm_enable();
 
 		OCR1A = 900;
@@ -112,7 +114,9 @@ void helmet_close(void)
 
 		state = HELMET_CLOSED;
 		eeprom_write_byte(&eeprom_state, state);
-	}
+//	} else {
+//		bluetooth_send("HELMET_CLOSE");
+//	}
 }
 
 uint8_t helmet_state(void)

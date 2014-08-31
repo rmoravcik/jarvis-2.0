@@ -267,22 +267,22 @@ void power_off(uint8_t devices)
 void power_failure(uint8_t devices)
 {
 	if (device_get(devices)) {
-		uint8_t tmp_eyes, tmp_repulsors, tmp_unibeam;
+		uint8_t curr_eyes, curr_repulsors, curr_unibeam;
 
 		// temporary disable PWM on requested devices
 		if (devices & EYES) {
-			tmp_eyes = duty[DUTY_EYES];
-			duty[DUTY_EYES] = 0;
+			curr_eyes = curr[DUTY_EYES];
+			curr[DUTY_EYES] = 0;
 		}
 
 		if (devices & REPULSORS_POWER) {
-			tmp_repulsors = duty[DUTY_REPULSORS];
-			duty[DUTY_REPULSORS] = 0;
+			curr_repulsors = curr[DUTY_REPULSORS];
+			curr[DUTY_REPULSORS] = 0;
 		}
 
 		if (devices & UNIBEAM) {
-			tmp_unibeam = duty[DUTY_UNIBEAM];
-			duty[DUTY_UNIBEAM] = 0;
+			curr_unibeam = curr[DUTY_UNIBEAM];
+			curr[DUTY_UNIBEAM] = 0;
 		}
 
 		device_off(devices);
@@ -296,15 +296,15 @@ void power_failure(uint8_t devices)
 
 		// re-enable previously disabled PWM
 		if (devices & EYES) {
-			duty[DUTY_EYES] = tmp_eyes;
+			curr[DUTY_EYES] = curr_eyes;
 		}
 
 		if (devices & REPULSORS_POWER) {
-			duty[DUTY_REPULSORS] = tmp_repulsors;
+			curr[DUTY_REPULSORS] = curr_repulsors;
 		}
 
 		if (devices & UNIBEAM) {
-			duty[DUTY_UNIBEAM] = tmp_unibeam;
+			curr[DUTY_UNIBEAM] = curr_unibeam;
 		}
 	} else {
 		// inverse blinking is used only eyes power on effect
