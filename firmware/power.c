@@ -70,7 +70,7 @@ static void device_off(uint8_t device)
 static uint8_t device_get(uint8_t device)
 {
 	if (device & EYES) {
-		if (duty[DUTY_EYES] > 0) {
+		if (curr[DUTY_EYES] > 0) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -78,7 +78,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & REPULSORS_POWER) {
-		if (duty[DUTY_REPULSORS] > 0) {
+		if (curr[DUTY_REPULSORS] > 0) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -86,7 +86,7 @@ static uint8_t device_get(uint8_t device)
 	}
 
 	if (device & UNIBEAM) {
-		if (duty[DUTY_UNIBEAM] > 0) {
+		if (curr[DUTY_UNIBEAM] > 0) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -102,35 +102,23 @@ ISR(TIMER2_OVF_vect)
 	static uint8_t cycle = 0;
 
 	if (cycle == 0) {
-		if ((duty[DUTY_EYES] > 0) && (curr[DUTY_EYES]) > 0) {
+		if (curr[DUTY_EYES] > 0) {
 			PORTB |= _BV(GPIO_EYES);
-		} else {
-			PORTB &= ~_BV(GPIO_EYES);
 		}
 
-		if ((duty[DUTY_REPULSORS] > 0) && (curr[DUTY_REPULSORS]) > 0) {
+		if (curr[DUTY_REPULSORS] > 0) {
 			PORTC |= _BV(GPIO_REPULSORS_PWR);
-		} else {
-			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
 		}
 
-		if ((duty[DUTY_UNIBEAM] > 0) && (curr[DUTY_UNIBEAM]) > 0) {
+		if (curr[DUTY_UNIBEAM] > 0) {
 			PORTD |= _BV(GPIO_UNIBEAM);
-		} else {
-			PORTD &= ~_BV(GPIO_UNIBEAM);
 		}
 	} else if (cycle == curr[DUTY_EYES]) {
-		if (duty[DUTY_EYES] > 0) {
-			PORTB &= ~_BV(GPIO_EYES);
-		}
+		PORTB &= ~_BV(GPIO_EYES);
 	} else if (cycle == curr[DUTY_REPULSORS]) {
-		if (duty[DUTY_REPULSORS] > 0) {
-			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
-		}
+		PORTC &= ~_BV(GPIO_REPULSORS_PWR);
 	} else if (cycle == curr[DUTY_UNIBEAM]) {
-		if (duty[DUTY_UNIBEAM] > 0) {
-			PORTD &= ~_BV(GPIO_UNIBEAM);
-		}
+		PORTD &= ~_BV(GPIO_UNIBEAM);
 	}
 
 	cycle++;
@@ -198,7 +186,7 @@ static void effect_fade(uint8_t mode, uint8_t devices)
 			}
 		}
 
-		_delay_ms(15);
+		_delay_ms(20);
 	}
 }
 
@@ -250,21 +238,21 @@ void power_off(uint8_t devices)
 {
 
 	if (devices == EYES) {
-		duty[DUTY_EYES] = 0;
+		curr[DUTY_EYES] = 0;
 		device_off(EYES);
 	} else {
 		effect_fade(FADE_OUT, devices);
 
 		if (devices & EYES) {
-			duty[DUTY_EYES] = 0;
+			curr[DUTY_EYES] = 0;
 		}
 
 		if (devices & REPULSORS_POWER) {
-			duty[DUTY_REPULSORS] = 0;
+			curr[DUTY_REPULSORS] = 0;
 		}
 
 		if (devices & UNIBEAM) {
-			duty[DUTY_UNIBEAM] = 0;
+			curr[DUTY_UNIBEAM] = 0;
 		}
 	}
 }
@@ -374,7 +362,6 @@ void power_set_intensity(uint8_t value)
 		duty[DUTY_UNIBEAM] = intensity;
 		curr[DUTY_UNIBEAM] = intensity;
 	}
-
 }
 
 uint8_t power_get_intensity(void)
