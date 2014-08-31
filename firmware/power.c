@@ -113,13 +113,20 @@ ISR(TIMER2_OVF_vect)
 		if (curr[DUTY_UNIBEAM] > 0) {
 			PORTD |= _BV(GPIO_UNIBEAM);
 		}
-	} else if (cycle == curr[DUTY_EYES]) {
-		PORTB &= ~_BV(GPIO_EYES);
-	} else if (cycle == curr[DUTY_REPULSORS]) {
-		PORTC &= ~_BV(GPIO_REPULSORS_PWR);
-	} else if (cycle == curr[DUTY_UNIBEAM]) {
-		PORTD &= ~_BV(GPIO_UNIBEAM);
+	} else {
+		if (cycle == curr[DUTY_EYES]) {
+			PORTB &= ~_BV(GPIO_EYES);
+		}
+
+		if (cycle == curr[DUTY_REPULSORS]) {
+			PORTC &= ~_BV(GPIO_REPULSORS_PWR);
+		}
+
+		if (cycle == curr[DUTY_UNIBEAM]) {
+			PORTD &= ~_BV(GPIO_UNIBEAM);
+		}
 	}
+
 
 	cycle++;
 
