@@ -20,8 +20,6 @@
 #include <avr/eeprom.h>
 #include <util/delay.h>
 
-#include "bluetooth.h"
-
 #include "common.h"
 #include "power.h"
 #include "voice.h"
