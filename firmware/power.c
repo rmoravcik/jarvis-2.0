@@ -23,10 +23,8 @@
 #include "common.h"
 #include "power.h"
 
-static uint8_t intensity = 50;
-
-static uint8_t curr[3] = { 0, 0, 0};
-static uint8_t duty[3] = { 0, 0, 0};
+static uint8_t curr[3] = {  0,  0,  0};
+static uint8_t duty[3] = { 50, 50, 50};
 
 #define DUTY_EYES	0
 #define DUTY_REPULSORS	1
@@ -226,18 +224,6 @@ void power_init(void)
 
 void power_on(uint8_t devices)
 {
-	if (devices & EYES) {
-		duty[DUTY_EYES] = intensity;
-	}
-
-	if (devices & REPULSORS_POWER) {
-		duty[DUTY_REPULSORS] = intensity;
-	}
-
-	if (devices & UNIBEAM) {
-		duty[DUTY_UNIBEAM] = intensity;
-	}
-
 	effect_fade(FADE_IN, devices);
 }
 
@@ -353,25 +339,16 @@ uint8_t power_state(uint8_t device)
 
 void power_set_intensity(uint8_t value)
 {
-	intensity = (value + 1) * 10;
+	uint8_t i;
+	uint8_t intensity = (value + 1) * 10;
 
-	if (duty[DUTY_EYES] > 0) {
-		duty[DUTY_EYES] = intensity;
-		curr[DUTY_EYES] = intensity;
-	}
-
-	if (duty[DUTY_REPULSORS] > 0) {
-		duty[DUTY_REPULSORS] = intensity;
-		curr[DUTY_REPULSORS] = intensity;
-	}
-
-	if (duty[DUTY_UNIBEAM] > 0) {
-		duty[DUTY_UNIBEAM] = intensity;
-		curr[DUTY_UNIBEAM] = intensity;
+	for (i = DUTY_EYES; i <= DUTY_UNIBEAM; i++) {
+		duty[i] = intensity;
+		curr[i] = intensity;
 	}
 }
 
 uint8_t power_get_intensity(void)
 {
-	return (intensity / 10) - 1;
+	return (duty[DUTY_EYES] / 10) - 1;
 }
