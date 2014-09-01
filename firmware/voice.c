@@ -86,7 +86,20 @@ static void wt588d_send_command(uint8_t command)
 void voice_init(void)
 {
 	seed = eeprom_read_byte(&eeprom_seed);
+
+	// initialize with default value if eeprom is empty
+	if (seed == 0xFF) {
+		seed = 27;
+		eeprom_write_byte(&eeprom_seed, seed);
+	}
+
 	volume = eeprom_read_byte(&eeprom_volume);
+
+	// initialize with default value if eeprom is empty
+	if (volume == 0xFF) {
+		volume = SOUND_VOLUME_7;
+		eeprom_write_byte(&eeprom_volume, volume);
+	}
 
 	// set DATA and RESET pins as an outputs
 	DDRD |= _BV(GPIO_WT588_DATA) | _BV(GPIO_WT588_RESET);

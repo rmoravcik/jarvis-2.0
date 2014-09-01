@@ -228,6 +228,12 @@ void power_init(void)
 
 	for (i = DUTY_EYES; i <= DUTY_UNIBEAM; i++) {
 		duty[i] = eeprom_read_byte(&eeprom_duty[i]);
+
+		// initialize with default values if eeprom is empty
+		if (duty[i] == 0xFF) {
+			duty[i] = 50;
+			eeprom_write_byte(&eeprom_duty[i], duty[i]);
+		}
 	}
 }
 

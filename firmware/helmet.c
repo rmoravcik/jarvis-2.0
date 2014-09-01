@@ -25,8 +25,8 @@
 #include "voice.h"
 #include "helmet.h"
 
-static uint8_t EEMEM eeprom_state = HELMET_OPEN;
-static uint8_t state = HELMET_OPEN;
+static uint8_t EEMEM eeprom_state = HELMET_CLOSED;
+static uint8_t state = HELMET_CLOSED;
 
 extern uint8_t mcucsr;
 
@@ -53,9 +53,14 @@ void helmet_init()
 
 	state = eeprom_read_byte(&eeprom_state);
 
+	// initialize with default value if eeprom is empty
+	if (state == 0xFF) {
+		state = HELMET_CLOSED;
+		eeprom_write_byte(&eeprom_state, state);
+	}
+
 	// open helmet only if was power on reset
 	if (mcucsr & _BV(PORF)) {
-		state = HELMET_CLOSED;
 		helmet_open();
 	} else {
 		if (state == HELMET_OPEN) {
