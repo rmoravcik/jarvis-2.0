@@ -23,7 +23,7 @@
 #include "common.h"
 #include "power.h"
 
-static uint8_t curr[3] = {  0,  0,  0};
+static  int8_t curr[3] = { -1, -1, -1};
 static uint8_t duty[3] = { 50, 50, 50};
 
 #define DUTY_EYES	0
@@ -231,21 +231,21 @@ void power_off(uint8_t devices)
 {
 
 	if (devices == EYES) {
-		curr[DUTY_EYES] = 0;
+		curr[DUTY_EYES] = -1;
 		device_off(EYES);
 	} else {
 		effect_fade(FADE_OUT, devices);
 
 		if (devices & EYES) {
-			curr[DUTY_EYES] = 0;
+			curr[DUTY_EYES] = -1;
 		}
 
 		if (devices & REPULSORS_POWER) {
-			curr[DUTY_REPULSORS] = 0;
+			curr[DUTY_REPULSORS] = -1;
 		}
 
 		if (devices & UNIBEAM) {
-			curr[DUTY_UNIBEAM] = 0;
+			curr[DUTY_UNIBEAM] = -1;
 		}
 	}
 }
@@ -258,17 +258,17 @@ void power_failure(uint8_t devices)
 		// temporary disable PWM on requested devices
 		if (devices & EYES) {
 			curr_eyes = curr[DUTY_EYES];
-			curr[DUTY_EYES] = 0;
+			curr[DUTY_EYES] = -1;
 		}
 
 		if (devices & REPULSORS_POWER) {
 			curr_repulsors = curr[DUTY_REPULSORS];
-			curr[DUTY_REPULSORS] = 0;
+			curr[DUTY_REPULSORS] = -1;
 		}
 
 		if (devices & UNIBEAM) {
 			curr_unibeam = curr[DUTY_UNIBEAM];
-			curr[DUTY_UNIBEAM] = 0;
+			curr[DUTY_UNIBEAM] = -1;
 		}
 
 		device_off(devices);
