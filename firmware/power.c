@@ -17,14 +17,17 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "common.h"
 #include "power.h"
 
+static uint8_t EEMEM eeprom_duty[3] = { 50, 50, 50 };
+
 static  int8_t curr[3] = { -1, -1, -1};
-static uint8_t duty[3] = { 50, 50, 50};
+static uint8_t duty[3] = {  0,  0,  0};
 
 #define DUTY_EYES	0
 #define DUTY_REPULSORS	1
@@ -197,6 +200,8 @@ static void effect_fade(uint8_t mode, uint8_t devices)
 
 void power_init(void)
 {
+	uint8_t i;
+
 	// set eyes pin as an output
 	DDRB |= _BV(GPIO_EYES);
 
@@ -220,6 +225,10 @@ void power_init(void)
 
 	// timer2 overflow interrupt enable
 	TIMSK |= _BV(TOIE2);
+
+	for (i = DUTY_EYES; i <= DUTY_UNIBEAM; i++) {
+		duty[i] = eeprom_read_byte(&eeprom_duty[i]);
+	}
 }
 
 void power_on(uint8_t devices)
@@ -343,8 +352,15 @@ void power_set_intensity(uint8_t value)
 	uint8_t intensity = (value + 1) * 10;
 
 	for (i = DUTY_EYES; i <= DUTY_UNIBEAM; i++) {
+		if (duty[i] != intensity) {
+			eeprom_write_byte(&eeprom_duty[i], intensity);
+		}
+
 		duty[i] = intensity;
-		curr[i] = intensity;
+
+		if (curr[i] > 0) {
+			curr[i] = intensity;
+		}
 	}
 }
 
