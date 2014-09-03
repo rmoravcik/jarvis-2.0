@@ -240,12 +240,12 @@ static void bluetooth_parse_command(uint8_t size)
 			uint8_t intensity = rxbuff[size - 1] - '0';
 
 			if ((intensity >= 0) && (intensity <= 9)) {
-				power_set_intensity(intensity);
+				power_set_intensity(ALL, intensity);
 			} else {
 				response = RESPONSE_ERROR;
 			}
 		} else if (size == strlen(BLUETOOTH_CMD_INTENSITY)) {
-			uint8_t intensity = power_get_intensity();
+			int8_t intensity = power_get_intensity(EYES);
 
 			uart_puts(BLUETOOTH_CMD_INTENSITY);
 			uart_puts(": ");
@@ -268,7 +268,7 @@ static void bluetooth_parse_command(uint8_t size)
 		voice_play_sound_no_wait(SOUND_POWER_DOWN);
 
 		// turn off all devices
-		power_off(ALL | EYES);
+		power_off(ALL);
 
 		// restart mcu
 		wdt_reboot();

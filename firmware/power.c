@@ -352,25 +352,53 @@ uint8_t power_state(uint8_t device)
 	}
 }
 
-void power_set_intensity(uint8_t value)
+void power_set_intensity(uint8_t devices, uint8_t value)
 {
-	uint8_t i;
+	uint8_t mask = 0, i;
 	uint8_t intensity = (value + 1) * 10;
 
+	if (devices & EYES) {
+		mask |= _BV(DUTY_EYES);
+	}
+
+	if (devices & REPULSORS_POWER) {
+		mask |= _BV(DUTY_REPULSORS);
+	}
+
+	if (devices & UNIBEAM) {
+		mask |= _BV(DUTY_UNIBEAM);
+	}
+
 	for (i = DUTY_EYES; i <= DUTY_UNIBEAM; i++) {
-		if (duty[i] != intensity) {
-			eeprom_write_byte(&eeprom_duty[i], intensity);
-		}
+		if (mask & _BV(i)) {
+			if (duty[i] != intensity) {
+				eeprom_write_byte(&eeprom_duty[i], intensity);
+			}
 
-		duty[i] = intensity;
+			duty[i] = intensity;
 
-		if (curr[i] > 0) {
-			curr[i] = intensity;
+			if (curr[i] > 0) {
+	    			curr[i] = intensity;
+			}
 		}
 	}
+
 }
 
-uint8_t power_get_intensity(void)
+int8_t power_get_intensity(uint8_t device)
 {
-	return (duty[DUTY_EYES] / 10) - 1;
+	uint8_t intensity;
+
+	if (device == EYES) {
+		intensity = duty[DUTY_EYES];
+	} else if (device == REPULSORS_POWER) {
+		intensity = duty[DUTY_REPULSORS];
+	} else if (device == UNIBEAM) {
+		intensity = duty[DUTY_UNIBEAM];
+	} else {
+		return -1;
+	}
+
+	return (intensity / 10) - 1;
+
 }

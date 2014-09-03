@@ -179,9 +179,9 @@ int main(void)
 	// if they were previously on
 	if (battery_get_capacity() >= BATTERY_BACKUP_CAPACITY) {
 		if (helmet_state() == HELMET_CLOSED) {
-			power_on(ALL | EYES);
-		} else {
 			power_on(ALL);
+		} else {
+			power_on(REPULSORS_POWER | UNIBEAM);
 		}
 	}
 

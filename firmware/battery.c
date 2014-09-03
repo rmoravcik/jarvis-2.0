@@ -39,10 +39,10 @@ static void simulate_power_failing(void)
 {
 	// blink also with eyes if helmet is closed
 	if (helmet_state() == HELMET_CLOSED) {
-		power_failure(ALL | EYES);
+		power_failure(ALL);
 	} else {
 		// blink with all devices
-		power_failure(ALL);
+		power_failure(REPULSORS_POWER | UNIBEAM);
 	}
 }
 
@@ -77,7 +77,7 @@ static void report_battery_status(void)
 					voice_play_sound_no_wait(SOUND_POWER_DOWN);
 
 					// turn off all devices
-					power_off(ALL | EYES);
+					power_off(ALL);
 				}
 			} else if (capacity < BATTERY_DAUNGEROUSLY_LOW_CAPACITY) {
 				if (!dangerously_low_reported) {

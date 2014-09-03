@@ -33,7 +33,7 @@ enum {
 	POWER_ON
 };
 
-#define ALL		REPULSORS_POWER | UNIBEAM
+#define ALL		EYES | REPULSORS_POWER | UNIBEAM
 
 void power_init(void);
 
@@ -46,7 +46,7 @@ void power_blast(uint8_t devices);
 
 uint8_t power_state(uint8_t device);
 
-void power_set_intensity(uint8_t value);
-uint8_t power_get_intensity(void);
+void power_set_intensity(uint8_t devices, uint8_t value);
+int8_t power_get_intensity(uint8_t device);
 
 #endif // POWER_H
