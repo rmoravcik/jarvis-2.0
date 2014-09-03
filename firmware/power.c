@@ -249,6 +249,19 @@ void power_off(uint8_t devices)
 		curr[DUTY_EYES] = -1;
 		device_off(EYES);
 	} else {
+		// do not try to fade out device, if it's already off
+		if ((devices & EYES) && (curr[DUTY_EYES] == -1)) {
+			devices &= ~EYES;
+		}
+
+		if ((devices & REPULSORS_POWER) && (curr[DUTY_REPULSORS] == -1)) {
+			devices &= ~REPULSORS_POWER;
+		}
+
+		if ((devices & UNIBEAM) && (curr[DUTY_UNIBEAM] == -1)) {
+			devices &= ~UNIBEAM;
+		}
+
 		effect_fade(FADE_OUT, devices);
 
 		if (devices & EYES) {
