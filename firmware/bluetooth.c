@@ -235,26 +235,56 @@ static void bluetooth_parse_command(uint8_t size)
 			response = RESPONSE_ERROR;
 		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_INTENSITY, strlen(BLUETOOTH_CMD_INTENSITY)) == 0) {
-		if (size == strlen(BLUETOOTH_CMD_INTENSITY) + 2) {
+		uint8_t device = 0;
+		char *param = rxbuff + strlen(BLUETOOTH_CMD_INTENSITY) + 1;
+
+		if (strncmp(param, BLUETOOTH_CMD_EYES, strlen(BLUETOOTH_CMD_EYES)) == 0) {
+			if (size == strlen(BLUETOOTH_CMD_INTENSITY) + strlen(BLUETOOTH_CMD_EYES) + 3) {
+				device = EYES;
+			} else if (size == strlen(BLUETOOTH_CMD_INTENSITY) + strlen(BLUETOOTH_CMD_EYES) + 1) {
+				device = EYES;
+				response = RESPONSE_NO_RESPONSE;
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (strncmp(param, BLUETOOTH_CMD_REPULSORS, strlen(BLUETOOTH_CMD_REPULSORS)) == 0) {
+			if (size == strlen(BLUETOOTH_CMD_INTENSITY) + strlen(BLUETOOTH_CMD_REPULSORS) + 3) {
+				device = REPULSORS_POWER;
+			} else if (size == strlen(BLUETOOTH_CMD_INTENSITY) + strlen(BLUETOOTH_CMD_REPULSORS) + 1) {
+				device = REPULSORS_POWER;
+				response = RESPONSE_NO_RESPONSE;
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else if (strncmp(param, BLUETOOTH_CMD_UNIBEAM, strlen(BLUETOOTH_CMD_UNIBEAM)) == 0) {
+			if (size == strlen(BLUETOOTH_CMD_INTENSITY) + strlen(BLUETOOTH_CMD_UNIBEAM) + 3) {
+				device = UNIBEAM;
+			} else if (size == strlen(BLUETOOTH_CMD_INTENSITY) + strlen(BLUETOOTH_CMD_UNIBEAM) + 1) {
+				device = UNIBEAM;
+				response = RESPONSE_NO_RESPONSE;
+			} else {
+				response = RESPONSE_ERROR;
+			}
+		} else {
+			response = RESPONSE_ERROR;
+		}
+
+		if (response == RESPONSE_OK) {
 			// convert number in ascii to integer
 			uint8_t intensity = rxbuff[size - 1] - '0';
 
 			if ((intensity >= 0) && (intensity <= 9)) {
-				power_set_intensity(ALL, intensity);
+				power_set_intensity(device, intensity);
 			} else {
 				response = RESPONSE_ERROR;
 			}
-		} else if (size == strlen(BLUETOOTH_CMD_INTENSITY)) {
-			int8_t intensity = power_get_intensity(EYES);
+		} else if (response == RESPONSE_NO_RESPONSE) {
+			int8_t intensity = power_get_intensity(device);
 
 			uart_puts(BLUETOOTH_CMD_INTENSITY);
 			uart_puts(": ");
 			uart_putc('0' + intensity);
 			uart_puts("\r\n");
-
-			response = RESPONSE_NO_RESPONSE;
-		} else {
-			response = RESPONSE_ERROR;
 		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		response = RESPONSE_NO_RESPONSE;
