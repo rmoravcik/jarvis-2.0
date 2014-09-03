@@ -322,23 +322,23 @@ void power_failure(uint8_t devices)
 	}
 }
 
-void power_blast(uint8_t device)
+void power_blast(uint8_t devices)
 {
-	if (device & REPULSOR_LEFT) {
+	if (devices & REPULSOR_LEFT) {
 		PORTC |= _BV(GPIO_REPULSOR_LEFT);
 	}
 
-	if (device & REPULSOR_RIGHT) {
+	if (devices & REPULSOR_RIGHT) {
 		PORTC |= _BV(GPIO_REPULSOR_RIGHT);
 	}
 
 	_delay_ms(100);
 
-	if (device & REPULSOR_LEFT) {
+	if (devices & REPULSOR_LEFT) {
 		PORTC &= ~_BV(GPIO_REPULSOR_LEFT);
 	}
 
-	if (device & REPULSOR_RIGHT) {
+	if (devices & REPULSOR_RIGHT) {
 		PORTC &= ~_BV(GPIO_REPULSOR_RIGHT);
 	}
 }
