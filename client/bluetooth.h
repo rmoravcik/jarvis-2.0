@@ -25,6 +25,7 @@ private:
     QBluetoothSocket *m_socket;
 
 signals:
+    void jarvisConnected(void);
     void jarvisDisconnected(void);
 
 public slots:

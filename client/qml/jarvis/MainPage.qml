@@ -39,9 +39,15 @@ Page {
         }
     }
 
-//    Bluetooth {
-//        onJarvisDisconnected: {
-//            label.visible = true;
-//        }
-//    }
+    Connections {
+        target: Bluetooth
+        onJarvisConnected: {
+            label.text = "Connected";
+            label.visible = true;
+        }
+        onJarvisDisconnected: {
+            label.text = "Disconnected";
+            label.visible = true;
+        }
+    }
 }
