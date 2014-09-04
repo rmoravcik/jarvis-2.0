@@ -49,6 +49,7 @@ void Bluetooth::onConnected(void)
 void Bluetooth::onDisconnected(void)
 {
     qDebug() << "Disconnected...";
+    emit jarvisDisconnected();
 }
 
 void Bluetooth::onReadyRead(void)

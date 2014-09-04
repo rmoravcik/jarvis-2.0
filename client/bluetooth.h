@@ -16,8 +16,8 @@ public:
     explicit Bluetooth(QObject *parent = 0);
     ~Bluetooth();
 
-    void start(void);
-    void stop(void);
+    Q_INVOKABLE void start(void);
+    Q_INVOKABLE void stop(void);
 
 private:
     QBluetoothLocalDevice *m_device;
@@ -25,6 +25,7 @@ private:
     QBluetoothSocket *m_socket;
 
 signals:
+    void jarvisDisconnected(void);
 
 public slots:
     void onConnected(void);
