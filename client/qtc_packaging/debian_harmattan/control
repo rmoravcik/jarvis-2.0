@@ -1,10 +1,10 @@
 Source: jarvis
 Section: user/other
 Priority: optional
-Maintainer: Roman Moravčík <morgan@unknown>
+Maintainer: Roman Moravčík <roman.moravcik@gmail.com>
 Build-Depends: debhelper (>= 5), libqt4-dev
 Standards-Version: 3.7.3
-Homepage: <insert the upstream URL, if relevant>
+Homepage: https://github.com/rmoravcik/jarvis-2.0
 
 Package: jarvis
 Architecture: any
