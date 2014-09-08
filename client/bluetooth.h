@@ -18,6 +18,7 @@ class Bluetooth : public QObject
     Q_ENUMS(Device)
     Q_ENUMS(PowerIntensity)
     Q_ENUMS(VolumeLevel)
+    Q_ENUMS(Request)
 
 public:
     enum HelmetState {
@@ -65,6 +66,21 @@ public:
         Level7
     };
 
+    enum Request {
+        REQUEST_NO_REQUEST = 0,
+        REQUEST_BATTERY,
+        REQUEST_EYES,
+        REQUEST_FORTUNE,
+        REQUEST_HELMET,
+        REQUEST_INTENSITY,
+        REQUEST_REBOOT,
+        REQUEST_REPULSOR,
+        REQUEST_REPULSORS,
+        REQUEST_UNIBEAM,
+        REQUEST_VERSION,
+        REQUEST_VOLUME
+    };
+
     explicit Bluetooth(QObject *parent = 0);
     ~Bluetooth();
 
@@ -104,11 +120,15 @@ private:
     QBluetoothAddress *m_address;
     QBluetoothSocket *m_socket;
 
+    Request m_request;
+
     void sendData(const QString &data);
 
 signals:
     void connected(void);
     void disconnected(void);
+
+    void battery(unsigned int capacity);
 
 public slots:
     void onConnected(void);

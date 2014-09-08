@@ -71,6 +71,7 @@
 #define BLUETOOTH_CMD_VOLUME		"VOLUME"
 #define BLUETOOTH_CMD_VOLUME_HELP	BLUETOOTH_CMD_VOLUME " [0..7]"
 
+#ifndef QT_VERSION
 char *commands[] = {
 	"",
 	BLUETOOTH_CMD_BATTERY,
@@ -86,5 +87,6 @@ char *commands[] = {
 	BLUETOOTH_CMD_VERSION,
 	BLUETOOTH_CMD_VOLUME_HELP
 };
+#endif
 
 #endif // STRINGS_H

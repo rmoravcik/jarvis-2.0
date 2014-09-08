@@ -49,7 +49,7 @@ Page {
            onClicked: {
                jarvis.visible = true;
                jarvisCreateAnimation.start();
-               terminal_log.text = terminal_log.text + "\n" + "> Playing quote...";
+               terminal_log.text = terminal_log.text + "Playing quote...\n> ";
                Bluetooth.playQuote();
            }
        }
@@ -65,7 +65,7 @@ Page {
         MouseArea {
            anchors.fill: parent
            onClicked: {
-               terminal_log.text = terminal_log.text + "\n" + "> Helmet...";
+               terminal_log.text = terminal_log.text + "Helmet...\n> ";
                Bluetooth.setHelmet(Bluetooth.HelmetClose);
            }
        }
@@ -87,8 +87,22 @@ Page {
             anchors.topMargin: -1
            anchors.fill: parent
            onClicked: {
-               terminal_log.text = terminal_log.text + "\n" + "> Unibeam...";
+               terminal_log.text = terminal_log.text + "Unibeam...\n> ";
                Bluetooth.setUnibeam(Bluetooth.PowerOff);
+           }
+       }
+    }
+    Item {
+        id: suit_button
+        x: 676
+        y: 119
+        width: 128
+        height: 128
+        MouseArea {
+           anchors.fill: parent
+           onClicked: {
+               terminal_log.text = terminal_log.text + "Version...\n> ";
+               Bluetooth.getVersion();
            }
        }
     }
@@ -102,6 +116,7 @@ Page {
         text: qsTr("Connect")
         iconSource: ""
         onClicked: {
+            terminal_log.text = terminal_log.text + "Connecting...\n> ";
             Bluetooth.requestConnection();
         }
     }
@@ -109,11 +124,15 @@ Page {
     Connections {
         target: Bluetooth
         onConnected: {
-            terminal_log.text = terminal_log.text + "\n" + "> Connected!";
+            Bluetooth.getBattery();
+            terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
         }
         onDisconnected: {
-            terminal_log.text = terminal_log.text + "\n" + "> Disconnected!";
+            terminal_log.text = terminal_log.text + "Disconnected!\n> ";
+        }
+        onBattery: {
+            battery.text = "Current power level is at " + capacity + "% and holding steady.";
         }
     }
 
@@ -144,7 +163,7 @@ Page {
             width: flickArea.width;
             height: flickArea.height;
             color: "#ffffff"
-            text: qsTr("> Connecting...")
+            text: qsTr("> ")
             activeFocusOnPress: false
             readOnly: true
             font.pixelSize: 12
@@ -157,9 +176,8 @@ Page {
         x: 252
         y: 422
         color: "#ffffff"
-        text: qsTr("Current power level is  at 100 and holding steady.")
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: 12
+        font.pixelSize: 14
     }
 }
