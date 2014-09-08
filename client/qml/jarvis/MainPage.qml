@@ -19,6 +19,11 @@ Page {
         }
     }
 
+    Item {
+        id: status
+        property variant eyes: Bluetooth.PowerOff
+    }
+
     Image {
         id: background
         x: 0
@@ -90,12 +95,12 @@ Page {
         height: 120
 
         MouseArea {
-            x: 0
-            y: -1
-            anchors.rightMargin: 0
-            anchors.bottomMargin: 1
-            anchors.leftMargin: 0
-            anchors.topMargin: -1
+           x: 0
+           y: -1
+           anchors.rightMargin: 0
+           anchors.bottomMargin: 1
+           anchors.leftMargin: 0
+           anchors.topMargin: -1
            anchors.fill: parent
            onClicked: {
                terminal_log.text = terminal_log.text + "Unibeam...\n> ";
@@ -103,6 +108,7 @@ Page {
            }
        }
     }
+
     Item {
         id: suit_button
         x: 676
@@ -121,8 +127,8 @@ Page {
     Button {
         id: connect_button
         anchors {
-            horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
+           horizontalCenter: parent.horizontalCenter
+           verticalCenter: parent.verticalCenter
         }
         text: qsTr("Connect")
         iconSource: ""
@@ -138,6 +144,7 @@ Page {
             refresh_timer.start();
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
+            Bluetooth.getEyes();
         }
         onDisconnected: {
             refresh_timer.stop();
@@ -145,6 +152,10 @@ Page {
         }
         onBattery: {
             battery.text = "Current power level is at " + capacity + "% and holding steady.";
+        }
+        onEyes: {
+            status.eyes = state;
+            // update picture
         }
     }
 

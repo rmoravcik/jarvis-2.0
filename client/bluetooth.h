@@ -129,6 +129,7 @@ signals:
     void disconnected(void);
 
     void battery(unsigned int capacity);
+    void eyes(PowerState state);
 
 public slots:
     void onConnected(void);

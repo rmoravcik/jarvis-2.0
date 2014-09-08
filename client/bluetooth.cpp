@@ -315,6 +315,22 @@ void Bluetooth::onReadyRead(void)
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
+                    case REQUEST_EYES:
+                        if (line.contains(BLUETOOTH_CMD_EYES)) {
+                            PowerState state;
+                            line.remove(BLUETOOTH_CMD_EYES + QString(": "));
+                            if (line.contains(BLUETOOTH_PARAM_ON)) {
+                                state = PowerOn;
+                            } else {
+                                state = PowerOff;
+                            }
+                            emit eyes(state);
+                        } else {
+                            getEyes();
+                        }
+                        m_request = REQUEST_NO_REQUEST;
+                        break;
+
 //                    default:
 //                        break;
                 }
