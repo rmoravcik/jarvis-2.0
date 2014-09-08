@@ -130,6 +130,7 @@ signals:
 
     void battery(unsigned int capacity);
     void eyes(PowerState state);
+    void quoteFinished(void);
 
 public slots:
     void onConnected(void);

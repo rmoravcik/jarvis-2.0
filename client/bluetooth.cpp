@@ -331,6 +331,13 @@ void Bluetooth::onReadyRead(void)
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
+                    case REQUEST_FORTUNE:
+                        if (line.contains("OK")) {
+                            emit quoteFinished();
+                        }
+                        m_request = REQUEST_NO_REQUEST;
+                        break;
+
 //                    default:
 //                        break;
                 }

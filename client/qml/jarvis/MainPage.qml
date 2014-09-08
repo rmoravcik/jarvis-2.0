@@ -46,7 +46,7 @@ Page {
         source: "resources/jarvis.png"
 
         NumberAnimation on opacity {
-            id: jarvisCreateAnimation
+            id: jarvis_speak
             from: 0
             to: 1
             duration: 2000
@@ -64,7 +64,7 @@ Page {
            anchors.fill: parent
            onClicked: {
                jarvis.visible = true;
-               jarvisCreateAnimation.start();
+               jarvis_speak.start();
                terminal_log.text = terminal_log.text + "Playing quote...\n> ";
                Bluetooth.playQuote();
            }
@@ -156,6 +156,9 @@ Page {
         onEyes: {
             status.eyes = state;
             // update picture
+        }
+        quoteFinished: {
+            jarvis_speak.stop();
         }
     }
 
