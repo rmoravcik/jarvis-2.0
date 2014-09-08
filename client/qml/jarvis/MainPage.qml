@@ -8,6 +8,17 @@ Page {
     tools: null
     orientationLock: PageOrientation.LockLandscape
 
+    Timer {
+        id: refresh_timer
+        interval: 30000
+        triggeredOnStart: true
+        repeat: true
+
+        onTriggered: {
+            Bluetooth.getBattery();
+        }
+    }
+
     Image {
         id: background
         x: 0
@@ -124,11 +135,12 @@ Page {
     Connections {
         target: Bluetooth
         onConnected: {
-            Bluetooth.getBattery();
+            refresh_timer.start();
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
         }
         onDisconnected: {
+            refresh_timer.stop();
             terminal_log.text = terminal_log.text + "Disconnected!\n> ";
         }
         onBattery: {
