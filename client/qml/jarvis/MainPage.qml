@@ -22,6 +22,7 @@ Page {
     Item {
         id: status
         property variant eyes: Bluetooth.PowerOff
+        property variant helmet: Bluetooth.HelmetOpen
     }
 
     Image {
@@ -47,9 +48,11 @@ Page {
 
         NumberAnimation on opacity {
             id: jarvis_speak
+            loops: Animation.Infinite
+            easing.type: Easing.OutInBounce
             from: 0
             to: 1
-            duration: 2000
+            duration: 500
         }
     }
 
@@ -82,7 +85,10 @@ Page {
            anchors.fill: parent
            onClicked: {
                terminal_log.text = terminal_log.text + "Helmet...\n> ";
-               Bluetooth.setHelmet(Bluetooth.HelmetClose);
+               if (status.helmet == Bluetooth.HelmetClose)
+                   Bluetooth.setHelmet(Bluetooth.HelmetClose);
+               else
+                   Bluetooth.setHelmet(Bluetooth.HelmetOpen);
            }
        }
     }
@@ -145,6 +151,7 @@ Page {
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
             Bluetooth.getEyes();
+            Bluetooth.getHelmet();
         }
         onDisconnected: {
             refresh_timer.stop();
@@ -157,8 +164,12 @@ Page {
             status.eyes = state;
             // update picture
         }
-        quoteFinished: {
+        onQuoteFinished: {
             jarvis_speak.stop();
+        }
+        onHelmet: {
+            status.helmet = state;
+            // update picture
         }
     }
 

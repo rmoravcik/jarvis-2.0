@@ -131,6 +131,7 @@ signals:
     void battery(unsigned int capacity);
     void eyes(PowerState state);
     void quoteFinished(void);
+    void helmet(HelmetState state);
 
 public slots:
     void onConnected(void);

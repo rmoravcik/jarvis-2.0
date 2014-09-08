@@ -338,6 +338,22 @@ void Bluetooth::onReadyRead(void)
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
+                    case REQUEST_HELMET:
+                        if (line.contains(BLUETOOTH_CMD_HELMET)) {
+                            HelmetState state;
+                            line.remove(BLUETOOTH_CMD_HELMET + QString(": "));
+                            if (line.contains(BLUETOOTH_PARAM_CLOSE)) {
+                                state = HelmetClose;
+                            } else {
+                                state = HelmetOpen;
+                            }
+                            emit helmet(state);
+                        } else {
+                            getHelmet();
+                        }
+                        m_request = REQUEST_NO_REQUEST;
+                        break;
+
 //                    default:
 //                        break;
                 }
