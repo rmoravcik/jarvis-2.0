@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import Bluetooth 1.0
 
 Page {
     id: main
@@ -15,14 +16,14 @@ Page {
         repeat: true
 
         onTriggered: {
-            Bluetooth.getBattery();
+            bluetooth.getBattery();
         }
     }
 
     Item {
         id: status
-        property variant eyes: Bluetooth.PowerOff
-        property variant helmet: Bluetooth.HelmetOpen
+        property variant eyes: bluetooth.PowerOff
+        property variant helmet: bluetooth.HelmetOpen
     }
 
     Image {
@@ -66,10 +67,12 @@ Page {
         MouseArea {
            anchors.fill: parent
            onClicked: {
-               jarvis.visible = true;
-               jarvis_speak.start();
-               terminal_log.text = terminal_log.text + "Playing quote...\n> ";
-               Bluetooth.playQuote();
+               if (bluetooth.isConnected()) {
+                   jarvis.visible = true;
+                   jarvis_speak.start();
+                   terminal_log.text = terminal_log.text + "Playing quote...\n> ";
+                   bluetooth.playQuote();
+               }
            }
        }
     }
@@ -84,11 +87,13 @@ Page {
         MouseArea {
            anchors.fill: parent
            onClicked: {
-               terminal_log.text = terminal_log.text + "Helmet...\n> ";
-               if (status.helmet == Bluetooth.HelmetClose)
-                   Bluetooth.setHelmet(Bluetooth.HelmetClose);
-               else
-                   Bluetooth.setHelmet(Bluetooth.HelmetOpen);
+               if (bluetooth.isConnected()) {
+                   terminal_log.text = terminal_log.text + "Helmet...\n> ";
+                   if (status.helmet == bluetooth.HelmetClose)
+                       bluetooth.setHelmet(bluetooth.HelmetClose);
+                   else
+                       bluetooth.setHelmet(bluetooth.HelmetOpen);
+               }
            }
        }
     }
@@ -109,8 +114,10 @@ Page {
            anchors.topMargin: -1
            anchors.fill: parent
            onClicked: {
-               terminal_log.text = terminal_log.text + "Unibeam...\n> ";
-               Bluetooth.setUnibeam(Bluetooth.PowerOff);
+               if (bluetooth.isConnected()) {
+                   terminal_log.text = terminal_log.text + "Unibeam...\n> ";
+                   bluetooth.setUnibeam(bluetooth.PowerOff);
+               }
            }
        }
     }
@@ -124,8 +131,10 @@ Page {
         MouseArea {
            anchors.fill: parent
            onClicked: {
-               terminal_log.text = terminal_log.text + "Version...\n> ";
-               Bluetooth.getVersion();
+//               if (bluetooth.isConnected()) {
+                   terminal_log.text = terminal_log.text + "Version...\n> ";
+                   bluetooth.getVersion();
+//               }
            }
        }
     }
@@ -140,18 +149,18 @@ Page {
         iconSource: ""
         onClicked: {
             terminal_log.text = terminal_log.text + "Connecting...\n> ";
-            Bluetooth.requestConnection();
+            bluetooth.requestConnection();
         }
     }
 
-    Connections {
-        target: Bluetooth
+    Bluetooth {
+        id: bluetooth
         onConnected: {
             refresh_timer.start();
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
-            Bluetooth.getEyes();
-            Bluetooth.getHelmet();
+            bluetooth.getEyes();
+            bluetooth.getHelmet();
         }
         onDisconnected: {
             refresh_timer.stop();
