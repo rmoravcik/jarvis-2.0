@@ -98,6 +98,12 @@ Page {
         visible: false
         rotation: 0
         source: "resources/system.png"
+
+        NumberAnimation on opacity {
+            id: system_connected
+            from: 0
+            to: 1
+        }
     }
 
     Item {
@@ -202,6 +208,7 @@ Page {
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
             system.visible = true;
+            system_connected.start();
             bluetooth.getHelmet();
             bluetooth.getRepulsors();
             bluetooth.getUnibeam();
@@ -270,23 +277,18 @@ Page {
     Flickable {
         id: flickArea
         x: 561
-        y: 35
+        y: 28
         width: 250
         height: 64
-        contentWidth: terminal_log.width; contentHeight: terminal_log.height
+        contentWidth: terminal_log.width;
+        contentHeight: terminal_log.height
         flickableDirection: Flickable.VerticalFlick
         clip: true
 
         function ensureVisible(r)
         {
-            if (contentX >= r.x)
-                contentX = r.x;
-            else if (contentX + width <= r.x + r.width)
-                contentX = r.x + r.width-width;
-            if (contentY >= r.y)
-                contentY = r.y;
-            else if (contentY + height <= r.y + r.height)
-                contentY = r.y + r.height - height;
+            if (terminal_log.paintedHeight > 64)
+                contentY = terminal_log.paintedHeight - 64;
         }
 
         TextEdit {
@@ -304,8 +306,8 @@ Page {
 
     Text {
         id: battery
-        x: 252
-        y: 422
+        x: 381
+        y: 417
         color: "#ffffff"
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
