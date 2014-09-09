@@ -67,6 +67,39 @@ Page {
         }
     }
 
+    Image {
+        id: helmet
+        x: 367
+        y: 35
+        width: 120
+        height: 180
+        visible: false
+        rotation: 0
+        source: "resources/helmet.png"
+    }
+
+    Image {
+        id: unibeam
+        x: 367
+        y: 285
+        width: 120
+        height: 120
+        visible: false
+        rotation: 0
+        source: "resources/unibeam.png"
+    }
+
+    Image {
+        id: system
+        x: 626
+        y: 308
+        width: 188
+        height: 140
+        visible: false
+        rotation: 0
+        source: "resources/system.png"
+    }
+
     Item {
         id: jarvis_button
         x: 92
@@ -168,7 +201,7 @@ Page {
             refresh_timer.start();
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
-            bluetooth.getEyes();
+            system.visible = true;
             bluetooth.getHelmet();
             bluetooth.getRepulsors();
             bluetooth.getUnibeam();
@@ -182,7 +215,12 @@ Page {
         }
         onEyes: {
             status.eyes = state;
-            // update picture
+
+            if (status.eyes == bluetooth.PowerOn) {
+                helmet.visible = true;
+            } else {
+                helmet.visible = false;
+            }
         }
         onQuoteFinished: {
             jarvis_speak.stop();
@@ -190,7 +228,12 @@ Page {
         }
         onHelmet: {
             status.helmet = state;
-            // update picture
+
+            if (status.helmet == bluetooth.HelmetClose) {
+                helmet.visible = true;
+            } else {
+                helmet.visible = false;
+            }
         }
         onIntensity: {
             status.intensity[device] = level;
@@ -208,7 +251,12 @@ Page {
         }
         onUnibeam: {
             status.unibeam = state;
-            // update picture
+
+            if (status.unibeam == bluetooth.PowerOn) {
+                unibeam.visible = true;
+            } else {
+                unibeam.visible = false;
+            }
         }
         onVersion: {
             terminal_log.text = terminal_log.text + revision + "\n> " + build + "\n> ";
