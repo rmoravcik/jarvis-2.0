@@ -12,6 +12,10 @@ Bluetooth::Bluetooth(QObject *parent) : QObject(parent)
     m_socket = new QBluetoothSocket(QBluetoothSocket::RfcommSocket);
 
     m_request = REQUEST_NO_REQUEST;
+    m_intensityDevice = DeviceEyes;
+    m_repulsor = RepulsorLeft;
+    m_revision.clear();
+    m_build.clear();
 
     connect(m_socket, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
@@ -132,6 +136,7 @@ void Bluetooth::repulsorsBlast(Repulsor repulsor)
         sendData(BLUETOOTH_CMD_REPULSOR + QString(" ") + BLUETOOTH_PARAM_RIGHT + QString("\r\n"));
     }
     m_request = REQUEST_REPULSOR;
+    m_repulsor = repulsor;
 }
 
 
@@ -196,6 +201,7 @@ void Bluetooth::setIntensity(Device device, PowerIntensity intensity)
             break;
     }
     m_request = REQUEST_INTENSITY;
+    m_intensityDevice = device;
 }
 
 void Bluetooth::getIntensity(Device device)
@@ -208,6 +214,7 @@ void Bluetooth::getIntensity(Device device)
         sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_UNIBEAM + QString("\r\n"));
     }
     m_request = REQUEST_INTENSITY;
+    m_intensityDevice = device;
 }
 
 void Bluetooth::setVolume(VolumeLevel level)
@@ -261,6 +268,9 @@ void Bluetooth::getBattery(void)
 
 void Bluetooth::getVersion(void)
 {
+    m_revision.clear();
+    m_build.clear();
+
     sendData(BLUETOOTH_CMD_VERSION + QString("\r\n"));
     m_request = REQUEST_VERSION;
 }
@@ -347,30 +357,78 @@ void Bluetooth::onReadyRead(void)
                         break;
 
                     case REQUEST_INTENSITY:
+                        if (line.contains(BLUETOOTH_CMD_INTENSITY)) {
+                            line.remove(BLUETOOTH_CMD_INTENSITY + QString(": "));
+                            PowerIntensity value = (PowerIntensity) line.toInt();
+                            emit intensity(m_intensityDevice, value);
+                        } else {
+                            getIntensity(m_intensityDevice);
+                        }
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
                     case REQUEST_REBOOT:
+                        if (line.contains("OK")) {
+                            emit rebootStarted();
+                        }
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
                     case REQUEST_REPULSOR:
+                        if (line.contains("OK")) {
+                            emit repulsorBlastGenerated(m_repulsor);
+                        }
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
                     case REQUEST_REPULSORS:
+                        if (line.contains(BLUETOOTH_CMD_REPULSORS)) {
+                            PowerState state;
+                            line.remove(BLUETOOTH_CMD_REPULSORS + QString(": "));
+                            if (line.contains(BLUETOOTH_PARAM_ON)) {
+                                state = PowerOn;
+                            } else {
+                                state = PowerOff;
+                            }
+                            emit repulsors(state);
+                        } else {
+                            getRepulsors();
+                        }
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
                     case REQUEST_UNIBEAM:
+                        if (line.contains(BLUETOOTH_CMD_UNIBEAM)) {
+                            PowerState state;
+                            line.remove(BLUETOOTH_CMD_UNIBEAM + QString(": "));
+                            if (line.contains(BLUETOOTH_PARAM_ON)) {
+                                state = PowerOn;
+                            } else {
+                                state = PowerOff;
+                            }
+                            emit unibeam(state);
+                        } else {
+                            getUnibeam();
+                        }
                         m_request = REQUEST_NO_REQUEST;
                         break;
 
                     case REQUEST_VERSION:
-                        m_request = REQUEST_NO_REQUEST;
+                        if (m_revision.isEmpty()) {
+                            m_revision = line;
+                        } else if (m_build.isEmpty()) {
+                            m_build = line;
+                            emit version(m_revision, m_build);
+                            m_request = REQUEST_NO_REQUEST;
+                        }
                         break;
 
                     case REQUEST_VOLUME:
+                        if (line.contains(BLUETOOTH_CMD_VOLUME)) {
+                            line.remove(BLUETOOTH_CMD_VOLUME + QString(": "));
+                            VolumeLevel level = (VolumeLevel) line.toInt();
+                            emit volume(level);
+                        }
                         m_request = REQUEST_NO_REQUEST;
                         break;
 

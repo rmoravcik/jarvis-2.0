@@ -24,6 +24,10 @@ Page {
         id: status
         property variant eyes: bluetooth.PowerOff
         property variant helmet: bluetooth.HelmetOpen
+        property variant intensity: [bluetooth.Intensity50, bluetooth.Intensity50, bluetooth.Intensity50]
+        property variant repulsors: bluetooth.PowerOff
+        property variant unibeam: bluetooth.PowerOff
+        property variant volume: bluetooth.Level7
     }
 
     Image {
@@ -138,7 +142,6 @@ Page {
            anchors.fill: parent
            onClicked: {
 //               if (bluetooth.isConnected()) {
-                   terminal_log.text = terminal_log.text + "Version...\n> ";
                    bluetooth.getVersion();
 //               }
            }
@@ -167,6 +170,8 @@ Page {
             connect_button.visible = false;
             bluetooth.getEyes();
             bluetooth.getHelmet();
+            bluetooth.getRepulsors();
+            bluetooth.getUnibeam();
         }
         onDisconnected: {
             refresh_timer.stop();
@@ -185,6 +190,31 @@ Page {
         }
         onHelmet: {
             status.helmet = state;
+            // update picture
+        }
+        onIntensity: {
+            status.intensity[device] = level;
+            // update picture
+        }
+        onRebootStarted: {
+            terminal_log.text = terminal_log.text + "Rebooting...\n> ";
+        }
+        onRepulsorBlastGenerated: {
+            // fixme
+        }
+        onRepulsors: {
+            status.repulsors = state;
+            // update picture
+        }
+        onUnibeam: {
+            status.unibeam = state;
+            // update picture
+        }
+        onVersion: {
+            terminal_log.text = terminal_log.text + revision + "\n> " + build + "\n> ";
+        }
+        onVolume: {
+            status.volume = level;
             // update picture
         }
     }

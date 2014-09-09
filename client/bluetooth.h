@@ -121,6 +121,10 @@ private:
     QBluetoothSocket *m_socket;
 
     Request m_request;
+    Device m_intensityDevice;
+    Repulsor m_repulsor;
+    QString m_revision;
+    QString m_build;
 
     void sendData(const QString &data);
 
@@ -132,6 +136,13 @@ signals:
     void eyes(PowerState state);
     void quoteFinished(void);
     void helmet(HelmetState state);
+    void intensity(Device device, PowerIntensity level);
+    void rebootStarted(void);
+    void repulsorBlastGenerated(Repulsor repulsor);
+    void repulsors(PowerState state);
+    void unibeam(PowerState state);
+    void version(const QString &revision, const QString &build);
+    void volume(VolumeLevel level);
 
 public slots:
     void onConnected(void);
