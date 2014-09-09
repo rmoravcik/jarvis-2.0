@@ -55,6 +55,12 @@ Page {
             to: 1
             duration: 500
         }
+
+        NumberAnimation on opacity {
+            id: jarvis_speak_finished
+            from: 1
+            to: 0
+        }
     }
 
     Item {
@@ -175,6 +181,7 @@ Page {
         }
         onQuoteFinished: {
             jarvis_speak.stop();
+            jarvis_speak_finished.start();
         }
         onHelmet: {
             status.helmet = state;
