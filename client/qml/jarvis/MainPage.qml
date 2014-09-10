@@ -22,12 +22,12 @@ Page {
 
     Item {
         id: status
-        property variant eyes: bluetooth.PowerOff
-        property variant helmet: bluetooth.HelmetOpen
-        property variant intensity: [bluetooth.Intensity50, bluetooth.Intensity50, bluetooth.Intensity50]
-        property variant repulsors: bluetooth.PowerOff
-        property variant unibeam: bluetooth.PowerOff
-        property variant volume: bluetooth.Level7
+        property variant eyes: Bluetooth.PowerOff
+        property variant helmet: Bluetooth.HelmetOpen
+        property variant intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
+        property variant repulsors: Bluetooth.PowerOff
+        property variant unibeam: Bluetooth.PowerOff
+        property variant volume: Bluetooth.Level7
     }
 
     Image {
@@ -136,12 +136,10 @@ Page {
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
-                   if (status.helmet == bluetooth.HelmetClose) {
-                       console.log("open, state: " + state);
-                       bluetooth.setHelmet(bluetooth.HelmetOpen);
+                   if (status.helmet == Bluetooth.HelmetClose) {
+                       bluetooth.setHelmet(Bluetooth.HelmetOpen);
                    } else {
-                       console.log("close, state: " + state);
-                       bluetooth.setHelmet(bluetooth.HelmetClose);
+                       bluetooth.setHelmet(Bluetooth.HelmetClose);
                    }
                }
            }
@@ -165,10 +163,10 @@ Page {
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
-                   if (status.unibeam == bluetooth.PowerOn)
-                       bluetooth.setUnibeam(bluetooth.PowerOff);
+                   if (status.unibeam == Bluetooth.PowerOn)
+                       bluetooth.setUnibeam(Bluetooth.PowerOff);
                    else
-                       bluetooth.setUnibeam(bluetooth.PowerON);
+                       bluetooth.setUnibeam(Bluetooth.PowerOn);
                }
            }
        }
@@ -226,7 +224,7 @@ Page {
         onEyes: {
             status.eyes = state;
 
-            if (status.eyes == bluetooth.PowerOn) {
+            if (status.eyes == Bluetooth.PowerOn) {
                 helmet.visible = true;
             } else {
                 helmet.visible = false;
@@ -239,7 +237,7 @@ Page {
         onHelmet: {
             status.helmet = state;
 
-            if (status.helmet == bluetooth.HelmetClose) {
+            if (status.helmet == Bluetooth.HelmetClose) {
                 helmet.visible = true;
             } else {
                 helmet.visible = false;
@@ -262,7 +260,7 @@ Page {
         onUnibeam: {
             status.unibeam = state;
 
-            if (status.unibeam == bluetooth.PowerOn) {
+            if (status.unibeam == Bluetooth.PowerOn) {
                 unibeam.visible = true;
             } else {
                 unibeam.visible = false;
