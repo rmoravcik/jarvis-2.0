@@ -35,6 +35,8 @@
 
 #define UART_BAUD 38400
 
+static uint8_t echo = FALSE;
+
 #define RXBUFF_LEN 40
 char rxbuff[RXBUFF_LEN];
 
@@ -97,8 +99,10 @@ ISR(USART_RXC_vect)
 	}
 
 	if (rxbuff[i] == '\r') {
-		// send 'new line' character
-		uart_puts("\r\n");
+		if (echo) {
+			// send 'new line' character
+			uart_puts("\r\n");
+		}
 
 		// replace '\r' character with string termination character
 		rxbuff[i] = '\0';
@@ -108,15 +112,19 @@ ISR(USART_RXC_vect)
 		i = 0;
 	} else if (rxbuff[i] == '\b') {
 		if (i > 0) {
-			// clear deleted character
-			uart_puts("\b \b");
+			if (echo) {
+				// clear deleted character
+				uart_puts("\b \b");
+			}
 
 			rxbuff[i] = 0;
 			i--;
 		}
 	} else {
-		// echo back received character
-		uart_putc(rxbuff[i]);
+		if (echo) {
+			// echo back received character
+			uart_putc(rxbuff[i]);
+		}
 
 		i++;
 		if (i == RXBUFF_LEN) {
@@ -167,6 +175,10 @@ static void bluetooth_parse_command(uint8_t size)
 		uart_puts(resp);
 		uart_puts("%\r\n");
 
+		response = RESPONSE_NO_RESPONSE;
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_ECHO, size) == 0) {
+		echo = TRUE;
+		uart_puts("\r\n");
 		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_EYES, strlen(BLUETOOTH_CMD_EYES)) == 0) {
 		char *param = rxbuff + strlen(BLUETOOTH_CMD_EYES) + 1;
@@ -386,6 +398,7 @@ static void bluetooth_parse_command(uint8_t size)
 		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VERSION, size) == 0) {
 		uart_puts(BLUETOOTH_RESPONSE_VERSION);
+		uart_puts("\r\n");
 		response = RESPONSE_NO_RESPONSE;
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_VOLUME, strlen(BLUETOOTH_CMD_VOLUME)) == 0) {
 		if (size == strlen(BLUETOOTH_CMD_VOLUME) + 2) {
@@ -415,11 +428,15 @@ static void bluetooth_parse_command(uint8_t size)
 
 	if (response == RESPONSE_OK) {
 		uart_puts(BLUETOOTH_RESPONSE_OK);
+		uart_puts("\r\n");
 	} else if (response == RESPONSE_ERROR) {
 		uart_puts(BLUETOOTH_RESPONSE_ERROR);
+		uart_puts("\r\n");
 	}
 
-	uart_puts(BLUETOOTH_PROMPT);
+	if (echo) {
+		uart_puts(BLUETOOTH_PROMPT);
+	}
 }
 
 void bluetooth_init(void)
