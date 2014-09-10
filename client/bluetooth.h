@@ -2,6 +2,7 @@
 #define BLUETOOTH_H
 
 #include <QObject>
+#include <QThread>
 
 #include <QBluetoothLocalDevice>
 #include <QBluetoothAddress>
@@ -149,6 +150,19 @@ public slots:
     void onDisconnected(void);
     void onReadyRead(void);
     void onError(QBluetoothSocket::SocketError error);
+};
+
+class Sleep : public QThread
+{
+public:
+    static void public_usleep(quint32 a_usec)
+    { QThread::usleep(a_usec); }
+
+    static void public_msleep(quint32 a_msec)
+    { QThread::msleep(a_msec); }
+
+    static void public_sleep(quint32 a_sec)
+    { QThread::sleep(a_sec); }
 };
 
 #endif // BLUETOOTH_H

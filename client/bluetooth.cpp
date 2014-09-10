@@ -444,7 +444,13 @@ void Bluetooth::sendData(const QString &data)
 {
     if (isConnected()) {
         unsigned int len = data.length();
-        m_socket->write(data.toUtf8().constData(), len);
+//        m_socket->write(data.toUtf8().constData(), len);
+
+        for (unsigned int i = 0; i < len - 1; i++) {
+            m_socket->putChar(data.toUtf8().constData()[i]);
+            Sleep::public_msleep(10);
+        }
+
         qDebug() << "Sending:" << data.trimmed();
     }
 }

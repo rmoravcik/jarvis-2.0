@@ -76,6 +76,28 @@ Page {
         visible: false
         rotation: 0
         source: "resources/helmet.png"
+
+        function open() {
+            helmet_open.start();
+        }
+
+        function close() {
+            if (helmet.visible == false)
+                helmet.visible = true;
+            helmet_close.start();
+        }
+
+        NumberAnimation on opacity {
+            id: helmet_open
+            from: 1
+            to: 0
+        }
+
+        NumberAnimation on opacity {
+            id: helmet_close
+            from: 0
+            to: 1
+        }
     }
 
     Image {
@@ -87,6 +109,28 @@ Page {
         visible: false
         rotation: 0
         source: "resources/unibeam.png"
+
+        function off() {
+            unibeam_off.start();
+        }
+
+        function on() {
+            if (unibeam.visible == false)
+                unibeam.visible = true;
+            unibeam_on.start();
+        }
+
+        NumberAnimation on opacity {
+            id: unibeam_off
+            from: 1
+            to: 0
+        }
+
+        NumberAnimation on opacity {
+            id: unibeam_on
+            from: 0
+            to: 1
+        }
     }
 
     Image {
@@ -137,8 +181,10 @@ Page {
            onClicked: {
                if (bluetooth.isConnected()) {
                    if (status.helmet == Bluetooth.HelmetClose) {
+                       helmet.open();
                        bluetooth.setHelmet(Bluetooth.HelmetOpen);
                    } else {
+                       helmet.close();
                        bluetooth.setHelmet(Bluetooth.HelmetClose);
                    }
                }
@@ -163,10 +209,13 @@ Page {
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
-                   if (status.unibeam == Bluetooth.PowerOn)
+                   if (status.unibeam == Bluetooth.PowerOn) {
+                       unibeam.off();
                        bluetooth.setUnibeam(Bluetooth.PowerOff);
-                   else
+                   } else {
+                       unibeam.on();
                        bluetooth.setUnibeam(Bluetooth.PowerOn);
+                   }
                }
            }
        }
@@ -238,9 +287,11 @@ Page {
             status.helmet = state;
 
             if (status.helmet == Bluetooth.HelmetClose) {
-                helmet.visible = true;
+                if (helmet.opacity == 0)
+                    helmet.close();
             } else {
-                helmet.visible = false;
+                if (helmet.opacity == 1)
+                    helmet.open();
             }
         }
         onIntensity: {
@@ -261,9 +312,11 @@ Page {
             status.unibeam = state;
 
             if (status.unibeam == Bluetooth.PowerOn) {
-                unibeam.visible = true;
+                if (unibeam.opacity == 0)
+                    unibeam.on();
             } else {
-                unibeam.visible = false;
+                if (unibeam.opacity == 1)
+                    unibeam.off();
             }
         }
         onVersion: {
