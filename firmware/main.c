@@ -175,6 +175,9 @@ int main(void)
 		configured = TRUE;
 	}
 
+	// delay about 2sec after power on
+	_delay_ms(2000);
+
 	// power on repulsors, unibeam and eyes
 	// if they were previously on
 	if (battery_get_capacity() >= BATTERY_BACKUP_CAPACITY) {
