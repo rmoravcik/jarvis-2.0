@@ -119,7 +119,6 @@ Page {
                if (bluetooth.isConnected()) {
                    jarvis.visible = true;
                    jarvis_speak.start();
-                   terminal_log.text = terminal_log.text + "Playing quote...\n> ";
                    bluetooth.playQuote();
                }
            }
@@ -137,11 +136,13 @@ Page {
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
-                   terminal_log.text = terminal_log.text + "Helmet...\n> ";
-                   if (status.helmet == bluetooth.HelmetClose)
-                       bluetooth.setHelmet(bluetooth.HelmetClose);
-                   else
+                   if (status.helmet == bluetooth.HelmetClose) {
+                       console.log("open, state: " + state);
                        bluetooth.setHelmet(bluetooth.HelmetOpen);
+                   } else {
+                       console.log("close, state: " + state);
+                       bluetooth.setHelmet(bluetooth.HelmetClose);
+                   }
                }
            }
        }
@@ -164,8 +165,10 @@ Page {
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
-                   terminal_log.text = terminal_log.text + "Unibeam...\n> ";
-                   bluetooth.setUnibeam(bluetooth.PowerOff);
+                   if (status.unibeam == bluetooth.PowerOn)
+                       bluetooth.setUnibeam(bluetooth.PowerOff);
+                   else
+                       bluetooth.setUnibeam(bluetooth.PowerON);
                }
            }
        }
@@ -209,9 +212,9 @@ Page {
             connect_button.visible = false;
             system.visible = true;
             system_connected.start();
-            bluetooth.getHelmet();
-            bluetooth.getRepulsors();
-            bluetooth.getUnibeam();
+//            bluetooth.getHelmet();
+//            bluetooth.getRepulsors();
+//            bluetooth.getUnibeam();
         }
         onDisconnected: {
             refresh_timer.stop();

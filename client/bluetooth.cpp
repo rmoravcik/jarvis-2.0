@@ -77,8 +77,7 @@ void Bluetooth::setHelmet(HelmetState state)
     if (state == HelmetOpen)
     {
         sendData(BLUETOOTH_CMD_HELMET + QString(" ") + BLUETOOTH_PARAM_OPEN + QString("\r\n"));
-    } else
-    {
+    } else {
         sendData(BLUETOOTH_CMD_HELMET + QString(" ") + BLUETOOTH_PARAM_CLOSE + QString("\r\n"));
     }
     m_request = REQUEST_HELMET;
@@ -256,8 +255,8 @@ void Bluetooth::getVolume(void)
 
 void Bluetooth::playQuote(void)
 {
-    sendData(BLUETOOTH_CMD_FORTUNE + QString("\r\n"));
-    m_request = REQUEST_FORTUNE;
+    sendData(BLUETOOTH_CMD_QUOTE + QString("\r\n"));
+    m_request = REQUEST_QUOTE;
 }
 
 void Bluetooth::getBattery(void)
@@ -305,136 +304,132 @@ void Bluetooth::onReadyRead(void)
         if (line.length() > 0) {
             qDebug() << "Received:" << line << "request:" << m_request;
 
-            if (!line.contains(BLUETOOTH_PROMPT)) {
-                switch (m_request) {
-                    case REQUEST_BATTERY:
-                        if (line.contains(BLUETOOTH_CMD_BATTERY)) {
-                            line.remove(BLUETOOTH_CMD_BATTERY + QString(": "));
-                            line.remove(QChar('%'));
-                            unsigned int capacity = line.toInt();
-                            emit battery(capacity);
-                        }
-                        m_request = REQUEST_NO_REQUEST;
-                        break;
+            switch (m_request) {
+                case REQUEST_BATTERY:
+                    if (line.contains(BLUETOOTH_CMD_BATTERY)) {
+                        line.remove(BLUETOOTH_CMD_BATTERY + QString(": "));
+                        line.remove(QChar('%'));
+                        unsigned int capacity = line.toInt();
+                        emit battery(capacity);
+                    }
+                    m_request = REQUEST_NO_REQUEST;
+                    break;
 
-                    case REQUEST_EYES:
-                        if (line.contains(BLUETOOTH_CMD_EYES)) {
-                            PowerState state;
-                            line.remove(BLUETOOTH_CMD_EYES + QString(": "));
-                            if (line.contains(BLUETOOTH_PARAM_ON)) {
-                                state = PowerOn;
-                            } else {
-                                state = PowerOff;
-                            }
-                            emit eyes(state);
+                case REQUEST_EYES:
+                    if (line.contains(BLUETOOTH_CMD_EYES)) {
+                        PowerState state;
+                        if (line.contains(BLUETOOTH_PARAM_ON)) {
+                            state = PowerOn;
                         } else {
-                            getEyes();
+                            state = PowerOff;
                         }
+                        emit eyes(state);
                         m_request = REQUEST_NO_REQUEST;
-                        break;
+                    } else {
+                        getEyes();
+                    }
+                    break;
 
-                    case REQUEST_FORTUNE:
-                        if (line.contains("OK")) {
-                            emit quoteFinished();
-                        }
-                        m_request = REQUEST_NO_REQUEST;
-                        break;
-
-                    case REQUEST_HELMET:
-                        if (line.contains(BLUETOOTH_CMD_HELMET)) {
-                            HelmetState state;
-                            line.remove(BLUETOOTH_CMD_HELMET + QString(": "));
-                            if (line.contains(BLUETOOTH_PARAM_CLOSE)) {
-                                state = HelmetClose;
-                            } else {
-                                state = HelmetOpen;
-                            }
-                            emit helmet(state);
+                case REQUEST_HELMET:
+                    if (line.contains(BLUETOOTH_CMD_HELMET)) {
+                        HelmetState state;
+                        if (line.contains(BLUETOOTH_PARAM_CLOSE)) {
+                            state = HelmetClose;
                         } else {
-                            getHelmet();
+                            state = HelmetOpen;
                         }
+                        emit helmet(state);
                         m_request = REQUEST_NO_REQUEST;
-                        break;
+                    } else {
+                        getHelmet();
+                    }
+                    break;
 
-                    case REQUEST_INTENSITY:
-                        if (line.contains(BLUETOOTH_CMD_INTENSITY)) {
-                            line.remove(BLUETOOTH_CMD_INTENSITY + QString(": "));
-                            PowerIntensity value = (PowerIntensity) line.toInt();
-                            emit intensity(m_intensityDevice, value);
+                case REQUEST_INTENSITY:
+                    if (line.contains(BLUETOOTH_CMD_INTENSITY)) {
+                        line.remove(BLUETOOTH_CMD_INTENSITY + QString(": "));
+                        PowerIntensity value = (PowerIntensity) line.toInt();
+                        emit intensity(m_intensityDevice, value);
+                        m_request = REQUEST_NO_REQUEST;
+                    } else {
+                        getIntensity(m_intensityDevice);
+                    }
+                    break;
+
+                case REQUEST_QUOTE:
+                    if (line.contains("OK")) {
+                        emit quoteFinished();
+                    }
+                    m_request = REQUEST_NO_REQUEST;
+                    break;
+
+                case REQUEST_REBOOT:
+                    if (line.contains("OK")) {
+                        emit rebootStarted();
+                    }
+                    m_request = REQUEST_NO_REQUEST;
+                    break;
+
+                case REQUEST_REPULSOR:
+                    if (line.contains("OK")) {
+                        emit repulsorBlastGenerated(m_repulsor);
+                    }
+                    m_request = REQUEST_NO_REQUEST;
+                    break;
+
+                case REQUEST_REPULSORS:
+                    if (line.contains(BLUETOOTH_CMD_REPULSORS)) {
+                        PowerState state;
+                        if (line.contains(BLUETOOTH_PARAM_ON)) {
+                            state = PowerOn;
                         } else {
-                            getIntensity(m_intensityDevice);
+                            state = PowerOff;
                         }
+                        emit repulsors(state);
                         m_request = REQUEST_NO_REQUEST;
-                        break;
+                    } else {
+                        getRepulsors();
+                    }
+                    break;
 
-                    case REQUEST_REBOOT:
-                        if (line.contains("OK")) {
-                            emit rebootStarted();
-                        }
-                        m_request = REQUEST_NO_REQUEST;
-                        break;
-
-                    case REQUEST_REPULSOR:
-                        if (line.contains("OK")) {
-                            emit repulsorBlastGenerated(m_repulsor);
-                        }
-                        m_request = REQUEST_NO_REQUEST;
-                        break;
-
-                    case REQUEST_REPULSORS:
-                        if (line.contains(BLUETOOTH_CMD_REPULSORS)) {
-                            PowerState state;
-                            line.remove(BLUETOOTH_CMD_REPULSORS + QString(": "));
-                            if (line.contains(BLUETOOTH_PARAM_ON)) {
-                                state = PowerOn;
-                            } else {
-                                state = PowerOff;
-                            }
-                            emit repulsors(state);
+                case REQUEST_UNIBEAM:
+                    if (line.contains(BLUETOOTH_CMD_UNIBEAM)) {
+                        PowerState state;
+                        if (line.contains(BLUETOOTH_PARAM_ON)) {
+                            state = PowerOn;
                         } else {
-                            getRepulsors();
+                            state = PowerOff;
                         }
+                        emit unibeam(state);
                         m_request = REQUEST_NO_REQUEST;
-                        break;
+                    } else {
+                        getUnibeam();
+                    }
+                    break;
 
-                    case REQUEST_UNIBEAM:
-                        if (line.contains(BLUETOOTH_CMD_UNIBEAM)) {
-                            PowerState state;
-                            line.remove(BLUETOOTH_CMD_UNIBEAM + QString(": "));
-                            if (line.contains(BLUETOOTH_PARAM_ON)) {
-                                state = PowerOn;
-                            } else {
-                                state = PowerOff;
-                            }
-                            emit unibeam(state);
-                        } else {
-                            getUnibeam();
-                        }
+                case REQUEST_VERSION:
+                    if (m_revision.isEmpty()) {
+                        m_revision = line;
+                    } else if (m_build.isEmpty()) {
+                        m_build = line;
+                        emit version(m_revision, m_build);
                         m_request = REQUEST_NO_REQUEST;
-                        break;
+                    }
+                    break;
 
-                    case REQUEST_VERSION:
-                        if (m_revision.isEmpty()) {
-                            m_revision = line;
-                        } else if (m_build.isEmpty()) {
-                            m_build = line;
-                            emit version(m_revision, m_build);
-                            m_request = REQUEST_NO_REQUEST;
-                        }
-                        break;
-
-                    case REQUEST_VOLUME:
-                        if (line.contains(BLUETOOTH_CMD_VOLUME)) {
-                            line.remove(BLUETOOTH_CMD_VOLUME + QString(": "));
-                            VolumeLevel level = (VolumeLevel) line.toInt();
-                            emit volume(level);
-                        }
+                case REQUEST_VOLUME:
+                    if (line.contains(BLUETOOTH_CMD_VOLUME)) {
+                        line.remove(BLUETOOTH_CMD_VOLUME + QString(": "));
+                        VolumeLevel level = (VolumeLevel) line.toInt();
+                        emit volume(level);
                         m_request = REQUEST_NO_REQUEST;
-                        break;
+                    } else {
+                        getVolume();
+                    }
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
         }
     }
