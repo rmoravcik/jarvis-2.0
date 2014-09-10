@@ -107,7 +107,7 @@ enum {
 void voice_init(void);
 
 void voice_play_welcome(void);
-void voice_play_random(void);
+void voice_play_quote(void);
 
 uint8_t voice_is_playing(void);
 

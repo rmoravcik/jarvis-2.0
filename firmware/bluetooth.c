@@ -212,8 +212,6 @@ static void bluetooth_parse_command(uint8_t size)
 		} else {
 			response = RESPONSE_ERROR;
 		}
-	} else if (strncmp(rxbuff, BLUETOOTH_CMD_FORTUNE, size) == 0) {
-		voice_play_random();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_HELMET, strlen(BLUETOOTH_CMD_HELMET)) == 0) {
 		char *param = rxbuff + strlen(BLUETOOTH_CMD_HELMET) + 1;
 
@@ -298,6 +296,8 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_putc('0' + intensity);
 			uart_puts("\r\n");
 		}
+	} else if (strncmp(rxbuff, BLUETOOTH_CMD_QUOTE, size) == 0) {
+		voice_play_quote();
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		response = RESPONSE_NO_RESPONSE;
 

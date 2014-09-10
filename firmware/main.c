@@ -57,7 +57,7 @@ ISR(INT0_vect, ISR_NOBLOCK)
 		} else {
 			voice_play_sound(SOUND_BUTTON_SOUND_0);
 			_delay_ms(500);
-			voice_play_random();
+			voice_play_quote();
 		}
 	}
 
