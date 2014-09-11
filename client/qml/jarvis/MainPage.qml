@@ -12,7 +12,6 @@ Page {
     Timer {
         id: refresh_timer
         interval: 30000
-        triggeredOnStart: true
         repeat: true
 
         onTriggered: {
@@ -28,6 +27,27 @@ Page {
         property variant repulsors: Bluetooth.PowerOff
         property variant unibeam: Bluetooth.PowerOff
         property variant volume: Bluetooth.Level7
+
+        property int index: 0
+
+        function check_configuration() {
+            if (index == 0) {
+                bluetooth.getVersion();
+                index++;
+            } else if (index == 1) {
+                bluetooth.getBattery();
+                index++;
+            } else if (index == 2) {
+                bluetooth.getHelmet();
+                index++;
+            } else if (index == 3) {
+                bluetooth.getRepulsors();
+                index++
+            } else if (index == 4) {
+                bluetooth.getUnibeam();
+                index++
+            }
+        }
     }
 
     Image {
@@ -254,14 +274,12 @@ Page {
     Bluetooth {
         id: bluetooth
         onConnected: {
+            status.check_configuration();
             refresh_timer.start();
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
             system.visible = true;
             system_connected.start();
-//            bluetooth.getHelmet();
-//            bluetooth.getRepulsors();
-//            bluetooth.getUnibeam();
         }
         onDisconnected: {
             refresh_timer.stop();
@@ -269,6 +287,7 @@ Page {
         }
         onBattery: {
             battery.text = "Current power level is at " + capacity + "% and holding steady.";
+            status.check_configuration();
         }
         onEyes: {
             status.eyes = state;
@@ -287,12 +306,13 @@ Page {
             status.helmet = state;
 
             if (status.helmet == Bluetooth.HelmetClose) {
-                if (helmet.opacity == 0)
+                if (helmet.opacity == 0 || helmet.visible == false)
                     helmet.close();
             } else {
                 if (helmet.opacity == 1)
                     helmet.open();
             }
+            status.check_configuration();
         }
         onIntensity: {
             status.intensity[device] = level;
@@ -307,12 +327,13 @@ Page {
         onRepulsors: {
             status.repulsors = state;
             // update picture
+            status.check_configuration();
         }
         onUnibeam: {
             status.unibeam = state;
 
             if (status.unibeam == Bluetooth.PowerOn) {
-                if (unibeam.opacity == 0)
+                if (unibeam.opacity == 0 || unibeam.visible == false)
                     unibeam.on();
             } else {
                 if (unibeam.opacity == 1)
@@ -321,6 +342,7 @@ Page {
         }
         onVersion: {
             terminal_log.text = terminal_log.text + revision + "\n> " + build + "\n> ";
+            status.check_configuration();
         }
         onVolume: {
             status.volume = level;
