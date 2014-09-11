@@ -10,7 +10,7 @@ Page {
     orientationLock: PageOrientation.LockLandscape
 
     Timer {
-        id: refresh_timer
+        id: battery_timer
         interval: 30000
         repeat: true
 
@@ -190,13 +190,13 @@ Page {
     }
 
     Item {
-        id: helmet_button
         x: 367
         y: 35
         width: 120
         height: 180
 
         MouseArea {
+           id: helmet_button
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
@@ -207,25 +207,20 @@ Page {
                        helmet.close();
                        bluetooth.setHelmet(Bluetooth.HelmetClose);
                    }
+                   enabled = false;
                }
            }
        }
     }
 
     Item {
-        id: unibeam_button
         x: 367
         y: 285
         width: 120
         height: 120
 
         MouseArea {
-           x: 0
-           y: -1
-           anchors.rightMargin: 0
-           anchors.bottomMargin: 1
-           anchors.leftMargin: 0
-           anchors.topMargin: -1
+           id: unibeam_button
            anchors.fill: parent
            onClicked: {
                if (bluetooth.isConnected()) {
@@ -236,6 +231,7 @@ Page {
                        unibeam.on();
                        bluetooth.setUnibeam(Bluetooth.PowerOn);
                    }
+                   enabled = false;
                }
            }
        }
@@ -253,6 +249,25 @@ Page {
 //               if (bluetooth.isConnected()) {
                    bluetooth.getVersion();
 //               }
+           }
+       }
+    }
+
+    Item {
+        x: 0
+        y: 0
+        width: 50
+        height: 50
+
+        MouseArea {
+           id: reboot_button
+           anchors.fill: parent
+           onDoubleClicked: {
+               if (bluetooth.isConnected()) {
+                   battery_timer.stop();
+                   battery_timer.start();
+                   bluetooth.reboot();
+               }
            }
        }
     }
@@ -275,14 +290,14 @@ Page {
         id: bluetooth
         onConnected: {
             status.check_configuration();
-            refresh_timer.start();
+            battery_timer.start();
             terminal_log.text = terminal_log.text + "Connected!\n> ";
             connect_button.visible = false;
             system.visible = true;
             system_connected.start();
         }
         onDisconnected: {
-            refresh_timer.stop();
+            battery_timer.stop();
             terminal_log.text = terminal_log.text + "Disconnected!\n> ";
         }
         onBattery: {
@@ -313,13 +328,13 @@ Page {
                     helmet.open();
             }
             status.check_configuration();
+
+            if (helmet_button.enabled == false)
+                helmet_button.enabled = true;
         }
         onIntensity: {
             status.intensity[device] = level;
             // update picture
-        }
-        onRebootStarted: {
-            terminal_log.text = terminal_log.text + "Rebooting...\n> ";
         }
         onRepulsorBlastGenerated: {
             // fixme
@@ -339,6 +354,9 @@ Page {
                 if (unibeam.opacity == 1)
                     unibeam.off();
             }
+
+            if (unibeam_button.enabled == false)
+                unibeam_button.enabled = true;
         }
         onVersion: {
             terminal_log.text = terminal_log.text + revision + "\n> " + build + "\n> ";

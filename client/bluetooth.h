@@ -74,7 +74,6 @@ public:
         REQUEST_HELMET,
         REQUEST_INTENSITY,
         REQUEST_QUOTE,
-        REQUEST_REBOOT,
         REQUEST_REPULSOR,
         REQUEST_REPULSORS,
         REQUEST_UNIBEAM,
@@ -138,7 +137,6 @@ signals:
     void quoteFinished(void);
     void helmet(HelmetState state);
     void intensity(Device device, PowerIntensity level);
-    void rebootStarted(void);
     void repulsorBlastGenerated(Repulsor repulsor);
     void repulsors(PowerState state);
     void unibeam(PowerState state);

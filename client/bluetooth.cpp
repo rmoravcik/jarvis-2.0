@@ -284,7 +284,6 @@ void Bluetooth::getVersion(void)
 
 void Bluetooth::reboot(void)
 {
-    m_request = REQUEST_REBOOT;
     sendData(BLUETOOTH_CMD_REBOOT + QString("\r\n"));
 }
 
@@ -369,13 +368,6 @@ void Bluetooth::onReadyRead(void)
                 case REQUEST_QUOTE:
                     if (line.contains("OK")) {
                         emit quoteFinished();
-                    }
-                    m_request = REQUEST_NO_REQUEST;
-                    break;
-
-                case REQUEST_REBOOT:
-                    if (line.contains("OK")) {
-                        emit rebootStarted();
                     }
                     m_request = REQUEST_NO_REQUEST;
                     break;
