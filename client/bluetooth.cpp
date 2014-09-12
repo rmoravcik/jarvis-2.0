@@ -22,10 +22,6 @@ Bluetooth::Bluetooth(QObject *parent) : QObject(parent)
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(m_socket, SIGNAL(error(QBluetoothSocket::SocketError)),
             this, SLOT(onError(QBluetoothSocket::SocketError)));
-
-    if (m_device->isValid()) {
-        m_device->powerOn();
-    }
 }
 
 Bluetooth::~Bluetooth()
@@ -43,6 +39,10 @@ void Bluetooth::requestConnection(void)
 {
     if (!m_socket) {
         return;
+    }
+
+    if (m_device->isValid()) {
+        m_device->powerOn();
     }
 
     qDebug() << "Connecting...";
