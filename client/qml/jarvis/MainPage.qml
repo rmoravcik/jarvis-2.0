@@ -269,64 +269,64 @@ Page {
     }
 
     Item {
-        id: reboot
-        x: 5
-        y: 5
-        width: 70
-        height: 56
+        id: reactor
+        x: 149
+        y: 84
+        width: 140
+        height: 140
 
         Timer {
-            id: reboot_button_timer
+            id: reactor_button_timer
             interval: 2000
 
             onTriggered: {
-                reboot_hide();
+                reactor_image.hide();
             }
         }
 
         Image {
-            id: reboot_image
+            id: reactor_image
             anchors.fill: parent
             visible: false
-            source: "resources/reboot.png"
+            source: "resources/reactor.png"
 
             function hide() {
-                reboot_hide.start();
-                reboot_image.visible = false;
+                reactor_hide.start();
+                reactor_image.visible = false;
             }
 
             function show() {
-                if (reboot_image.visible == false)
-                    reboot_image.visible = true;
-                reboot_show.start();
+                if (reactor_image.visible == false)
+                    reactor_image.visible = true;
+                reactor_show.start();
+                reactor_button_timer.start();
             }
 
             NumberAnimation on opacity {
-                id: reboot_hide
+                id: reactor_hide
                 from: 1
                 to: 0
             }
 
             NumberAnimation on opacity {
-                id: reboot_show
+                id: reactor_show
                 from: 0
                 to: 1
             }
         }
 
         MouseArea {
-           id: reboot_button
+           id: reactor_button
            anchors.fill: parent
 
-           onClicked: {
-               if (reboot_image.visible == false) {
-                   reboot_image.show();
-                   reboot_button_timer.start();
-               }
-           }
-
            onDoubleClicked: {
-               if (reboot_image.visible == true) {
+               if (reactor_image.visible == false) {
+                   if (bluetooth.isConnected()) {
+                       reactor_image.show();
+                   }
+               }
+
+               if (reactor_image.visible == true) {
                    if (bluetooth.isConnected()) {
                        battery_timer.stop();
                        battery_timer.start();
