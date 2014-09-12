@@ -231,37 +231,69 @@ Page {
     }
 
     Item {
-        id: system
-        x: 626
-        y: 308
-        width: 188
-        height: 140
+        id: suit_diagnostics
 
         Image {
-            id: system_image
-            anchors.fill: parent
+            id: suit_diagnostics_blue
+            x: 630
+            y: 298
+            width: 188
+            height: 139
             visible: false
-            source: "resources/system.png"
+            source: "resources/suit_diagnostics.png"
 
             function hide() {
-                system_hide.start();
-                system_image.visible = false;
+                suit_diagnostics_blue_hide.start();
+                suit_diagnostics_blue.visible = false;
             }
 
             function show() {
-                if (system_image.visible == false)
-                    system_image.visible = true;
-                system_show.start();
+                if (suit_diagnostics_blue.visible == false)
+                    suit_diagnostics_blue.visible = true;
+                suit_diagnostics_blue_show.start();
             }
 
             NumberAnimation on opacity {
-                id: system_hide
+                id: suit_diagnostics_blue_hide
                 from: 1
                 to: 0
             }
 
             NumberAnimation on opacity {
-                id: system_show
+                id: suit_diagnostics_blue_show
+                from: 0
+                to: 1
+            }
+        }
+
+        Image {
+            id: suit_diagnostics_red
+            x: 630
+            y: 308
+            width: 193
+            height: 137
+            visible: false
+            source: "resources/suit_diagnostics2.png"
+
+            function hide() {
+                suit_diagnostics_red_hide.start();
+                suit_diagnostics_red.visible = false;
+            }
+
+            function show() {
+                if (suit_diagnostics_red.visible == false)
+                    suit_diagnostics_red.visible = true;
+                suit_diagnostics_red_show.start();
+            }
+
+            NumberAnimation on opacity {
+                id: suit_diagnostics_red_hide
+                from: 1
+                to: 0
+            }
+
+            NumberAnimation on opacity {
+                id: suit_diagnostics_red_show
                 from: 0
                 to: 1
             }
@@ -360,12 +392,12 @@ Page {
             battery_timer.start();
             terminal_log.text = terminal_log.text + "Connected...\n> ";
             connect_button.visible = false;
-            system_image.show();
+            suit_diagnostics_red_show.show();
         }
 
         onDisconnected: {
             battery_timer.stop();
-            system_image.hide();
+            suit_diagnostics_red_show.hide();
             terminal_log.text = terminal_log.text + "Disconnected...\n> ";
         }
 
