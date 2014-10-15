@@ -1,8 +1,10 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
+import QtQml 2.2
 import Bluetooth 1.0
 
 ApplicationWindow {
+    id: applicationWindow1
     visible: true
     width: 800
     height: 480
@@ -43,7 +45,7 @@ ApplicationWindow {
         id: background
         x: 0
         y: 0
-        width: 854
+        width: 800
         height: 480
         visible: true
         rotation: 0
@@ -52,10 +54,10 @@ ApplicationWindow {
 
     Item {
         id: jarvis
-        x: 92
-        y: 277
-        width: 128
-        height: 128
+        x: 32
+        y: 271
+        width: 140
+        height: 140
 
         Image {
             id: jarvis_image
@@ -105,7 +107,7 @@ ApplicationWindow {
 
     Item {
         id: helmet
-        x: 367
+        x: 313
         y: 35
         width: 120
         height: 180
@@ -159,7 +161,7 @@ ApplicationWindow {
 
     Item {
         id: unibeam
-        x: 367
+        x: 313
         y: 285
         width: 120
         height: 120
@@ -213,7 +215,7 @@ ApplicationWindow {
 
     Item {
         id: suit
-        x: 676
+        x: 623
         y: 119
         width: 128
         height: 128
@@ -234,7 +236,7 @@ ApplicationWindow {
 
         Image {
             id: suit_diagnostics_blue
-            x: 630
+            x: 577
             y: 298
             width: 188
             height: 139
@@ -267,7 +269,7 @@ ApplicationWindow {
 
         Image {
             id: suit_diagnostics_red
-            x: 630
+            x: 577
             y: 308
             width: 193
             height: 137
@@ -301,7 +303,7 @@ ApplicationWindow {
 
     Item {
         id: reactor
-        x: 149
+        x: 96
         y: 84
         width: 140
         height: 140
@@ -491,10 +493,9 @@ ApplicationWindow {
 
         Text {
             id: battery_text
-            x: 381
+            x: 400
             y: 417
             color: "#ffffff"
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 14
         }
@@ -502,7 +503,7 @@ ApplicationWindow {
 
     Flickable {
         id: flick
-        x: 561
+        x: 508
         y: 28
         width: 250
         height: 64
