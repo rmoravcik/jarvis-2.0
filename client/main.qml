@@ -303,7 +303,7 @@ ApplicationWindow {
 
     Item {
         id: reactor
-        x: 96
+        x: 97
         y: 84
         width: 140
         height: 140
@@ -480,6 +480,9 @@ ApplicationWindow {
 
     Item {
         id: battery
+        y: 426
+        anchors.horizontalCenterOffset: -27
+        anchors.horizontalCenter: parent.horizontalCenter
 
         Timer {
             id: battery_timer
@@ -493,10 +496,13 @@ ApplicationWindow {
 
         Text {
             id: battery_text
-            x: 400
-            y: 417
+            x: 0
+            y: 0
             color: "#ffffff"
+            text: ""
+            anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
         }
     }
