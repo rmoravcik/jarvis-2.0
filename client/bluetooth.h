@@ -4,11 +4,11 @@
 #include <QObject>
 #include <QThread>
 
-#include <QBluetoothLocalDevice>
-#include <QBluetoothAddress>
-#include <QBluetoothSocket>
+#include <QtBluetooth/QBluetoothLocalDevice>
+#include <QtBluetooth/QBluetoothAddress>
+#include <QtBluetooth/QBluetoothSocket>
 
-QTM_USE_NAMESPACE
+//QTM_USE_NAMESPACE
 
 class Bluetooth : public QObject
 {

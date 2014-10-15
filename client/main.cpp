@@ -1,21 +1,17 @@
-#include <QtGui/QApplication>
-#include <QtDeclarative/QDeclarativeContext>
-#include <QtDeclarative>
-
-#include "qmlapplicationviewer.h"
+#include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QtQml>
 
 #include "bluetooth.h"
 
-Q_DECL_EXPORT int main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    QScopedPointer<QApplication> app(createApplication(argc, argv));
+    QApplication app(argc, argv);
 
     qmlRegisterType<Bluetooth>("Bluetooth", 1, 0, "Bluetooth");
 
-    QmlApplicationViewer viewer;
-    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    viewer.setMainQmlFile(QLatin1String("qml/jarvis/main.qml"));
-    viewer.showExpanded();
+    QQmlApplicationEngine engine;
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    return app->exec();
+    return app.exec();
 }

@@ -1,22 +1,21 @@
-import QtQuick 1.1
-import com.nokia.meego 1.0
+import QtQuick 2.3
+import QtQuick.Controls 1.2
 import Bluetooth 1.0
 
-Page {
-    id: main
-    width: 854
+ApplicationWindow {
+    visible: true
+    width: 800
     height: 480
-    tools: null
-    orientationLock: PageOrientation.LockLandscape
+    title: qsTr("Jarvis")
 
     Item {
         id: status
-        property variant eyes: Bluetooth.PowerOff
-        property variant helmet: Bluetooth.HelmetOpen
-        property variant intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
-        property variant repulsors: Bluetooth.PowerOff
-        property variant unibeam: Bluetooth.PowerOff
-        property variant volume: Bluetooth.Level7
+        property int eyes: Bluetooth.PowerOff
+        property int helmet: Bluetooth.HelmetOpen
+        property int intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
+        property int repulsors: Bluetooth.PowerOff
+        property int unibeam: Bluetooth.PowerOff
+        property int volume: Bluetooth.Level7
 
         property int index: 0
 

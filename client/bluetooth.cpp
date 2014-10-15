@@ -9,7 +9,7 @@ Bluetooth::Bluetooth(QObject *parent) : QObject(parent)
     m_device = new QBluetoothLocalDevice();
     m_address = new QBluetoothAddress("98:D3:31:70:14:79");
 
-    m_socket = new QBluetoothSocket(QBluetoothSocket::RfcommSocket);
+    m_socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
 
     m_request = REQUEST_NO_REQUEST;
     m_intensityDevice = DeviceEyes;
