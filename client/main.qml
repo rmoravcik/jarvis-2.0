@@ -14,7 +14,7 @@ ApplicationWindow {
         id: status
         property int eyes: Bluetooth.PowerOff
         property int helmet: Bluetooth.HelmetOpen
-        property int intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
+        property var intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
         property int repulsors: Bluetooth.PowerOff
         property int unibeam: Bluetooth.PowerOff
         property int volume: Bluetooth.Level7
@@ -225,79 +225,76 @@ ApplicationWindow {
             anchors.fill: parent
             onClicked: {
 //               if (bluetooth.isConnected()) {
-                bluetooth.getVersion();
+//                bluetooth.getVersion();
+                suit_diagnostics.flop();
 //               }
             }
         }
     }
 
-    Item {
+    Flipable {
         id: suit_diagnostics
+        x: 570
+        y: 291
+        width: 206
+        height: 160
+        visible: false
 
-        Image {
-            id: suit_diagnostics_blue
-            x: 577
-            y: 298
-            width: 188
-            height: 139
-            visible: false
-            source: "resources/suit_diagnostics.png"
+        function off() {
+            suit_diagnostics_off.start();
+            visible = false;
+        }
 
-            function hide() {
-                suit_diagnostics_blue_hide.start();
-                suit_diagnostics_blue.visible = false;
-            }
+        function on() {
+            if (visible == false)
+                visible = true;
+            suit_diagnostics_on.start();
+        }
 
-            function show() {
-                if (suit_diagnostics_blue.visible == false)
-                    suit_diagnostics_blue.visible = true;
-                suit_diagnostics_blue_show.start();
-            }
-
-            NumberAnimation on opacity {
-                id: suit_diagnostics_blue_hide
-                from: 1
-                to: 0
-            }
-
-            NumberAnimation on opacity {
-                id: suit_diagnostics_blue_show
-                from: 0
-                to: 1
+        function flop() {
+            if (visible == false) {
+                on();
+            } else {
+                if (rot.angle == 0) {
+                    rot.angle = 180;
+                } else {
+                    rot.angle = 0;
+                }
             }
         }
 
-        Image {
-            id: suit_diagnostics_red
-            x: 577
-            y: 308
-            width: 193
-            height: 137
-            visible: false
+        NumberAnimation on opacity {
+            id: suit_diagnostics_off
+            from: 1
+            to: 0
+        }
+
+        NumberAnimation on opacity {
+            id: suit_diagnostics_on
+            from: 0
+            to: 1
+        }
+
+        transform: Rotation {
+            id: rot
+            origin.x: 103
+            origin.y: 80
+            axis.x: 0
+            axis.y: 1
+            axis.z: 0
+            angle: 0
+
+            Behavior on angle { PropertyAnimation{} }
+        }
+
+        front: Image {
+            anchors.centerIn: parent
+            source: "resources/suit_diagnostics.png"
+        }
+
+        back: Image {
+            anchors.centerIn: parent
             source: "resources/suit_diagnostics2.png"
-
-            function hide() {
-                suit_diagnostics_red_hide.start();
-                suit_diagnostics_red.visible = false;
-            }
-
-            function show() {
-                if (suit_diagnostics_red.visible == false)
-                    suit_diagnostics_red.visible = true;
-                suit_diagnostics_red_show.start();
-            }
-
-            NumberAnimation on opacity {
-                id: suit_diagnostics_red_hide
-                from: 1
-                to: 0
-            }
-
-            NumberAnimation on opacity {
-                id: suit_diagnostics_red_show
-                from: 0
-                to: 1
-            }
         }
     }
 
@@ -377,6 +374,7 @@ ApplicationWindow {
            verticalCenter: parent.verticalCenter
         }
         text: qsTr("Connect")
+        anchors.horizontalCenterOffset: -27
         iconSource: ""
 
         onClicked: {
