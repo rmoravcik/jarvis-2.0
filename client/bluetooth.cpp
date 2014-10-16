@@ -1,14 +1,17 @@
 #include <QDebug>
+#include <QString>
+#include <QLatin1String>
 
 #include "../firmware/strings.h"
 
 #include "bluetooth.h"
 
+const QLatin1String m_serviceUuid("41fe8d86-3cca-4710-a0e4-2f77bfc017cb");
+const QString m_address("98:D3:31:70:14:79");
+
 Bluetooth::Bluetooth(QObject *parent) : QObject(parent)
 {
     m_device = new QBluetoothLocalDevice();
-    m_address = new QBluetoothAddress("98:D3:31:70:14:79");
-
     m_socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
 
     m_request = REQUEST_NO_REQUEST;
@@ -32,7 +35,6 @@ Bluetooth::~Bluetooth()
 
     delete m_socket;
     delete m_device;
-    delete m_address;
 }
 
 void Bluetooth::requestConnection(void)
@@ -43,10 +45,10 @@ void Bluetooth::requestConnection(void)
 
     if (m_device->isValid()) {
         m_device->powerOn();
-    }
 
-    qDebug() << "Connecting...";
-    m_socket->connectToService(*m_address, 1);
+        qDebug() << "Connecting...";
+        m_socket->connectToService(QBluetoothAddress(m_address), QBluetoothUuid(m_serviceUuid));
+    }
 }
 
 void Bluetooth::requestDisconnection(void)
@@ -55,8 +57,10 @@ void Bluetooth::requestDisconnection(void)
         return;
     }
 
-    qDebug() << "Disconnecting...";
-    m_socket->disconnectFromService();
+    if (m_device->isValid()) {
+        qDebug() << "Disconnecting...";
+        m_socket->disconnectFromService();
+    }
 }
 
 bool Bluetooth::isConnected(void)

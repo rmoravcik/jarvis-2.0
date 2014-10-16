@@ -8,8 +8,6 @@
 #include <QtBluetooth/QBluetoothAddress>
 #include <QtBluetooth/QBluetoothSocket>
 
-//QTM_USE_NAMESPACE
-
 class Bluetooth : public QObject
 {
     Q_OBJECT
@@ -117,7 +115,6 @@ public:
 
 private:
     QBluetoothLocalDevice *m_device;
-    QBluetoothAddress *m_address;
     QBluetoothSocket *m_socket;
 
     Request m_request;

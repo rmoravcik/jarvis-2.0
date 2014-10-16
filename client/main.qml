@@ -8,7 +8,7 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 480
-    title: qsTr("Jarvis")
+    title: qsTr("J.A.R.V.I.S.")
 
     Item {
         id: status
@@ -224,10 +224,9 @@ ApplicationWindow {
             id: suit_button
             anchors.fill: parent
             onClicked: {
-//               if (bluetooth.isConnected()) {
-//                bluetooth.getVersion();
-                suit_diagnostics.flop();
-//               }
+               if (bluetooth.isConnected()) {
+                   bluetooth.getVersion();
+               }
             }
         }
     }
@@ -240,7 +239,22 @@ ApplicationWindow {
         height: 160
         visible: false
 
+        Timer {
+            id: suit_diagnostics_timer
+            interval: 5000
+            repeat: true
+
+            onTriggered: {
+                if (rot.angle == 0) {
+                    rot.angle = 180;
+                } else {
+                    rot.angle = 0;
+                }
+            }
+        }
+
         function off() {
+            suit_diagnostics_timer.stop();
             suit_diagnostics_off.start();
             visible = false;
         }
@@ -249,18 +263,7 @@ ApplicationWindow {
             if (visible == false)
                 visible = true;
             suit_diagnostics_on.start();
-        }
-
-        function flop() {
-            if (visible == false) {
-                on();
-            } else {
-                if (rot.angle == 0) {
-                    rot.angle = 180;
-                } else {
-                    rot.angle = 0;
-                }
-            }
+            suit_diagnostics_timer.start();
         }
 
         NumberAnimation on opacity {
@@ -391,12 +394,12 @@ ApplicationWindow {
             battery_timer.start();
             terminal_log.text = terminal_log.text + "Connected...\n> ";
             connect_button.visible = false;
-            suit_diagnostics_red_show.show();
+            suit_diagnostics.on();
         }
 
         onDisconnected: {
             battery_timer.stop();
-            suit_diagnostics_red_show.hide();
+            suit_diagnostics.off();
             terminal_log.text = terminal_log.text + "Disconnected...\n> ";
         }
 
