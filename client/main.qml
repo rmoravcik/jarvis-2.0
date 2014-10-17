@@ -403,6 +403,14 @@ ApplicationWindow {
             terminal_log.text = terminal_log.text + "Disconnected...\n> ";
         }
 
+        onConnectionError: {
+            terminal_log.text = terminal_log.text + "Error...\n> ";
+        }
+
+        onReadTimetout: {
+            terminal_log.text = terminal_log.text + "Timeout...\n> ";
+        }
+
         onBattery: {
             battery_text.text = "Current power level is at " + capacity + "% and holding steady.";
             status.check_configuration();

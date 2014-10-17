@@ -14,6 +14,8 @@ Bluetooth::Bluetooth(QObject *parent) : QObject(parent)
     m_device = new QBluetoothLocalDevice();
     m_socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
 
+    m_timer = new QTimer();
+
     m_request = REQUEST_NO_REQUEST;
     m_intensityDevice = DeviceEyes;
     m_repulsor = RepulsorLeft;
@@ -25,6 +27,8 @@ Bluetooth::Bluetooth(QObject *parent) : QObject(parent)
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(m_socket, SIGNAL(error(QBluetoothSocket::SocketError)),
             this, SLOT(onError(QBluetoothSocket::SocketError)));
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(onReadTimeout()));
+
 }
 
 Bluetooth::~Bluetooth()
@@ -317,6 +321,10 @@ void Bluetooth::onReadyRead(void)
         if (line.length() > 0) {
             qDebug() << "Received:" << line << "request:" << m_request;
 
+            if (m_timer->isActive()) {
+                m_timer->stop();
+            }
+
             switch (m_request) {
                 case REQUEST_BATTERY:
                     if (line.contains(BLUETOOTH_CMD_BATTERY)) {
@@ -444,18 +452,34 @@ void Bluetooth::onReadyRead(void)
 void Bluetooth::onError(QBluetoothSocket::SocketError error)
 {
     qDebug() << "Error: " << error << m_socket->errorString();
+    emit connectionError();
+}
+
+void Bluetooth::onReadTimeout(void)
+{
+    qDebug() << "Error: Timeout waiting for response!";
+
+    if (m_timer->isActive()) {
+        m_timer->stop();
+    }
+
+    emit readTimetout();
 }
 
 void Bluetooth::sendData(const QString &data)
 {
     if (isConnected()) {
         unsigned int len = data.length();
-//        m_socket->write(data.toUtf8().constData(), len);
 
         for (unsigned int i = 0; i < len - 1; i++) {
             m_socket->putChar(data.toUtf8().constData()[i]);
             Sleep::public_msleep(10);
         }
+
+        if (m_timer->isActive()) {
+            m_timer->stop();
+        }
+        m_timer->start(500);
 
         qDebug() << "Sending:" << data.trimmed();
     }

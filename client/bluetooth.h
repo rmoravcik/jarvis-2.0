@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QTimer>
 
 #include <QtBluetooth/QBluetoothLocalDevice>
 #include <QtBluetooth/QBluetoothAddress>
@@ -117,6 +118,8 @@ private:
     QBluetoothLocalDevice *m_device;
     QBluetoothSocket *m_socket;
 
+    QTimer *m_timer;
+
     Request m_request;
     Device m_intensityDevice;
     Repulsor m_repulsor;
@@ -128,6 +131,9 @@ private:
 signals:
     void connected(void);
     void disconnected(void);
+
+    void connectionError(void);
+    void readTimetout(void);
 
     void battery(unsigned int capacity);
     void eyes(PowerState state);
@@ -145,6 +151,7 @@ public slots:
     void onDisconnected(void);
     void onReadyRead(void);
     void onError(QBluetoothSocket::SocketError error);
+    void onReadTimeout(void);
 };
 
 class Sleep : public QThread
