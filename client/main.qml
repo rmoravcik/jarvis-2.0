@@ -37,6 +37,18 @@ ApplicationWindow {
             } else if (index == 4) {
                 bluetooth.getUnibeam();
                 index++
+            } else if (index == 5) {
+                bluetooth.getIntensity(Bluetooth.DeviceEyes);
+                index++
+            } else if (index == 6) {
+                bluetooth.getIntensity(Bluetooth.DeviceRepulsors);
+                index++
+            } else if (index == 7) {
+                bluetooth.getIntensity(Bluetooth.DeviceUnibeam);
+                index++
+            } else if (index == 8) {
+                bluetooth.getVolume();
+                index++
             }
         }
     }
@@ -449,6 +461,8 @@ ApplicationWindow {
         onIntensity: {
             status.intensity[device] = level;
             // update picture
+
+            status.check_configuration();
         }
 
         onRepulsorBlastGenerated: {
@@ -474,6 +488,8 @@ ApplicationWindow {
 
             if (unibeam_button.enabled == false)
                 unibeam_button.enabled = true;
+
+            status.check_configuration();
         }
 
         onVersion: {
