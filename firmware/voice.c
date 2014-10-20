@@ -95,8 +95,8 @@ void voice_init(void)
 
 	volume = eeprom_read_byte(&eeprom_volume);
 
-	// initialize with default value if eeprom is empty
-	if (volume == 0xFF) {
+	// initialize with default value if eeprom is corrupted
+	if ((volume < SOUND_VOLUME_0) || (volume > SOUND_VOLUME_7)) {
 		volume = SOUND_VOLUME_7;
 		eeprom_write_byte(&eeprom_volume, volume);
 	}

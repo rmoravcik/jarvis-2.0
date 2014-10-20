@@ -297,7 +297,11 @@ static void bluetooth_parse_command(uint8_t size)
 			uart_puts("\r\n");
 		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_QUOTE, size) == 0) {
-		voice_play_quote();
+		if (voice_is_playing()) {
+			voice_stop_playback();
+		} else {
+			voice_play_quote();
+		}
 	} else if (strncmp(rxbuff, BLUETOOTH_CMD_REBOOT, size) == 0) {
 		response = RESPONSE_NO_RESPONSE;
 
