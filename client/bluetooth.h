@@ -126,7 +126,7 @@ private:
     QString m_revision;
     QString m_build;
 
-    void sendData(const QString &data);
+    void sendData(Request request, const QString &data);
 
 signals:
     void connected(void);

@@ -82,223 +82,204 @@ bool Bluetooth::isConnected(void)
 
 void Bluetooth::setHelmet(HelmetState state)
 {
-    m_request = REQUEST_HELMET;
-
     if (state == HelmetOpen)
     {
-        sendData(BLUETOOTH_CMD_HELMET + QString(" ") + BLUETOOTH_PARAM_OPEN + QString("\r\n"));
+        sendData(REQUEST_HELMET, BLUETOOTH_CMD_HELMET + QString(" ") + BLUETOOTH_PARAM_OPEN + QString("\r\n"));
     } else {
-        sendData(BLUETOOTH_CMD_HELMET + QString(" ") + BLUETOOTH_PARAM_CLOSE + QString("\r\n"));
+        sendData(REQUEST_HELMET, BLUETOOTH_CMD_HELMET + QString(" ") + BLUETOOTH_PARAM_CLOSE + QString("\r\n"));
     }
 }
 
 void Bluetooth::getHelmet(void)
 {
-    m_request = REQUEST_HELMET;
-    sendData(BLUETOOTH_CMD_HELMET + QString("\r\n"));
+    sendData(REQUEST_HELMET, BLUETOOTH_CMD_HELMET + QString("\r\n"));
 }
 
 void Bluetooth::setEyes(PowerState state)
 {
-    m_request = REQUEST_EYES;
-
     if (state == PowerOn)
     {
-        sendData(BLUETOOTH_CMD_EYES + QString(" ") + BLUETOOTH_PARAM_ON + QString("\r\n"));
+        sendData(REQUEST_EYES, BLUETOOTH_CMD_EYES + QString(" ") + BLUETOOTH_PARAM_ON + QString("\r\n"));
     } else
     {
-        sendData(BLUETOOTH_CMD_EYES + QString(" ") + BLUETOOTH_PARAM_OFF + QString("\r\n"));
+        sendData(REQUEST_EYES, BLUETOOTH_CMD_EYES + QString(" ") + BLUETOOTH_PARAM_OFF + QString("\r\n"));
     }
 }
 
 void Bluetooth::getEyes(void)
 {
-    m_request = REQUEST_EYES;
-    sendData(BLUETOOTH_CMD_EYES + QString("\r\n"));
+    sendData(REQUEST_EYES, BLUETOOTH_CMD_EYES + QString("\r\n"));
 }
 
 void Bluetooth::setRepulsors(PowerState state)
 {
-    m_request = REQUEST_REPULSORS;
-
     if (state == PowerOn)
     {
-        sendData(BLUETOOTH_CMD_REPULSORS + QString(" ") + BLUETOOTH_PARAM_ON + QString("\r\n"));
+        sendData(REQUEST_REPULSORS, BLUETOOTH_CMD_REPULSORS + QString(" ") + BLUETOOTH_PARAM_ON + QString("\r\n"));
     } else
     {
-        sendData(BLUETOOTH_CMD_REPULSORS + QString(" ") + BLUETOOTH_PARAM_OFF + QString("\r\n"));
+        sendData(REQUEST_REPULSORS, BLUETOOTH_CMD_REPULSORS + QString(" ") + BLUETOOTH_PARAM_OFF + QString("\r\n"));
     }
 }
 
 void Bluetooth::getRepulsors(void)
 {
-    m_request = REQUEST_REPULSORS;
-    sendData(BLUETOOTH_CMD_REPULSORS + QString("\r\n"));
+    sendData(REQUEST_REPULSORS, BLUETOOTH_CMD_REPULSORS + QString("\r\n"));
 }
 
 void Bluetooth::repulsorsBlast(Repulsor repulsor)
 {
-    m_request = REQUEST_REPULSOR;
     m_repulsor = repulsor;
 
     if (repulsor == RepulsorLeft)
     {
-        sendData(BLUETOOTH_CMD_REPULSOR + QString(" ") + BLUETOOTH_PARAM_LEFT + QString("\r\n"));
+        sendData(REQUEST_REPULSOR, BLUETOOTH_CMD_REPULSOR + QString(" ") + BLUETOOTH_PARAM_LEFT + QString("\r\n"));
     } else
     {
-        sendData(BLUETOOTH_CMD_REPULSOR + QString(" ") + BLUETOOTH_PARAM_RIGHT + QString("\r\n"));
+        sendData(REQUEST_REPULSOR, BLUETOOTH_CMD_REPULSOR + QString(" ") + BLUETOOTH_PARAM_RIGHT + QString("\r\n"));
     }
 }
 
 
 void Bluetooth::setUnibeam(PowerState state)
 {
-    m_request = REQUEST_UNIBEAM;
-
     if (state == PowerOn)
     {
-        sendData(BLUETOOTH_CMD_UNIBEAM + QString(" ") + BLUETOOTH_PARAM_ON + QString("\r\n"));
+        sendData(REQUEST_UNIBEAM, BLUETOOTH_CMD_UNIBEAM + QString(" ") + BLUETOOTH_PARAM_ON + QString("\r\n"));
     } else
     {
-        sendData(BLUETOOTH_CMD_UNIBEAM + QString(" ") + BLUETOOTH_PARAM_OFF + QString("\r\n"));
+        sendData(REQUEST_UNIBEAM, BLUETOOTH_CMD_UNIBEAM + QString(" ") + BLUETOOTH_PARAM_OFF + QString("\r\n"));
     }
 }
 
 void Bluetooth::getUnibeam(void)
 {
-    m_request = REQUEST_UNIBEAM;
-    sendData(BLUETOOTH_CMD_UNIBEAM + QString("\r\n"));
+    sendData(REQUEST_UNIBEAM, BLUETOOTH_CMD_UNIBEAM + QString("\r\n"));
 }
 
 void Bluetooth::setIntensity(Device device, PowerIntensity intensity)
 {
-    m_request = REQUEST_INTENSITY;
     m_intensityDevice = device;
+    QString msg;
 
     if (device == DeviceEyes) {
-        sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_EYES + QString(" "));
+        msg = BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_EYES + QString(" ");
     } else if (device == DeviceRepulsors) {
-        sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_REPULSORS + QString(" "));
+        msg = BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_REPULSORS + QString(" ");
     } else if (device == DeviceUnibeam) {
-        sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_UNIBEAM + QString(" "));
+        msg = BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_UNIBEAM + QString(" ");
     }
 
     switch (intensity) {
         case Intensity10:
-            sendData("0\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("0\r\n"));
             break;
         case Intensity20:
-            sendData("1\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("1\r\n"));
             break;
         case Intensity30:
-            sendData("2\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("2\r\n"));
             break;
         case Intensity40:
-            sendData("3\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("3\r\n"));
             break;
         case Intensity50:
-            sendData("4\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("4\r\n"));
             break;
         case Intensity60:
-            sendData("5\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("5\r\n"));
             break;
         case Intensity70:
-            sendData("6\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("6\r\n"));
             break;
         case Intensity80:
-            sendData("7\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("7\r\n"));
             break;
         case Intensity90:
-            sendData("8\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("8\r\n"));
             break;
         case Intensity100:
-            sendData("9\r\n");
+            sendData(REQUEST_INTENSITY, msg + QString("9\r\n"));
             break;
     }
 }
 
 void Bluetooth::getIntensity(Device device)
 {
-    m_request = REQUEST_INTENSITY;
     m_intensityDevice = device;
 
     if (device == DeviceEyes) {
-        sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_EYES + QString("\r\n"));
+        sendData(REQUEST_INTENSITY, BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_EYES + QString("\r\n"));
     } else if (device == DeviceRepulsors) {
-        sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_REPULSORS + QString("\r\n"));
+        sendData(REQUEST_INTENSITY, BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_REPULSORS + QString("\r\n"));
     } else if (device == DeviceUnibeam) {
-        sendData(BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_UNIBEAM + QString("\r\n"));
+        sendData(REQUEST_INTENSITY, BLUETOOTH_CMD_INTENSITY + QString(" ") + BLUETOOTH_CMD_UNIBEAM + QString("\r\n"));
     }
 }
 
 void Bluetooth::setVolume(VolumeLevel level)
 {
-    m_request = REQUEST_VOLUME;
-
     switch (level) {
         case Level0:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 0\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 0\r\n"));
             break;
         case Level1:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 1\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 1\r\n"));
             break;
         case Level2:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 2\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 2\r\n"));
             break;
         case Level3:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 3\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 3\r\n"));
             break;
         case Level4:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 4\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 4\r\n"));
             break;
         case Level5:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 5\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 5\r\n"));
             break;
         case Level6:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 6\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 6\r\n"));
             break;
         case Level7:
-            sendData(BLUETOOTH_CMD_VOLUME + QString(" 7\r\n"));
+            sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString(" 7\r\n"));
             break;
     }
 }
 
 void Bluetooth::getVolume(void)
 {
-    m_request = REQUEST_VOLUME;
-    sendData(BLUETOOTH_CMD_VOLUME + QString("\r\n"));
+    sendData(REQUEST_VOLUME, BLUETOOTH_CMD_VOLUME + QString("\r\n"));
 }
 
 void Bluetooth::playQuote(void)
 {
-    m_request = REQUEST_QUOTE;
-    sendData(BLUETOOTH_CMD_QUOTE + QString("\r\n"));
+    sendData(REQUEST_QUOTE, BLUETOOTH_CMD_QUOTE + QString("\r\n"));
 }
 
 void Bluetooth::getBattery(void)
 {
-    m_request = REQUEST_BATTERY;
-    sendData(BLUETOOTH_CMD_BATTERY + QString("\r\n"));
+    sendData(REQUEST_BATTERY, BLUETOOTH_CMD_BATTERY + QString("\r\n"));
 }
 
 void Bluetooth::getVersion(void)
 {
     m_revision.clear();
     m_build.clear();
-    m_request = REQUEST_VERSION;
 
-    sendData(BLUETOOTH_CMD_VERSION + QString("\r\n"));
+    sendData(REQUEST_VERSION, BLUETOOTH_CMD_VERSION + QString("\r\n"));
 }
 
 void Bluetooth::reboot(void)
 {
-    sendData(BLUETOOTH_CMD_REBOOT + QString("\r\n"));
+    sendData(REQUEST_NO_REQUEST, BLUETOOTH_CMD_REBOOT + QString("\r\n"));
 }
 
 void Bluetooth::onConnected(void)
 {
     qDebug() << "Connected...";
-    sendData("\r\n");
+
+    sendData(REQUEST_NO_REQUEST, QString("\r\n"));
     emit connected();
 }
 
@@ -333,6 +314,8 @@ void Bluetooth::onReadyRead(void)
                         unsigned int capacity = line.toInt();
                         m_request = REQUEST_NO_REQUEST;
                         emit battery(capacity);
+                    } else {
+                        // FIXME: received a non expected response
                     }
                     break;
 
@@ -463,12 +446,19 @@ void Bluetooth::onReadTimeout(void)
         m_timer->stop();
     }
 
+    m_request = REQUEST_NO_REQUEST;
+
     emit readTimetout();
 }
 
-void Bluetooth::sendData(const QString &data)
+void Bluetooth::sendData(Request request, const QString &data)
 {
     if (isConnected()) {
+        if ((request == REQUEST_BATTERY) && (m_request != REQUEST_NO_REQUEST)) {
+            qDebug() << "Waiting for response:" << m_request;
+            return;
+        }
+
         unsigned int len = data.length();
 
         for (unsigned int i = 0; i < len - 1; i++) {
@@ -479,7 +469,14 @@ void Bluetooth::sendData(const QString &data)
         if (m_timer->isActive()) {
             m_timer->stop();
         }
-        m_timer->start(500);
+
+        if (request == REQUEST_QUOTE) {
+            m_timer->start(40000);
+        } else {
+            m_timer->start(5000);
+        }
+
+        m_request = request;
 
         qDebug() << "Sending:" << data.trimmed();
     }

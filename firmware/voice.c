@@ -163,125 +163,125 @@ void voice_play_quote(void)
 
 	switch (i) {
 		case 0:
-			voice_play_sound(SOUND_CLOCK_AFTERNOON);
+			voice_play_sound(SOUND_CLOCK_AFTERNOON); // 3.20
 			break;
 
 		case 1:
-			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_0);
+			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_0); // 1.94
 			break;
 
 		case 2:
-			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_2);
+			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_2); // 3.81
 			break;
 
 		case 3:
-			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3);
-			voice_play_sound_no_wait(SOUND_ACDC);
+			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3); // 2.17
+			voice_play_sound_no_wait(SOUND_ACDC); // 1:11.41
 			break;
 
 		case 4:
-			voice_play_sound(SOUND_CLOCK_LATE_0);
+			voice_play_sound(SOUND_CLOCK_LATE_0); // 3.70
 			break;
 
 		case 5:
-			voice_play_sound(SOUND_CLOCK_LATE_1);
+			voice_play_sound(SOUND_CLOCK_LATE_1); // 4.61
 			break;
 
 		case 6:
-			voice_play_sound(SOUND_LISTENING_OFF_2);
+			voice_play_sound(SOUND_LISTENING_OFF_2); // 2.93
 			break;
 
 		case 7:
-			voice_play_sound(SOUND_MESSAGE_NEW_6);
+			voice_play_sound(SOUND_MESSAGE_NEW_6); // 2.76
 			break;
 
 		case 8:
-			voice_play_sound(SOUND_MESSAGE_NEW_7);
+			voice_play_sound(SOUND_MESSAGE_NEW_7); // 3.45
 			break;
 
 		case 9:
-			voice_play_sound(SOUND_NETWORK_LOST_WIFI);
-			voice_play_sound(SOUND_NETWORK_NO_WIFI);
+			voice_play_sound(SOUND_NETWORK_LOST_WIFI); // 1.89
+			voice_play_sound(SOUND_NETWORK_NO_WIFI); // 3.75
 			break;
 
 		case 10:
-			voice_play_sound(SOUND_REPEAT_1);
+			voice_play_sound(SOUND_REPEAT_1); // 2.04
 			break;
 
 		case 11:
-			voice_play_sound(SOUND_REPEAT_2);
+			voice_play_sound(SOUND_REPEAT_2); // 3.77
 			break;
 
 		case 12:
-			voice_play_sound(SOUND_REPEAT_3);
+			voice_play_sound(SOUND_REPEAT_3); // 4.03
 			break;
 
 		case 13:
-			voice_play_sound(SOUND_SELF_DESTRUCT_1);
+			voice_play_sound(SOUND_SELF_DESTRUCT_1); // 5.82
 			break;
 
 		case 14:
-			voice_play_sound(SOUND_SUITS_DECRYPT_1);
+			voice_play_sound(SOUND_SUITS_DECRYPT_1); // 2.99
 			_delay_ms(1500);
-			voice_play_sound(SOUND_SUITS_DECRYPT_2);
+			voice_play_sound(SOUND_SUITS_DECRYPT_2); // 5.37
 			_delay_ms(2000);
-			voice_play_sound(SOUND_SUITS_DECRYPT_3);
+			voice_play_sound(SOUND_SUITS_DECRYPT_3); // 2.06
 			_delay_ms(1000);
-			voice_play_sound(SOUND_SUITS_DECRYPT_4);
+			voice_play_sound(SOUND_SUITS_DECRYPT_4); // 3.48
 			_delay_ms(200);
-			voice_play_sound(SOUND_SUITS_DECRYPT_5);
+			voice_play_sound(SOUND_SUITS_DECRYPT_5); // 3.55
 			_delay_ms(300);
-			voice_play_sound(SOUND_SUITS_DECRYPT_6);
+			voice_play_sound(SOUND_SUITS_DECRYPT_6); // 1.78
 			_delay_ms(100);
 
 			i = random_get(1);
 			if (i == 1) {
-				voice_play_sound(SOUND_SUITS_DECRYPT_8);
+				voice_play_sound(SOUND_SUITS_DECRYPT_8); // 8.18
 			} else {
-				voice_play_sound(SOUND_SUITS_DECRYPT_7);
+				voice_play_sound(SOUND_SUITS_DECRYPT_7); // 11.22
 			}
 			break;
 
 		case 15:
-			voice_play_sound(SOUND_TRS3_0);
+			voice_play_sound(SOUND_TRS3_0); // 3.74
 			break;
 
 		case 16:
-			voice_play_sound(SOUND_TRS4);
+			voice_play_sound(SOUND_TRS4); // 4.29
 			break;
 
 		case 17:
-			voice_play_sound(SOUND_TRS6);
+			voice_play_sound(SOUND_TRS6); // 4.47
 			break;
 
 		case 18:
-			voice_play_sound(SOUND_TRS7_1);
+			voice_play_sound(SOUND_TRS7_1); // 2.97
 			break;
 
 		case 19:
-			voice_play_sound(SOUND_TRS8);
+			voice_play_sound(SOUND_TRS8); // 1.83
 			break;
 
 		case 20:
-			voice_play_sound(SOUND_TRS9);
+			voice_play_sound(SOUND_TRS9); // 4.92
 			break;
 
 		case 21:
-			voice_play_sound(SOUND_TRS10);
+			voice_play_sound(SOUND_TRS10); // 6.71
 			break;
 
 		case 22:
-			voice_play_sound(SOUND_TRS11);
+			voice_play_sound(SOUND_TRS11); // 4.90
 			_delay_ms(1000);
-			voice_play_sound(SOUND_JUST_KIDDING);
+			voice_play_sound(SOUND_JUST_KIDDING); // 0.62
 			break;
 
 		case 23:
-			voice_play_sound(SOUND_UNAVAILABLE_0);
+			voice_play_sound(SOUND_UNAVAILABLE_0); // 3.31
 			break;
 
 		case 24:
-			voice_play_sound(SOUND_UNAVAILABLE_3);
+			voice_play_sound(SOUND_UNAVAILABLE_3); // 2.96
 			break;
 	}
 }
