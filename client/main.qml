@@ -369,12 +369,11 @@ ApplicationWindow {
                    if (bluetooth.isConnected()) {
                        reactor_image.show();
                    }
-               }
-
-               if (reactor_image.visible == true) {
+               } else {
                    if (bluetooth.isConnected()) {
                        battery_timer.stop();
                        battery_timer.start();
+                       terminal_log.text = terminal_log.text + "Rebooting...\n> ";
                        bluetooth.reboot();
                    }
                }

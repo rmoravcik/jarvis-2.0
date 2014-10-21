@@ -315,7 +315,7 @@ void Bluetooth::onReadyRead(void)
                         m_request = REQUEST_NO_REQUEST;
                         emit battery(capacity);
                     } else {
-                        // FIXME: received a non expected response
+                        // FIXME: ERROR
                     }
                     break;
 
@@ -362,9 +362,11 @@ void Bluetooth::onReadyRead(void)
 
                 case REQUEST_QUOTE:
                     if (line.contains("OK")) {
+                        m_request = REQUEST_NO_REQUEST;
                         emit quoteFinished();
+                    } else {
+                        // FIXME: ERROR
                     }
-                    m_request = REQUEST_NO_REQUEST;
                     break;
 
                 case REQUEST_REPULSOR:
@@ -470,10 +472,12 @@ void Bluetooth::sendData(Request request, const QString &data)
             m_timer->stop();
         }
 
-        if (request == REQUEST_QUOTE) {
-            m_timer->start(40000);
-        } else {
-            m_timer->start(5000);
+        if (request != REQUEST_NO_REQUEST) {
+            if (request == REQUEST_QUOTE) {
+                m_timer->start(40000);
+            } else {
+                m_timer->start(5000);
+            }
         }
 
         m_request = request;
