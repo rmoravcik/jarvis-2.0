@@ -90,6 +90,7 @@ static void hc05_send_command(char *command)
 ISR(USART_RXC_vect)
 {
 	static uint8_t i = 0;
+	uint8_t len;
 
 	rxbuff[i] = UDR;
 
@@ -107,9 +108,10 @@ ISR(USART_RXC_vect)
 		// replace '\r' character with string termination character
 		rxbuff[i] = '\0';
 
-		bluetooth_parse_command(len);
-
+		len = i;
 		i = 0;
+
+		bluetooth_parse_command(len);
 	} else if (rxbuff[i] == '\b') {
 		if (i > 0) {
 			if (echo) {

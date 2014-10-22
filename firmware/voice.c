@@ -31,6 +31,8 @@ static uint8_t EEMEM eeprom_volume = SOUND_VOLUME_7;
 static uint8_t seed;
 static uint8_t volume;
 
+static uint8_t is_playing = FALSE;
+
 uint8_t random_get(uint8_t max)
 {
 	static uint8_t old = 0;
@@ -83,6 +85,33 @@ static void wt588d_send_command(uint8_t command)
 	PORTD |= _BV(GPIO_WT588_DATA);
 }
 
+static uint8_t wt588d_is_busy(void)
+{
+	// busy is held down during the playback
+	if (PINB & _BV(GPIO_WT588_BUSY)) {
+		return FALSE;
+	} else {
+		return TRUE;
+	}
+}
+
+void wt588d_play_sound(uint8_t sound, uint8_t wait)
+{
+	// send command to play a sound
+	wt588d_send_command(sound);
+
+	if (wait) {
+		// wait till wt588d start playing sample
+		while (!wt588d_is_busy());
+
+		// wait till wt588d finish playing sample
+		while (wt588d_is_busy());
+
+		// busy signal is held down for 32ms
+		_delay_ms(32);
+	}
+}
+
 void voice_init(void)
 {
 	seed = eeprom_read_byte(&eeprom_seed);
@@ -123,36 +152,40 @@ void voice_play_welcome(void)
 
 	i = random_get(5);
 
+	is_playing = TRUE;
+
 	switch (i) {
 		case 0:
-			voice_play_sound(SOUND_LISTENING_ON_1);
+			wt588d_play_sound(SOUND_LISTENING_ON_1, TRUE);
 			break;
 
 		case 1:
-			voice_play_sound(SOUND_LISTENING_ON_4);
-			voice_play_sound(SOUND_ASK_0);
+			wt588d_play_sound(SOUND_LISTENING_ON_4, TRUE);
+			wt588d_play_sound(SOUND_ASK_0, TRUE);
 			break;
 
 		case 2:
-			voice_play_sound(SOUND_LISTENING_ON_AFTERNOON);
-			voice_play_sound(SOUND_LISTENING_ON_7);
+			wt588d_play_sound(SOUND_LISTENING_ON_AFTERNOON, TRUE);
+			wt588d_play_sound(SOUND_LISTENING_ON_7, TRUE);
 			break;
 
 		case 3:
-			voice_play_sound(SOUND_LISTENING_ON_EVENING);
-			voice_play_sound(SOUND_LISTENING_ON_7);
+			wt588d_play_sound(SOUND_LISTENING_ON_EVENING, TRUE);
+			wt588d_play_sound(SOUND_LISTENING_ON_7, TRUE);
 			break;
 
 		case 4:
-			voice_play_sound(SOUND_LISTENING_ON_MORNING);
-			voice_play_sound(SOUND_LISTENING_ON_7);
+			wt588d_play_sound(SOUND_LISTENING_ON_MORNING, TRUE);
+			wt588d_play_sound(SOUND_LISTENING_ON_7, TRUE);
 			break;
 
 		case 5:
-			voice_play_sound(SOUND_WELCOME);
-			voice_play_sound(SOUND_LISTENING_ON_3);
+			wt588d_play_sound(SOUND_WELCOME, TRUE);
+			wt588d_play_sound(SOUND_LISTENING_ON_3, TRUE);
 			break;
 	}
+
+	is_playing = FALSE;
 }
 
 void voice_play_quote(void)
@@ -161,160 +194,152 @@ void voice_play_quote(void)
 
 	i = random_get(24);
 
+	is_playing = TRUE;
+
 	switch (i) {
 		case 0:
-			voice_play_sound(SOUND_CLOCK_AFTERNOON); // 3.20
+			wt588d_play_sound(SOUND_CLOCK_AFTERNOON, TRUE); // 3.20
 			break;
 
 		case 1:
-			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_0); // 1.94
+			wt588d_play_sound(SOUND_CLOCK_ALARM_SNOOZE_0, TRUE); // 1.94
 			break;
 
 		case 2:
-			voice_play_sound(SOUND_CLOCK_ALARM_SNOOZE_2); // 3.81
+			wt588d_play_sound(SOUND_CLOCK_ALARM_SNOOZE_2, TRUE); // 3.81
 			break;
 
 		case 3:
-			voice_play_sound(SOUND_CLOCK_ALARM_WAKE_3); // 2.17
-			voice_play_sound_no_wait(SOUND_ACDC); // 1:11.41
+			wt588d_play_sound(SOUND_CLOCK_ALARM_WAKE_3, TRUE); // 2.17
+			wt588d_play_sound(SOUND_ACDC, TRUE); // 1:11.41
 			break;
 
 		case 4:
-			voice_play_sound(SOUND_CLOCK_LATE_0); // 3.70
+			wt588d_play_sound(SOUND_CLOCK_LATE_0, TRUE); // 3.70
 			break;
 
 		case 5:
-			voice_play_sound(SOUND_CLOCK_LATE_1); // 4.61
+			wt588d_play_sound(SOUND_CLOCK_LATE_1, TRUE); // 4.61
 			break;
 
 		case 6:
-			voice_play_sound(SOUND_LISTENING_OFF_2); // 2.93
+			wt588d_play_sound(SOUND_LISTENING_OFF_2, TRUE); // 2.93
 			break;
 
 		case 7:
-			voice_play_sound(SOUND_MESSAGE_NEW_6); // 2.76
+			wt588d_play_sound(SOUND_MESSAGE_NEW_6, TRUE); // 2.76
 			break;
 
 		case 8:
-			voice_play_sound(SOUND_MESSAGE_NEW_7); // 3.45
+			wt588d_play_sound(SOUND_MESSAGE_NEW_7, TRUE); // 3.45
 			break;
 
 		case 9:
-			voice_play_sound(SOUND_NETWORK_LOST_WIFI); // 1.89
-			voice_play_sound(SOUND_NETWORK_NO_WIFI); // 3.75
+			wt588d_play_sound(SOUND_NETWORK_LOST_WIFI, TRUE); // 1.89
+			wt588d_play_sound(SOUND_NETWORK_NO_WIFI, TRUE); // 3.75
 			break;
 
 		case 10:
-			voice_play_sound(SOUND_REPEAT_1); // 2.04
+			wt588d_play_sound(SOUND_REPEAT_1, TRUE); // 2.04
 			break;
 
 		case 11:
-			voice_play_sound(SOUND_REPEAT_2); // 3.77
+			wt588d_play_sound(SOUND_REPEAT_2, TRUE); // 3.77
 			break;
 
 		case 12:
-			voice_play_sound(SOUND_REPEAT_3); // 4.03
+			wt588d_play_sound(SOUND_REPEAT_3, TRUE); // 4.03
 			break;
 
 		case 13:
-			voice_play_sound(SOUND_SELF_DESTRUCT_1); // 5.82
+			wt588d_play_sound(SOUND_SELF_DESTRUCT_1, TRUE); // 5.82
 			break;
 
 		case 14:
-			voice_play_sound(SOUND_SUITS_DECRYPT_1); // 2.99
+			wt588d_play_sound(SOUND_SUITS_DECRYPT_1, TRUE); // 2.99
 			_delay_ms(1500);
-			voice_play_sound(SOUND_SUITS_DECRYPT_2); // 5.37
+			wt588d_play_sound(SOUND_SUITS_DECRYPT_2, TRUE); // 5.37
 			_delay_ms(2000);
-			voice_play_sound(SOUND_SUITS_DECRYPT_3); // 2.06
+			wt588d_play_sound(SOUND_SUITS_DECRYPT_3, TRUE); // 2.06
 			_delay_ms(1000);
-			voice_play_sound(SOUND_SUITS_DECRYPT_4); // 3.48
+			wt588d_play_sound(SOUND_SUITS_DECRYPT_4, TRUE); // 3.48
 			_delay_ms(200);
-			voice_play_sound(SOUND_SUITS_DECRYPT_5); // 3.55
+			wt588d_play_sound(SOUND_SUITS_DECRYPT_5, TRUE); // 3.55
 			_delay_ms(300);
-			voice_play_sound(SOUND_SUITS_DECRYPT_6); // 1.78
+			wt588d_play_sound(SOUND_SUITS_DECRYPT_6, TRUE); // 1.78
 			_delay_ms(100);
 
 			i = random_get(1);
 			if (i == 1) {
-				voice_play_sound(SOUND_SUITS_DECRYPT_8); // 8.18
+				wt588d_play_sound(SOUND_SUITS_DECRYPT_8, TRUE); // 8.18
 			} else {
-				voice_play_sound(SOUND_SUITS_DECRYPT_7); // 11.22
+				wt588d_play_sound(SOUND_SUITS_DECRYPT_7, TRUE); // 11.22
 			}
 			break;
 
 		case 15:
-			voice_play_sound(SOUND_TRS3_0); // 3.74
+			wt588d_play_sound(SOUND_TRS3_0, TRUE); // 3.74
 			break;
 
 		case 16:
-			voice_play_sound(SOUND_TRS4); // 4.29
+			wt588d_play_sound(SOUND_TRS4, TRUE); // 4.29
 			break;
 
 		case 17:
-			voice_play_sound(SOUND_TRS6); // 4.47
+			wt588d_play_sound(SOUND_TRS6, TRUE); // 4.47
 			break;
 
 		case 18:
-			voice_play_sound(SOUND_TRS7_1); // 2.97
+			wt588d_play_sound(SOUND_TRS7_1, TRUE); // 2.97
 			break;
 
 		case 19:
-			voice_play_sound(SOUND_TRS8); // 1.83
+			wt588d_play_sound(SOUND_TRS8, TRUE); // 1.83
 			break;
 
 		case 20:
-			voice_play_sound(SOUND_TRS9); // 4.92
+			wt588d_play_sound(SOUND_TRS9, TRUE); // 4.92
 			break;
 
 		case 21:
-			voice_play_sound(SOUND_TRS10); // 6.71
+			wt588d_play_sound(SOUND_TRS10, TRUE); // 6.71
 			break;
 
 		case 22:
-			voice_play_sound(SOUND_TRS11); // 4.90
+			wt588d_play_sound(SOUND_TRS11, TRUE); // 4.90
 			_delay_ms(1000);
-			voice_play_sound(SOUND_JUST_KIDDING); // 0.62
+			wt588d_play_sound(SOUND_JUST_KIDDING, TRUE); // 0.62
 			break;
 
 		case 23:
-			voice_play_sound(SOUND_UNAVAILABLE_0); // 3.31
+			wt588d_play_sound(SOUND_UNAVAILABLE_0, TRUE); // 3.31
 			break;
 
 		case 24:
-			voice_play_sound(SOUND_UNAVAILABLE_3); // 2.96
+			wt588d_play_sound(SOUND_UNAVAILABLE_3, TRUE); // 2.96
 			break;
 	}
+
+	is_playing = FALSE;
 }
 
 uint8_t voice_is_playing(void)
 {
-	// busy is held down during the playback
-	if (PINB & _BV(GPIO_WT588_BUSY)) {
-		return FALSE;
-	} else {
-		return TRUE;
-	}
+	return is_playing;
 }
 
 void voice_play_sound(uint8_t sound)
 {
-	// send command to play a sound
-	wt588d_send_command(sound);
-
-	// wait till wt588d start playing sample
-	while (!voice_is_playing());
-
-	// wait till wt588d finish playing sample
-	while (voice_is_playing());
-
-	// busy signal is held down for 32ms
-	_delay_ms(32);
+	is_playing = TRUE;
+	wt588d_play_sound(sound, TRUE);
+	is_playing = FALSE;
 }
 
 void voice_play_sound_no_wait(uint8_t sound)
 {
-	// send command to play a sound
-	wt588d_send_command(sound);
+	is_playing = TRUE;
+	wt588d_play_sound(sound, FALSE);
+	is_playing = FALSE;
 }
 
 void voice_set_volume(uint8_t level)
@@ -336,4 +361,5 @@ uint8_t voice_get_volume(void)
 void voice_stop_playback(void)
 {
 	wt588d_send_command(STOP_PLAYING);
+	is_playing = FALSE;
 }
