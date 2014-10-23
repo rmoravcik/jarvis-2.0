@@ -73,7 +73,8 @@ bool Bluetooth::isConnected(void)
         return false;
     }
 
-    if (m_socket->state() == QBluetoothSocket::ConnectedState) {
+    if ((m_socket->state() == QBluetoothSocket::ConnectedState) &&
+        (m_socket->error() == QBluetoothSocket::NoSocketError)) {
                 return true;
     }
 
@@ -437,6 +438,13 @@ void Bluetooth::onReadyRead(void)
 void Bluetooth::onError(QBluetoothSocket::SocketError error)
 {
     qDebug() << "Error: " << error << m_socket->errorString();
+
+    if (m_timer->isActive()) {
+        m_timer->stop();
+    }
+
+    m_request = REQUEST_NO_REQUEST;
+
     emit connectionError();
 }
 

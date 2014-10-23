@@ -415,6 +415,8 @@ ApplicationWindow {
         }
 
         onConnectionError: {
+            battery_timer.stop();
+            suit_diagnostics.off();
             terminal_log.text = terminal_log.text + "Error...\n> ";
         }
 
