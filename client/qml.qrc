@@ -8,5 +8,6 @@
         <file>resources/suit_diagnostics.png</file>
         <file>resources/suit_diagnostics2.png</file>
         <file>resources/unibeam.png</file>
+        <file>resources/click.wav</file>
     </qresource>
 </RCC>

@@ -1,6 +1,8 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQml 2.2
+import QtMultimedia 5.0
+
 import Bluetooth 1.0
 
 ApplicationWindow {
@@ -53,6 +55,11 @@ ApplicationWindow {
         }
     }
 
+    SoundEffect {
+            id: clickEffect
+            source: "resources/click.wav"
+    }
+
     Image {
         id: background
         x: 0
@@ -61,7 +68,7 @@ ApplicationWindow {
         height: 480
         visible: true
         rotation: 0
-        source: "resources/background.png"
+        source: "qrc:///resources/background.png"
     }
 
     Item {
@@ -75,7 +82,7 @@ ApplicationWindow {
             id: jarvis_image
             anchors.fill: parent
             visible: false
-            source: "resources/jarvis.png"
+            source: "qrc:///resources/jarvis.png"
 
             function hide() {
                 jarvis_show.stop();
@@ -111,6 +118,7 @@ ApplicationWindow {
             onClicked: {
                 if (bluetooth.isConnected()) {
                     jarvis_image.show();
+                    clickEffect.play();
                     bluetooth.playQuote();
                 }
             }
@@ -128,7 +136,7 @@ ApplicationWindow {
             id: helmet_image
             anchors.fill: parent
             visible: false
-            source: "resources/helmet.png"
+            source: "qrc:///resources/helmet.png"
 
             function open() {
                 helmet_open.start();
@@ -159,9 +167,11 @@ ApplicationWindow {
            onClicked: {
                if (bluetooth.isConnected()) {
                    if (status.helmet == Bluetooth.HelmetClose) {
+                       clickEffect.play();
                        helmet_image.open();
                        bluetooth.setHelmet(Bluetooth.HelmetOpen);
                    } else {
+                       clickEffect.play();
                        helmet_image.close();
                        bluetooth.setHelmet(Bluetooth.HelmetClose);
                    }
@@ -181,7 +191,7 @@ ApplicationWindow {
         Image {
             id: unibeam_image
             visible: false
-            source: "resources/unibeam.png"
+            source: "qrc:///resources/unibeam.png"
 
             function off() {
                 unibeam_off.start();
@@ -214,9 +224,11 @@ ApplicationWindow {
                 if (bluetooth.isConnected()) {
                     if (status.unibeam == Bluetooth.PowerOn) {
                         unibeam_image.off();
+                        clickEffect.play();
                         bluetooth.setUnibeam(Bluetooth.PowerOff);
                     } else {
                         unibeam_image.on();
+                        clickEffect.play();
                         bluetooth.setUnibeam(Bluetooth.PowerOn);
                     }
                     enabled = false;
@@ -237,6 +249,7 @@ ApplicationWindow {
             anchors.fill: parent
             onClicked: {
                if (bluetooth.isConnected()) {
+                   clickEffect.play();
                    bluetooth.getVersion();
                }
             }
@@ -304,12 +317,12 @@ ApplicationWindow {
 
         front: Image {
             anchors.centerIn: parent
-            source: "resources/suit_diagnostics.png"
+            source: "qrc:///resources/suit_diagnostics.png"
         }
 
         back: Image {
             anchors.centerIn: parent
-            source: "resources/suit_diagnostics2.png"
+            source: "qrc:///resources/suit_diagnostics2.png"
         }
     }
 
@@ -333,7 +346,7 @@ ApplicationWindow {
             id: reactor_image
             anchors.fill: parent
             visible: false
-            source: "resources/reactor.png"
+            source: "qrc:///resources/reactor.png"
 
             function hide() {
                 reactor_hide.start();
@@ -374,6 +387,7 @@ ApplicationWindow {
                        battery_timer.stop();
                        battery_timer.start();
                        terminal_log.text = terminal_log.text + "Rebooting...\n> ";
+                       clickEffect.play();
                        bluetooth.reboot();
                    }
                }
@@ -393,6 +407,7 @@ ApplicationWindow {
 
         onClicked: {
             terminal_log.text = terminal_log.text + "Connecting...\n> ";
+            clickEffect.play();
             bluetooth.requestConnection();
         }
     }
