@@ -6,7 +6,7 @@ import QtMultimedia 5.0
 import Bluetooth 1.0
 
 ApplicationWindow {
-    id: mainWindow
+    id: main_window
     visible: true
     width: 800
     height: 480
@@ -52,477 +52,6 @@ ApplicationWindow {
                 bluetooth.getVolume();
                 index++
             }
-        }
-    }
-
-    SoundEffect {
-            id: clickEffect
-            source: "resources/click.wav"
-    }
-
-    Item {
-        id: background
-        x: 0
-        y: 0
-        width: 800
-        height: 480
-        rotation: 0
-        state: "MAIN_WINDOW"
-
-        Image {
-            id: background_main
-            anchors.fill: parent
-            visible: true
-            source: "qrc:///resources/background.png"
-        }
-
-        Image {
-            id: background_suit_diagnostics_blue
-            anchors.fill: parent
-            visible: false
-            source: "qrc:///resources/background_suit_diagnostics.png"
-        }
-
-        Image {
-            id: background_suit_diagnostics_red
-            anchors.fill: parent
-            visible: false
-            source: "qrc:///resources/background_suit_diagnostics2.png"
-        }
-
-        states: [
-            State {
-                name: "MAIN_WINDOW"
-                PropertyChanges { target: background_main; visible: true}
-                PropertyChanges { target: background_suit_diagnostics_blue; visible: false}
-                PropertyChanges { target: background_suit_diagnostics_red; visible: false}
-
-                PropertyChanges { target: suit_diagnostics; visible: true}
-                PropertyChanges { target: battery_text; visible: true}
-                PropertyChanges { target: terminal_log; visible: true}
-
-                PropertyChanges { target: jarvis_button; enabled: true}
-                PropertyChanges { target: helmet_button; enabled: true}
-                PropertyChanges { target: unibeam_button; enabled: true}
-                PropertyChanges { target: suit_button; enabled: true}
-                PropertyChanges { target: suit_diagnostics_button; enabled: true}
-                PropertyChanges { target: reactor_button; enabled: true}
-            },
-            State {
-                name: "SUIT_DIAGNOSTICS_BLUE"
-                PropertyChanges { target: background_main; visible: false}
-                PropertyChanges { target: background_suit_diagnostics_blue; visible: true}
-                PropertyChanges { target: background_suit_diagnostics_red; visible: false}
-
-                PropertyChanges { target: suit_diagnostics; visible: false}
-                PropertyChanges { target: battery_text; visible: false}
-                PropertyChanges { target: terminal_log; visible: false}
-
-                PropertyChanges { target: jarvis_button; enabled: false}
-                PropertyChanges { target: helmet_button; enabled: false}
-                PropertyChanges { target: unibeam_button; enabled: false}
-                PropertyChanges { target: suit_button; enabled: false}
-                PropertyChanges { target: suit_diagnostics_button; enabled: false}
-                PropertyChanges { target: reactor_button; enabled: false}
-            },
-            State {
-                name: "SUIT_DIAGNOSTICS_RED"
-                PropertyChanges { target: background_main; visible: false}
-                PropertyChanges { target: background_suit_diagnostics_blue; visible: false}
-                PropertyChanges { target: background_suit_diagnostics_red; visible: true}
-
-                PropertyChanges { target: suit_diagnostics; visible: false}
-                PropertyChanges { target: battery_text; visible: false}
-                PropertyChanges { target: terminal_log; visible: false}
-
-                PropertyChanges { target: jarvis_button; enabled: false}
-                PropertyChanges { target: helmet_button; enabled: false}
-                PropertyChanges { target: unibeam_button; enabled: false}
-                PropertyChanges { target: suit_button; enabled: false}
-                PropertyChanges { target: suit_diagnostics_button; enabled: false}
-                PropertyChanges { target: reactor_button; enabled: false}
-            }
-        ]
-
-        transitions: [
-            Transition {
-                from: "MAIN_WINDOW"; to: "SUIT_DIAGNOSTICS_BLUE"
-                NumberAnimation {
-                    target: background_suit_diagnostics_blue
-                    properties: "x"
-                    from: 800
-                    to: 0
-                    duration: 2000
-                }
-            },
-            Transition {
-                from: "MAIN_WINDOW"; to: "SUIT_DIAGNOSTICS_RED"
-                NumberAnimation {
-                    target: background_suit_diagnostics_red
-                    properties: "x"
-                    from: 800
-                    to: 0
-                    duration: 2000
-                }
-            },
-            Transition {
-                from: "*"; to: "MAIN_WINDOW"
-                NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad; duration: 2000 }
-            }
-        ]
-    }
-
-    Item {
-        id: jarvis
-        x: 32
-        y: 271
-        width: 140
-        height: 140
-
-        Image {
-            id: jarvis_image
-            anchors.fill: parent
-            visible: false
-            source: "qrc:///resources/jarvis.png"
-
-            function hide() {
-                jarvis_show.stop();
-                jarvis_hide.start();
-                jarvis_image.visible = false;
-            }
-
-            function show() {
-                jarvis_image.visible = true;
-                jarvis_show.start();
-            }
-
-            NumberAnimation on opacity {
-                id: jarvis_hide
-                from: 1
-                to: 0
-            }
-
-            NumberAnimation on opacity {
-                id: jarvis_show
-                loops: Animation.Infinite
-                easing.type: Easing.OutInBounce
-                from: 0
-                to: 1
-                duration: 500
-            }
-        }
-
-        MouseArea {
-            id: jarvis_button
-            anchors.fill: parent
-
-            onClicked: {
-                if (bluetooth.isConnected()) {
-                    jarvis_image.show();
-                    clickEffect.play();
-                    bluetooth.playQuote();
-                }
-            }
-        }
-    }
-
-    Item {
-        id: helmet
-        x: 313
-        y: 35
-        width: 120
-        height: 180
-
-        Image {
-            id: helmet_image
-            anchors.fill: parent
-            visible: false
-            source: "qrc:///resources/helmet.png"
-
-            function open() {
-                helmet_open.start();
-            }
-
-            function close() {
-                if (helmet_image.visible == false)
-                    helmet_image.visible = true;
-                helmet_close.start();
-            }
-
-            NumberAnimation on opacity {
-                id: helmet_open
-                from: 1
-                to: 0
-            }
-
-            NumberAnimation on opacity {
-                id: helmet_close
-                from: 0
-                to: 1
-            }
-        }
-
-        MouseArea {
-           id: helmet_button
-           anchors.fill: parent
-           onClicked: {
-               if (bluetooth.isConnected()) {
-                   if (status.helmet == Bluetooth.HelmetClose) {
-                       clickEffect.play();
-                       helmet_image.open();
-                       bluetooth.setHelmet(Bluetooth.HelmetOpen);
-                   } else {
-                       clickEffect.play();
-                       helmet_image.close();
-                       bluetooth.setHelmet(Bluetooth.HelmetClose);
-                   }
-                   enabled = false;
-               }
-           }
-       }
-    }
-
-    Item {
-        id: unibeam
-        x: 313
-        y: 285
-        width: 120
-        height: 120
-
-        Image {
-            id: unibeam_image
-            visible: false
-            source: "qrc:///resources/unibeam.png"
-
-            function off() {
-                unibeam_off.start();
-                unibeam_image.visible = false;
-            }
-
-            function on() {
-                if (unibeam_image.visible == false)
-                    unibeam_image.visible = true;
-                unibeam_on.start();
-            }
-
-            NumberAnimation on opacity {
-                id: unibeam_off
-                from: 1
-                to: 0
-            }
-
-            NumberAnimation on opacity {
-                id: unibeam_on
-                from: 0
-                to: 1
-            }
-        }
-
-        MouseArea {
-            id: unibeam_button
-            anchors.fill: parent
-            onClicked: {
-                if (bluetooth.isConnected()) {
-                    if (status.unibeam == Bluetooth.PowerOn) {
-                        unibeam_image.off();
-                        clickEffect.play();
-                        bluetooth.setUnibeam(Bluetooth.PowerOff);
-                    } else {
-                        unibeam_image.on();
-                        clickEffect.play();
-                        bluetooth.setUnibeam(Bluetooth.PowerOn);
-                    }
-                    enabled = false;
-                }
-            }
-        }
-    }
-
-    Item {
-        id: suit
-        x: 623
-        y: 119
-        width: 128
-        height: 128
-
-        MouseArea {
-            id: suit_button
-            anchors.fill: parent
-            onClicked: {
-                suit_diagnostics.on();
-//               if (bluetooth.isConnected()) {
-//                   clickEffect.play();
-//                   bluetooth.getVersion();
-//               }
-            }
-        }
-    }
-
-    Flipable {
-        id: suit_diagnostics
-        x: 570
-        y: 291
-        width: 206
-        height: 160
-        visible: false
-
-        Timer {
-            id: suit_diagnostics_timer
-            interval: 5000
-            repeat: true
-
-            onTriggered: {
-                if (rot.angle == 0) {
-                    rot.angle = 180;
-                } else {
-                    rot.angle = 0;
-                }
-            }
-        }
-
-        function off() {
-            suit_diagnostics_timer.stop();
-            suit_diagnostics_off.start();
-            visible = false;
-        }
-
-        function on() {
-            if (visible == false)
-                visible = true;
-            suit_diagnostics_on.start();
-            suit_diagnostics_timer.start();
-        }
-
-        NumberAnimation on opacity {
-            id: suit_diagnostics_off
-            from: 1
-            to: 0
-        }
-
-        NumberAnimation on opacity {
-            id: suit_diagnostics_on
-            from: 0
-            to: 1
-        }
-
-        transform: Rotation {
-            id: rot
-            origin.x: 103
-            origin.y: 80
-            axis.x: 0
-            axis.y: 1
-            axis.z: 0
-            angle: 0
-
-            Behavior on angle { PropertyAnimation{} }
-        }
-
-        front: Image {
-            anchors.centerIn: parent
-            source: "qrc:///resources/suit_diagnostics.png"
-        }
-
-        back: Image {
-            anchors.centerIn: parent
-            source: "qrc:///resources/suit_diagnostics2.png"
-        }
-
-        MouseArea {
-            id: suit_diagnostics_button
-            anchors.fill: parent
-            onClicked: {
-                if (rot.angle == 180) {
-                    background.state = "SUIT_DIAGNOSTICS_RED";
-                } else {
-                    background.state = "SUIT_DIAGNOSTICS_BLUE";
-                }
-            }
-        }
-    }
-
-    Item {
-        id: reactor
-        x: 97
-        y: 84
-        width: 140
-        height: 140
-
-        Timer {
-            id: reactor_button_timer
-            interval: 2000
-
-            onTriggered: {
-                reactor_image.hide();
-            }
-        }
-
-        Image {
-            id: reactor_image
-            anchors.fill: parent
-            visible: false
-            source: "qrc:///resources/reactor.png"
-
-            function hide() {
-                reactor_hide.start();
-                reactor_image.visible = false;
-            }
-
-            function show() {
-                if (reactor_image.visible == false)
-                    reactor_image.visible = true;
-                reactor_show.start();
-                reactor_button_timer.start();
-            }
-
-            NumberAnimation on opacity {
-                id: reactor_hide
-                from: 1
-                to: 0
-            }
-
-            NumberAnimation on opacity {
-                id: reactor_show
-                from: 0
-                to: 1
-            }
-        }
-
-        MouseArea {
-           id: reactor_button
-           anchors.fill: parent
-
-           onDoubleClicked: {
-               if (reactor_image.visible == false) {
-                   if (bluetooth.isConnected()) {
-                       reactor_image.show();
-                   }
-               } else {
-                   if (bluetooth.isConnected()) {
-                       battery_timer.stop();
-                       battery_timer.start();
-                       terminal_log.text = terminal_log.text + "Rebooting...\n> ";
-                       clickEffect.play();
-                       bluetooth.reboot();
-                   }
-               }
-           }
-       }
-    }
-
-    Button {
-        id: connect_button
-        anchors {
-           horizontalCenter: parent.horizontalCenter
-           verticalCenter: parent.verticalCenter
-        }
-        text: qsTr("Connect")
-        anchors.horizontalCenterOffset: -27
-        iconSource: ""
-
-        onClicked: {
-            terminal_log.text = terminal_log.text + "Connecting...\n> ";
-            clickEffect.play();
-            bluetooth.requestConnection();
         }
     }
 
@@ -633,62 +162,539 @@ ApplicationWindow {
         }
     }
 
+    SoundEffect {
+            id: clickEffect
+            source: "resources/click.wav"
+    }
+
     Item {
-        id: battery
-        y: 426
-        anchors.horizontalCenterOffset: -27
-        anchors.horizontalCenter: parent.horizontalCenter
+        id: main_page
+        x: 0
+        y: 0
+        width: 800
+        height: 480
+        rotation: 0
+        state: "MAIN_WINDOW"
 
-        Timer {
-            id: battery_timer
-            interval: 30000
-            repeat: true
+        Image {
+            anchors.fill: parent
+            source: "qrc:///resources/background.png"
+        }
 
-            onTriggered: {
-                bluetooth.getBattery();
+        states: [
+            State {
+                name: "MAIN_WINDOW"
+                PropertyChanges { target: suit_diagnostics_blue_page; visible: false}
+                PropertyChanges { target: suit_diagnostics_red_page; visible: false}
+
+                PropertyChanges { target: jarvis_button; enabled: true}
+                PropertyChanges { target: helmet_button; enabled: true}
+                PropertyChanges { target: unibeam_button; enabled: true}
+                PropertyChanges { target: suit_button; enabled: true}
+                PropertyChanges { target: suit_diagnostics_button; enabled: true}
+                PropertyChanges { target: reactor_button; enabled: true}
+            },
+            State {
+                name: "SUIT_DIAGNOSTICS_BLUE"
+                PropertyChanges { target: suit_diagnostics_blue_page; visible: false}
+                PropertyChanges { target: suit_diagnostics_red_page; visible: true}
+
+                PropertyChanges { target: jarvis_button; enabled: false}
+                PropertyChanges { target: helmet_button; enabled: false}
+                PropertyChanges { target: unibeam_button; enabled: false}
+                PropertyChanges { target: suit_button; enabled: false}
+                PropertyChanges { target: suit_diagnostics_button; enabled: false}
+                PropertyChanges { target: reactor_button; enabled: false}
+            },
+            State {
+                name: "SUIT_DIAGNOSTICS_RED"
+                PropertyChanges { target: suit_diagnostics_blue_page; visible: false}
+                PropertyChanges { target: suit_diagnostics_red_page; visible: true}
+
+                PropertyChanges { target: jarvis_button; enabled: false}
+                PropertyChanges { target: helmet_button; enabled: false}
+                PropertyChanges { target: unibeam_button; enabled: false}
+                PropertyChanges { target: suit_button; enabled: false}
+                PropertyChanges { target: suit_diagnostics_button; enabled: false}
+                PropertyChanges { target: reactor_button; enabled: false}
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "MAIN_WINDOW"
+                to: "SUIT_DIAGNOSTICS_BLUE"
+                NumberAnimation {
+                    target: background_suit_diagnostics_blue
+                    properties: "x"
+                    from: 800
+                    to: 0
+                    duration: 2000
+                }
+            },
+            Transition {
+                from: "MAIN_WINDOW"
+                to: "SUIT_DIAGNOSTICS_RED"
+                NumberAnimation {
+                    target: background_suit_diagnostics_red
+                    properties: "x"
+                    from: 800
+                    to: 0
+                    duration: 2000
+                }
+            },
+            Transition {
+                from: "*"
+                to: "MAIN_WINDOW"
+                NumberAnimation {
+                    properties: "x,y"
+                    easing.type: Easing.InOutQuad
+                    duration: 2000
+                }
+            }
+        ]
+
+        Item {
+            id: jarvis
+            x: 32
+            y: 271
+            width: 140
+            height: 140
+
+            Image {
+                id: jarvis_image
+                anchors.fill: parent
+                visible: false
+                source: "qrc:///resources/jarvis.png"
+
+                function hide() {
+                    jarvis_show.stop();
+                    jarvis_hide.start();
+                    jarvis_image.visible = false;
+                }
+
+                function show() {
+                    jarvis_image.visible = true;
+                    jarvis_show.start();
+                }
+
+                NumberAnimation on opacity {
+                    id: jarvis_hide
+                    from: 1
+                    to: 0
+                }
+
+                NumberAnimation on opacity {
+                    id: jarvis_show
+                    loops: Animation.Infinite
+                    easing.type: Easing.OutInBounce
+                    from: 0
+                    to: 1
+                    duration: 500
+                }
+            }
+
+            MouseArea {
+                id: jarvis_button
+                anchors.fill: parent
+
+                onClicked: {
+                    if (bluetooth.isConnected()) {
+                        jarvis_image.show();
+                        clickEffect.play();
+                        bluetooth.playQuote();
+                    }
+                }
             }
         }
 
-        Text {
-            id: battery_text
-            x: 0
-            y: 0
-            color: "#ffffff"
-            text: ""
-            anchors.verticalCenter: parent.verticalCenter
+        Item {
+            id: helmet
+            x: 313
+            y: 35
+            width: 120
+            height: 180
+
+            Image {
+                id: helmet_image
+                anchors.fill: parent
+                visible: false
+                source: "qrc:///resources/helmet.png"
+
+                function open() {
+                    helmet_open.start();
+                }
+
+                function close() {
+                    if (helmet_image.visible == false)
+                        helmet_image.visible = true;
+                    helmet_close.start();
+                }
+
+                NumberAnimation on opacity {
+                    id: helmet_open
+                    from: 1
+                    to: 0
+                }
+
+                NumberAnimation on opacity {
+                    id: helmet_close
+                    from: 0
+                    to: 1
+                }
+            }
+
+            MouseArea {
+               id: helmet_button
+               anchors.fill: parent
+               onClicked: {
+                   if (bluetooth.isConnected()) {
+                       if (status.helmet == Bluetooth.HelmetClose) {
+                           clickEffect.play();
+                           helmet_image.open();
+                           bluetooth.setHelmet(Bluetooth.HelmetOpen);
+                       } else {
+                           clickEffect.play();
+                           helmet_image.close();
+                           bluetooth.setHelmet(Bluetooth.HelmetClose);
+                       }
+                       enabled = false;
+                   }
+               }
+           }
+        }
+
+        Item {
+            id: unibeam
+            x: 313
+            y: 285
+            width: 120
+            height: 120
+
+            Image {
+                id: unibeam_image
+                visible: false
+                source: "qrc:///resources/unibeam.png"
+
+                function off() {
+                    unibeam_off.start();
+                    unibeam_image.visible = false;
+                }
+
+                function on() {
+                    if (unibeam_image.visible == false)
+                        unibeam_image.visible = true;
+                    unibeam_on.start();
+                }
+
+                NumberAnimation on opacity {
+                    id: unibeam_off
+                    from: 1
+                    to: 0
+                }
+
+                NumberAnimation on opacity {
+                    id: unibeam_on
+                    from: 0
+                    to: 1
+                }
+            }
+
+            MouseArea {
+                id: unibeam_button
+                anchors.fill: parent
+                onClicked: {
+                    if (bluetooth.isConnected()) {
+                        if (status.unibeam == Bluetooth.PowerOn) {
+                            unibeam_image.off();
+                            clickEffect.play();
+                            bluetooth.setUnibeam(Bluetooth.PowerOff);
+                        } else {
+                            unibeam_image.on();
+                            clickEffect.play();
+                            bluetooth.setUnibeam(Bluetooth.PowerOn);
+                        }
+                        enabled = false;
+                    }
+                }
+            }
+        }
+
+        Item {
+            id: suit
+            x: 623
+            y: 119
+            width: 128
+            height: 128
+
+            MouseArea {
+                id: suit_button
+                anchors.fill: parent
+                onClicked: {
+                    suit_diagnostics.on();
+    //               if (bluetooth.isConnected()) {
+    //                   clickEffect.play();
+    //                   bluetooth.getVersion();
+    //               }
+                }
+            }
+        }
+
+        Flipable {
+            id: suit_diagnostics
+            x: 570
+            y: 291
+            width: 206
+            height: 160
+            visible: false
+
+            Timer {
+                id: suit_diagnostics_timer
+                interval: 5000
+                repeat: true
+
+                onTriggered: {
+                    if (rot.angle == 0) {
+                        rot.angle = 180;
+                    } else {
+                        rot.angle = 0;
+                    }
+                }
+            }
+
+            function off() {
+                suit_diagnostics_timer.stop();
+                suit_diagnostics_off.start();
+                visible = false;
+            }
+
+            function on() {
+                if (visible == false)
+                    visible = true;
+                suit_diagnostics_on.start();
+                suit_diagnostics_timer.start();
+            }
+
+            NumberAnimation on opacity {
+                id: suit_diagnostics_off
+                from: 1
+                to: 0
+            }
+
+            NumberAnimation on opacity {
+                id: suit_diagnostics_on
+                from: 0
+                to: 1
+            }
+
+            transform: Rotation {
+                id: rot
+                origin.x: 103
+                origin.y: 80
+                axis.x: 0
+                axis.y: 1
+                axis.z: 0
+                angle: 0
+
+                Behavior on angle { PropertyAnimation{} }
+            }
+
+            front: Image {
+                anchors.centerIn: parent
+                source: "qrc:///resources/suit_diagnostics.png"
+            }
+
+            back: Image {
+                anchors.centerIn: parent
+                source: "qrc:///resources/suit_diagnostics2.png"
+            }
+
+            MouseArea {
+                id: suit_diagnostics_button
+                anchors.fill: parent
+                onClicked: {
+                    if (rot.angle == 180) {
+                        main_page.state = "SUIT_DIAGNOSTICS_RED";
+                    } else {
+                        main_page.state = "SUIT_DIAGNOSTICS_BLUE";
+                    }
+                }
+            }
+        }
+
+        Item {
+            id: reactor
+            x: 97
+            y: 84
+            width: 140
+            height: 140
+
+            Timer {
+                id: reactor_button_timer
+                interval: 2000
+
+                onTriggered: {
+                    reactor_image.hide();
+                }
+            }
+
+            Image {
+                id: reactor_image
+                anchors.fill: parent
+                visible: false
+                source: "qrc:///resources/reactor.png"
+
+                function hide() {
+                    reactor_hide.start();
+                    reactor_image.visible = false;
+                }
+
+                function show() {
+                    if (reactor_image.visible == false)
+                        reactor_image.visible = true;
+                    reactor_show.start();
+                    reactor_button_timer.start();
+                }
+
+                NumberAnimation on opacity {
+                    id: reactor_hide
+                    from: 1
+                    to: 0
+                }
+
+                NumberAnimation on opacity {
+                    id: reactor_show
+                    from: 0
+                    to: 1
+                }
+            }
+
+            MouseArea {
+               id: reactor_button
+               anchors.fill: parent
+
+               onDoubleClicked: {
+                   if (reactor_image.visible == false) {
+                       if (bluetooth.isConnected()) {
+                           reactor_image.show();
+                       }
+                   } else {
+                       if (bluetooth.isConnected()) {
+                           battery_timer.stop();
+                           battery_timer.start();
+                           terminal_log.text = terminal_log.text + "Rebooting...\n> ";
+                           clickEffect.play();
+                           bluetooth.reboot();
+                       }
+                   }
+               }
+           }
+        }
+
+        Item {
+            id: battery
+            y: 426
+            anchors.horizontalCenterOffset: -27
             anchors.horizontalCenter: parent.horizontalCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 14
+
+            Timer {
+                id: battery_timer
+                interval: 30000
+                repeat: true
+
+                onTriggered: {
+                    bluetooth.getBattery();
+                }
+            }
+
+            Text {
+                id: battery_text
+                x: 0
+                y: 0
+                color: "#ffffff"
+                text: ""
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 14
+            }
+        }
+
+        Flickable {
+            id: flick
+            x: 508
+            y: 28
+            width: 250
+            height: 64
+            contentWidth: terminal_log.width;
+            contentHeight: terminal_log.height
+            flickableDirection: Flickable.VerticalFlick
+            clip: true
+
+            function ensureVisible(r)
+            {
+                if (terminal_log.paintedHeight > 64)
+                    contentY = terminal_log.paintedHeight - 64;
+            }
+
+            TextEdit {
+                id: terminal_log
+                width: flick.width;
+                height: flick.height;
+                color: "#ffffff"
+                text: qsTr("> Disconnected...\n> ")
+                activeFocusOnPress: false
+                readOnly: true
+                font.pixelSize: 12
+                onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+            }
+        }
+
+        Button {
+            id: connect_button
+            anchors {
+               horizontalCenter: parent.horizontalCenter
+               verticalCenter: parent.verticalCenter
+            }
+            text: qsTr("Connect")
+            anchors.horizontalCenterOffset: -27
+            iconSource: ""
+
+            onClicked: {
+                terminal_log.text = terminal_log.text + "Connecting...\n> ";
+                clickEffect.play();
+                bluetooth.requestConnection();
+            }
         }
     }
 
-    Flickable {
-        id: flick
-        x: 508
-        y: 28
-        width: 250
-        height: 64
-        contentWidth: terminal_log.width;
-        contentHeight: terminal_log.height
-        flickableDirection: Flickable.VerticalFlick
-        clip: true
+    Item {
+        id: suit_diagnostics_blue_page
+        x: 0
+        y: 0
+        width: 800
+        height: 480
+        rotation: 0
+        visible: false
 
-        function ensureVisible(r)
-        {
-            if (terminal_log.paintedHeight > 64)
-                contentY = terminal_log.paintedHeight - 64;
+        Image {
+            anchors.fill: parent
+            source: "qrc:///resources/background_suit_diagnostics.png"
         }
+    }
 
-        TextEdit {
-            id: terminal_log
-            width: flick.width;
-            height: flick.height;
-            color: "#ffffff"
-            text: qsTr("> Disconnected...\n> ")
-            activeFocusOnPress: false
-            readOnly: true
-            font.pixelSize: 12
-            onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+    Item {
+        id: suit_diagnostics_red_page
+        x: 0
+        y: 0
+        width: 800
+        height: 480
+        rotation: 0
+        visible: false
+
+        Image {
+            anchors.fill: parent
+            source: "qrc:///resources/background_suit_diagnostics2.png"
         }
     }
 }
