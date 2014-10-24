@@ -6,7 +6,7 @@ import QtMultimedia 5.0
 import Bluetooth 1.0
 
 ApplicationWindow {
-    id: applicationWindow1
+    id: mainWindow
     visible: true
     width: 800
     height: 480
@@ -60,15 +60,116 @@ ApplicationWindow {
             source: "resources/click.wav"
     }
 
-    Image {
+    Item {
         id: background
         x: 0
         y: 0
         width: 800
         height: 480
-        visible: true
         rotation: 0
-        source: "qrc:///resources/background.png"
+        state: "MAIN_WINDOW"
+
+        Image {
+            id: background_main
+            anchors.fill: parent
+            visible: true
+            source: "qrc:///resources/background.png"
+        }
+
+        Image {
+            id: background_suit_diagnostics_blue
+            anchors.fill: parent
+            visible: false
+            source: "qrc:///resources/background_suit_diagnostics.png"
+        }
+
+        Image {
+            id: background_suit_diagnostics_red
+            anchors.fill: parent
+            visible: false
+            source: "qrc:///resources/background_suit_diagnostics2.png"
+        }
+
+        states: [
+            State {
+                name: "MAIN_WINDOW"
+                PropertyChanges { target: background_main; visible: true}
+                PropertyChanges { target: background_suit_diagnostics_blue; visible: false}
+                PropertyChanges { target: background_suit_diagnostics_red; visible: false}
+
+                PropertyChanges { target: suit_diagnostics; visible: true}
+                PropertyChanges { target: battery_text; visible: true}
+                PropertyChanges { target: terminal_log; visible: true}
+
+                PropertyChanges { target: jarvis_button; enabled: true}
+                PropertyChanges { target: helmet_button; enabled: true}
+                PropertyChanges { target: unibeam_button; enabled: true}
+                PropertyChanges { target: suit_button; enabled: true}
+                PropertyChanges { target: suit_diagnostics_button; enabled: true}
+                PropertyChanges { target: reactor_button; enabled: true}
+            },
+            State {
+                name: "SUIT_DIAGNOSTICS_BLUE"
+                PropertyChanges { target: background_main; visible: false}
+                PropertyChanges { target: background_suit_diagnostics_blue; visible: true}
+                PropertyChanges { target: background_suit_diagnostics_red; visible: false}
+
+                PropertyChanges { target: suit_diagnostics; visible: false}
+                PropertyChanges { target: battery_text; visible: false}
+                PropertyChanges { target: terminal_log; visible: false}
+
+                PropertyChanges { target: jarvis_button; enabled: false}
+                PropertyChanges { target: helmet_button; enabled: false}
+                PropertyChanges { target: unibeam_button; enabled: false}
+                PropertyChanges { target: suit_button; enabled: false}
+                PropertyChanges { target: suit_diagnostics_button; enabled: false}
+                PropertyChanges { target: reactor_button; enabled: false}
+            },
+            State {
+                name: "SUIT_DIAGNOSTICS_RED"
+                PropertyChanges { target: background_main; visible: false}
+                PropertyChanges { target: background_suit_diagnostics_blue; visible: false}
+                PropertyChanges { target: background_suit_diagnostics_red; visible: true}
+
+                PropertyChanges { target: suit_diagnostics; visible: false}
+                PropertyChanges { target: battery_text; visible: false}
+                PropertyChanges { target: terminal_log; visible: false}
+
+                PropertyChanges { target: jarvis_button; enabled: false}
+                PropertyChanges { target: helmet_button; enabled: false}
+                PropertyChanges { target: unibeam_button; enabled: false}
+                PropertyChanges { target: suit_button; enabled: false}
+                PropertyChanges { target: suit_diagnostics_button; enabled: false}
+                PropertyChanges { target: reactor_button; enabled: false}
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "MAIN_WINDOW"; to: "SUIT_DIAGNOSTICS_BLUE"
+                NumberAnimation {
+                    target: background_suit_diagnostics_blue
+                    properties: "x"
+                    from: 800
+                    to: 0
+                    duration: 2000
+                }
+            },
+            Transition {
+                from: "MAIN_WINDOW"; to: "SUIT_DIAGNOSTICS_RED"
+                NumberAnimation {
+                    target: background_suit_diagnostics_red
+                    properties: "x"
+                    from: 800
+                    to: 0
+                    duration: 2000
+                }
+            },
+            Transition {
+                from: "*"; to: "MAIN_WINDOW"
+                NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad; duration: 2000 }
+            }
+        ]
     }
 
     Item {
@@ -248,10 +349,11 @@ ApplicationWindow {
             id: suit_button
             anchors.fill: parent
             onClicked: {
-               if (bluetooth.isConnected()) {
-                   clickEffect.play();
-                   bluetooth.getVersion();
-               }
+                suit_diagnostics.on();
+//               if (bluetooth.isConnected()) {
+//                   clickEffect.play();
+//                   bluetooth.getVersion();
+//               }
             }
         }
     }
@@ -323,6 +425,18 @@ ApplicationWindow {
         back: Image {
             anchors.centerIn: parent
             source: "qrc:///resources/suit_diagnostics2.png"
+        }
+
+        MouseArea {
+            id: suit_diagnostics_button
+            anchors.fill: parent
+            onClicked: {
+                if (rot.angle == 180) {
+                    background.state = "SUIT_DIAGNOSTICS_RED";
+                } else {
+                    background.state = "SUIT_DIAGNOSTICS_BLUE";
+                }
+            }
         }
     }
 
