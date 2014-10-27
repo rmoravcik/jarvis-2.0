@@ -1,5 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
 import QtQml 2.2
 import QtMultimedia 5.0
 
@@ -11,6 +12,11 @@ ApplicationWindow {
     width: 800
     height: 480
     title: qsTr("J.A.R.V.I.S.")
+
+    FontLoader {
+        id: consoleFont
+        source: "resources/gligoth.TTF"
+    }
 
     Item {
         id: status
@@ -186,27 +192,89 @@ ApplicationWindow {
         states: [
             State {
                 name: "MAIN_WINDOW"
-                PropertyChanges { target: options_page; visible: false}
-                PropertyChanges { target: options_page_button; enabled: false}
 
-                PropertyChanges { target: jarvis_button; enabled: true}
-                PropertyChanges { target: helmet_button; enabled: true}
-                PropertyChanges { target: unibeam_button; enabled: true}
-                PropertyChanges { target: suit_button; enabled: true}
-                PropertyChanges { target: suit_diagnostics_button; enabled: true}
-                PropertyChanges { target: reactor_button; enabled: true}
+                PropertyChanges {
+                    target: options_page
+                    visible: false
+                }
+
+                PropertyChanges {
+                    target: options_page_button
+                    enabled: false
+                }
+
+                PropertyChanges {
+                    target: jarvis_button
+                    enabled: true
+                }
+
+                PropertyChanges {
+                    target: helmet_button
+                    enabled: true
+                }
+
+                PropertyChanges {
+                    target: unibeam_button
+                    enabled: true
+                }
+
+                PropertyChanges {
+                    target: suit_button
+                    enabled: true
+                }
+
+                PropertyChanges {
+                    target: suit_diagnostics_button
+                    enabled: true
+                }
+
+                PropertyChanges {
+                    target: reactor_button
+                    enabled: true
+                }
             },
             State {
                 name: "OPTIONS_WINDOW"
-                PropertyChanges { target: options_page; visible: true}
-                PropertyChanges { target: options_page_button; enabled: true}
 
-                PropertyChanges { target: jarvis_button; enabled: false}
-                PropertyChanges { target: helmet_button; enabled: false}
-                PropertyChanges { target: unibeam_button; enabled: false}
-                PropertyChanges { target: suit_button; enabled: false}
-                PropertyChanges { target: suit_diagnostics_button; enabled: false}
-                PropertyChanges { target: reactor_button; enabled: false}
+                PropertyChanges {
+                    target: options_page
+                    visible: true
+                }
+
+                PropertyChanges {
+                    target: options_page_button
+                    enabled: true
+                }
+
+                PropertyChanges {
+                    target: jarvis_button
+                    enabled: false
+                }
+
+                PropertyChanges {
+                    target: helmet_button
+                    enabled: false
+                }
+
+                PropertyChanges {
+                    target: unibeam_button
+                    enabled: false
+                }
+
+                PropertyChanges {
+                    target: suit_button
+                    enabled: false
+                }
+
+                PropertyChanges {
+                    target: suit_diagnostics_button
+                    enabled: false
+                }
+
+                PropertyChanges {
+                    target: reactor_button
+                    enabled: false
+                }
             }
         ]
 
@@ -214,6 +282,7 @@ ApplicationWindow {
             Transition {
                 from: "MAIN_WINDOW"
                 to: "OPTIONS_WINDOW"
+
                 NumberAnimation {
                     target: options_page
                     properties: "opacity"
@@ -225,6 +294,7 @@ ApplicationWindow {
             Transition {
                 from: "OPTIONS_WINDOW"
                 to: "MAIN_WINDOW"
+
                 NumberAnimation {
                     target: options_page
                     properties: "opacity"
@@ -328,6 +398,7 @@ ApplicationWindow {
             MouseArea {
                id: helmet_button
                anchors.fill: parent
+
                onClicked: {
                    if (bluetooth.isConnected()) {
                        if (status.helmet == Bluetooth.HelmetClose) {
@@ -384,6 +455,7 @@ ApplicationWindow {
             MouseArea {
                 id: unibeam_button
                 anchors.fill: parent
+
                 onClicked: {
                     if (bluetooth.isConnected()) {
                         if (status.unibeam == Bluetooth.PowerOn) {
@@ -411,6 +483,7 @@ ApplicationWindow {
             MouseArea {
                 id: suit_button
                 anchors.fill: parent
+
                 onClicked: {
                     suit_diagnostics.on();
                 }
@@ -466,14 +539,23 @@ ApplicationWindow {
 
             transform: Rotation {
                 id: rot
-                origin.x: 103
-                origin.y: 80
-                axis.x: 0
-                axis.y: 1
-                axis.z: 0
+
+                origin {
+                    x: 103
+                    y: 80
+                }
+
+                axis {
+                    x: 0
+                    y: 1
+                    z: 0
+                }
+
                 angle: 0
 
-                Behavior on angle { PropertyAnimation{} }
+                Behavior on angle {
+                    PropertyAnimation{}
+                }
             }
 
             front: Image {
@@ -489,6 +571,7 @@ ApplicationWindow {
             MouseArea {
                 id: suit_diagnostics_button
                 anchors.fill: parent
+
                 onClicked: {
                     main_page.state = "OPTIONS_WINDOW";
                 }
@@ -567,8 +650,11 @@ ApplicationWindow {
         Item {
             id: battery
             y: 426
-            anchors.horizontalCenterOffset: -27
-            anchors.horizontalCenter: parent.horizontalCenter
+
+            anchors {
+                horizontalCenterOffset: -27
+                horizontalCenter: parent.horizontalCenter
+            }
 
             Timer {
                 id: battery_timer
@@ -585,11 +671,19 @@ ApplicationWindow {
                 x: 0
                 y: 0
                 color: "#ffffff"
-                text: ""
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Current power level is at 100% and holding steady."
+
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    horizontalCenter: parent.horizontalCenter
+                }
+
                 horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 14
+
+                font {
+                    family: consoleFont.name
+                    pixelSize: 16
+                }
             }
         }
 
@@ -599,39 +693,62 @@ ApplicationWindow {
             y: 28
             width: 250
             height: 64
-            contentWidth: terminal_log.width;
+            contentWidth: terminal_log.width
             contentHeight: terminal_log.height
             flickableDirection: Flickable.VerticalFlick
             clip: true
 
-            function ensureVisible(r)
-            {
+            function ensureVisible(r) {
                 if (terminal_log.paintedHeight > 64)
                     contentY = terminal_log.paintedHeight - 64;
             }
 
             TextEdit {
                 id: terminal_log
-                width: flick.width;
-                height: flick.height;
+                width: flick.width
+                height: flick.height
                 color: "#ffffff"
                 text: qsTr("> Disconnected...\n> ")
                 activeFocusOnPress: false
                 readOnly: true
-                font.pixelSize: 12
-                onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
+
+                font {
+                    family: consoleFont.name
+                    pixelSize: 14
+                }
+
+                onCursorRectangleChanged: {
+                    flick.ensureVisible(cursorRectangle);
+                }
             }
         }
 
         Button {
             id: connect_button
+
             anchors {
                horizontalCenter: parent.horizontalCenter
                verticalCenter: parent.verticalCenter
             }
+
             text: qsTr("Connect")
             anchors.horizontalCenterOffset: -27
             iconSource: ""
+
+            style: ButtonStyle {
+                label: Text {
+                    renderType: Text.NativeRendering
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+
+                    font {
+                        family: consoleFont.name
+                        pixelSize: 22
+                    }
+
+                    text: control.text
+                }
+            }
 
             onClicked: {
                 terminal_log.text = terminal_log.text + "Connecting...\n> ";
@@ -670,7 +787,12 @@ ApplicationWindow {
             x: 65
             y: 87
             color: "#ffffff"
-            font.pixelSize: 14
+
+            font {
+                family: consoleFont.name
+                pixelSize: 16
+            }
+
             text: qsTr("VOLUME")
         }
 
@@ -695,7 +817,12 @@ ApplicationWindow {
             x: 65
             y: 185
             color: "#ffffff"
-            font.pixelSize: 14
+
+            font {
+                family: consoleFont.name
+                pixelSize: 16
+            }
+
             text: qsTr("EYES")
         }
 
@@ -719,7 +846,12 @@ ApplicationWindow {
             x: 65
             y: 271
             color: "#ffffff"
-            font.pixelSize: 14
+
+            font {
+                family: consoleFont.name
+                pixelSize: 16
+            }
+
             text: qsTr("REPULSORS")
         }
 
@@ -743,7 +875,8 @@ ApplicationWindow {
             x: 65
             y: 357
             color: "#ffffff"
-            font.pixelSize: 14
+            font.family: consoleFont.name
+            font.pixelSize: 16
             text: qsTr("UNIBEAM")
         }
 

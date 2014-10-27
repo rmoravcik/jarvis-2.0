@@ -10,5 +10,6 @@
         <file>resources/suit_diagnostics2.png</file>
         <file>resources/unibeam.png</file>
         <file>resources/click.wav</file>
+        <file>resources/gligoth.TTF</file>
     </qresource>
 </RCC>
