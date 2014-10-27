@@ -2,10 +2,9 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>resources/background.png</file>
-        <file>resources/background_suit_diagnostics.png</file>
-        <file>resources/background_suit_diagnostics2.png</file>
         <file>resources/helmet.png</file>
         <file>resources/jarvis.png</file>
+        <file>resources/options.png</file>
         <file>resources/reactor.png</file>
         <file>resources/suit_diagnostics.png</file>
         <file>resources/suit_diagnostics2.png</file>

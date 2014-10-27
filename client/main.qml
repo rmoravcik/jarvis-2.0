@@ -16,10 +16,8 @@ ApplicationWindow {
         id: status
         property int eyes: Bluetooth.PowerOff
         property int helmet: Bluetooth.HelmetOpen
-        property var intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
         property int repulsors: Bluetooth.PowerOff
         property int unibeam: Bluetooth.PowerOff
-        property int volume: Bluetooth.Level7
 
         property int index: 0
 
@@ -118,8 +116,13 @@ ApplicationWindow {
         }
 
         onIntensity: {
-            status.intensity[device] = level;
-            // update picture
+            if (device == Bluetooth.DeviceEyes) {
+                eyes_intensity_slider.value = level;
+            } else if (device == Bluetooth.DeviceRepulsors) {
+                repulsors_intensity_slider.value = level;
+            } else if (device == Bluetooth.DeviceUnibeam) {
+                unibeam_intensity_slider.value = level;
+            }
 
             status.check_configuration();
         }
@@ -157,8 +160,7 @@ ApplicationWindow {
         }
 
         onVolume: {
-            status.volume = level;
-            // update picture
+            volume_slider.value = level;
         }
     }
 
@@ -178,14 +180,14 @@ ApplicationWindow {
 
         Image {
             anchors.fill: parent
-            source: "qrc:///resources/background.png"
+            source: "resources/background.png"
         }
 
         states: [
             State {
                 name: "MAIN_WINDOW"
-                PropertyChanges { target: suit_diagnostics_blue_page; visible: false}
-                PropertyChanges { target: suit_diagnostics_red_page; visible: false}
+                PropertyChanges { target: options_page; visible: false}
+                PropertyChanges { target: options_page_button; enabled: false}
 
                 PropertyChanges { target: jarvis_button; enabled: true}
                 PropertyChanges { target: helmet_button; enabled: true}
@@ -195,21 +197,9 @@ ApplicationWindow {
                 PropertyChanges { target: reactor_button; enabled: true}
             },
             State {
-                name: "SUIT_DIAGNOSTICS_BLUE"
-                PropertyChanges { target: suit_diagnostics_blue_page; visible: false}
-                PropertyChanges { target: suit_diagnostics_red_page; visible: true}
-
-                PropertyChanges { target: jarvis_button; enabled: false}
-                PropertyChanges { target: helmet_button; enabled: false}
-                PropertyChanges { target: unibeam_button; enabled: false}
-                PropertyChanges { target: suit_button; enabled: false}
-                PropertyChanges { target: suit_diagnostics_button; enabled: false}
-                PropertyChanges { target: reactor_button; enabled: false}
-            },
-            State {
-                name: "SUIT_DIAGNOSTICS_RED"
-                PropertyChanges { target: suit_diagnostics_blue_page; visible: false}
-                PropertyChanges { target: suit_diagnostics_red_page; visible: true}
+                name: "OPTIONS_WINDOW"
+                PropertyChanges { target: options_page; visible: true}
+                PropertyChanges { target: options_page_button; enabled: true}
 
                 PropertyChanges { target: jarvis_button; enabled: false}
                 PropertyChanges { target: helmet_button; enabled: false}
@@ -223,33 +213,24 @@ ApplicationWindow {
         transitions: [
             Transition {
                 from: "MAIN_WINDOW"
-                to: "SUIT_DIAGNOSTICS_BLUE"
+                to: "OPTIONS_WINDOW"
                 NumberAnimation {
-                    target: background_suit_diagnostics_blue
-                    properties: "x"
-                    from: 800
-                    to: 0
-                    duration: 2000
+                    target: options_page
+                    properties: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 500
                 }
             },
             Transition {
-                from: "MAIN_WINDOW"
-                to: "SUIT_DIAGNOSTICS_RED"
-                NumberAnimation {
-                    target: background_suit_diagnostics_red
-                    properties: "x"
-                    from: 800
-                    to: 0
-                    duration: 2000
-                }
-            },
-            Transition {
-                from: "*"
+                from: "OPTIONS_WINDOW"
                 to: "MAIN_WINDOW"
                 NumberAnimation {
-                    properties: "x,y"
-                    easing.type: Easing.InOutQuad
-                    duration: 2000
+                    target: options_page
+                    properties: "opacity"
+                    from: 1
+                    to: 0
+                    duration: 500
                 }
             }
         ]
@@ -265,7 +246,7 @@ ApplicationWindow {
                 id: jarvis_image
                 anchors.fill: parent
                 visible: false
-                source: "qrc:///resources/jarvis.png"
+                source: "resources/jarvis.png"
 
                 function hide() {
                     jarvis_show.stop();
@@ -319,7 +300,7 @@ ApplicationWindow {
                 id: helmet_image
                 anchors.fill: parent
                 visible: false
-                source: "qrc:///resources/helmet.png"
+                source: "resources/helmet.png"
 
                 function open() {
                     helmet_open.start();
@@ -374,7 +355,7 @@ ApplicationWindow {
             Image {
                 id: unibeam_image
                 visible: false
-                source: "qrc:///resources/unibeam.png"
+                source: "resources/unibeam.png"
 
                 function off() {
                     unibeam_off.start();
@@ -432,10 +413,6 @@ ApplicationWindow {
                 anchors.fill: parent
                 onClicked: {
                     suit_diagnostics.on();
-    //               if (bluetooth.isConnected()) {
-    //                   clickEffect.play();
-    //                   bluetooth.getVersion();
-    //               }
                 }
             }
         }
@@ -501,23 +478,19 @@ ApplicationWindow {
 
             front: Image {
                 anchors.centerIn: parent
-                source: "qrc:///resources/suit_diagnostics.png"
+                source: "resources/suit_diagnostics.png"
             }
 
             back: Image {
                 anchors.centerIn: parent
-                source: "qrc:///resources/suit_diagnostics2.png"
+                source: "resources/suit_diagnostics2.png"
             }
 
             MouseArea {
                 id: suit_diagnostics_button
                 anchors.fill: parent
                 onClicked: {
-                    if (rot.angle == 180) {
-                        main_page.state = "SUIT_DIAGNOSTICS_RED";
-                    } else {
-                        main_page.state = "SUIT_DIAGNOSTICS_BLUE";
-                    }
+                    main_page.state = "OPTIONS_WINDOW";
                 }
             }
         }
@@ -542,7 +515,7 @@ ApplicationWindow {
                 id: reactor_image
                 anchors.fill: parent
                 visible: false
-                source: "qrc:///resources/reactor.png"
+                source: "resources/reactor.png"
 
                 function hide() {
                     reactor_hide.start();
@@ -669,32 +642,125 @@ ApplicationWindow {
     }
 
     Item {
-        id: suit_diagnostics_blue_page
-        x: 0
+        id: options_page
+        x: 187
         y: 0
-        width: 800
+        width: 426
         height: 480
         rotation: 0
-        visible: false
 
-        Image {
-            anchors.fill: parent
-            source: "qrc:///resources/background_suit_diagnostics.png"
+        MouseArea {
+            id: options_page_button
+            x: -187
+            y: 0
+            width: 800
+            height: 480
+
+            onClicked: {
+                main_page.state = "MAIN_WINDOW";
+            }
         }
-    }
-
-    Item {
-        id: suit_diagnostics_red_page
-        x: 0
-        y: 0
-        width: 800
-        height: 480
-        rotation: 0
-        visible: false
 
         Image {
             anchors.fill: parent
-            source: "qrc:///resources/background_suit_diagnostics2.png"
+            source: "resources/options.png"
+        }
+
+        Text {
+            x: 65
+            y: 87
+            color: "#ffffff"
+            font.pixelSize: 14
+            text: qsTr("VOLUME")
+        }
+
+        Slider {
+            id: volume_slider
+            x: 65
+            y: 125
+            width: 312
+            height: 28
+            minimumValue: 0
+            maximumValue: 7
+            stepSize: 1.0
+            value: 0
+
+            onValueChanged: {
+                bluetooth.setVolume(value);
+
+            }
+        }
+
+        Text {
+            x: 65
+            y: 185
+            color: "#ffffff"
+            font.pixelSize: 14
+            text: qsTr("EYES")
+        }
+
+        Slider {
+            id: eyes_intensity_slider
+            x: 65
+            y: 223
+            width: 312
+            height: 28
+            minimumValue: 0
+            maximumValue: 9
+            stepSize: 1.0
+            value: 0
+
+            onValueChanged: {
+                bluetooth.setIntensity(Bluetooth.DeviceEyes, value);
+            }
+        }
+
+        Text {
+            x: 65
+            y: 271
+            color: "#ffffff"
+            font.pixelSize: 14
+            text: qsTr("REPULSORS")
+        }
+
+        Slider {
+            id: repulsors_intensity_slider
+            x: 65
+            y: 309
+            width: 312
+            height: 28
+            minimumValue: 0
+            maximumValue: 9
+            stepSize: 1.0
+            value: 0
+
+            onValueChanged: {
+                bluetooth.setIntensity(Bluetooth.DeviceRepulsors, value);
+            }
+        }
+
+        Text {
+            x: 65
+            y: 357
+            color: "#ffffff"
+            font.pixelSize: 14
+            text: qsTr("UNIBEAM")
+        }
+
+        Slider {
+            id: unibeam_intensity_slider
+            x: 65
+            y: 395
+            width: 312
+            height: 28
+            minimumValue: 0
+            maximumValue: 9
+            stepSize: 1.0
+            value: 0
+
+            onValueChanged: {
+                bluetooth.setIntensity(Bluetooth.DeviceUnibeam, value);
+            }
         }
     }
 }
