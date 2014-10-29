@@ -671,7 +671,7 @@ ApplicationWindow {
                 x: 0
                 y: 0
                 color: "#ffffff"
-                text: "Current power level is at 100% and holding steady."
+                text: ""
 
                 anchors {
                     verticalCenter: parent.verticalCenter
@@ -766,15 +766,29 @@ ApplicationWindow {
         height: 480
         rotation: 0
 
-        MouseArea {
+        Item {
             id: options_page_button
-            x: -187
-            y: 0
-            width: 800
-            height: 480
 
-            onClicked: {
-                main_page.state = "MAIN_WINDOW";
+            MouseArea {
+                x: -187
+                y: 0
+                width: 223
+                height: 480
+
+                onClicked: {
+                    main_page.state = "MAIN_WINDOW";
+                }
+            }
+
+            MouseArea {
+                x: 407
+                y: 0
+                width: 206
+                height: 480
+
+                onClicked: {
+                    main_page.state = "MAIN_WINDOW";
+                }
             }
         }
 
@@ -806,6 +820,7 @@ ApplicationWindow {
             maximumValue: 7
             stepSize: 1.0
             value: 0
+            updateValueWhileDragging: false
 
             onValueChanged: {
                 bluetooth.setVolume(value);
@@ -836,6 +851,7 @@ ApplicationWindow {
             maximumValue: 9
             stepSize: 1.0
             value: 0
+            updateValueWhileDragging: false
 
             onValueChanged: {
                 bluetooth.setIntensity(Bluetooth.DeviceEyes, value);
@@ -865,6 +881,7 @@ ApplicationWindow {
             maximumValue: 9
             stepSize: 1.0
             value: 0
+            updateValueWhileDragging: false
 
             onValueChanged: {
                 bluetooth.setIntensity(Bluetooth.DeviceRepulsors, value);
@@ -890,6 +907,7 @@ ApplicationWindow {
             maximumValue: 9
             stepSize: 1.0
             value: 0
+            updateValueWhileDragging: false
 
             onValueChanged: {
                 bluetooth.setIntensity(Bluetooth.DeviceUnibeam, value);
