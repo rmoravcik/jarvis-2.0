@@ -22,8 +22,10 @@ ApplicationWindow {
         id: status
         property int eyes: Bluetooth.PowerOff
         property int helmet: Bluetooth.HelmetOpen
+        property var intensity: [Bluetooth.Intensity50, Bluetooth.Intensity50, Bluetooth.Intensity50]
         property int repulsors: Bluetooth.PowerOff
         property int unibeam: Bluetooth.PowerOff
+        property int volume: Bluetooth.Level7
 
         property int index: 0
 
@@ -123,11 +125,20 @@ ApplicationWindow {
 
         onIntensity: {
             if (device == Bluetooth.DeviceEyes) {
-                eyes_intensity_slider.value = level;
+                if (eyes_intensity_slider.value != level) {
+                    status.intensity[Bluetooth.DeviceEyes] = level;
+                    eyes_intensity_slider.value = level;
+                }
             } else if (device == Bluetooth.DeviceRepulsors) {
-                repulsors_intensity_slider.value = level;
+                if (repulsors_intensity_slider.value != level) {
+                    status.intensity[Bluetooth.DeviceRepulsors] = level;
+                    repulsors_intensity_slider.value = level;
+                }
             } else if (device == Bluetooth.DeviceUnibeam) {
-                unibeam_intensity_slider.value = level;
+                if (unibeam_intensity_slider.value != level) {
+                    status.intensity[Bluetooth.DeviceUnibeam] = level;
+                    unibeam_intensity_slider.value = level;
+                }
             }
 
             status.check_configuration();
@@ -166,7 +177,10 @@ ApplicationWindow {
         }
 
         onVolume: {
-            volume_slider.value = level;
+            if (volume_slider.value != level) {
+                status.volume = level;
+                volume_slider.value = level;
+            }
         }
     }
 
@@ -823,8 +837,10 @@ ApplicationWindow {
             updateValueWhileDragging: false
 
             onValueChanged: {
-                bluetooth.setVolume(value);
-
+                if (status.volume != value) {
+                    bluetooth.setVolume(value);
+                    status.volume = value;
+                }
             }
         }
 
@@ -854,7 +870,10 @@ ApplicationWindow {
             updateValueWhileDragging: false
 
             onValueChanged: {
-                bluetooth.setIntensity(Bluetooth.DeviceEyes, value);
+                if (status.intensity[Bluetooth.DeviceEyes] != value) {
+                    bluetooth.setIntensity(Bluetooth.DeviceEyes, value);
+                    status.intensity[Bluetooth.DeviceEyes] = value;
+                }
             }
         }
 
@@ -884,7 +903,10 @@ ApplicationWindow {
             updateValueWhileDragging: false
 
             onValueChanged: {
-                bluetooth.setIntensity(Bluetooth.DeviceRepulsors, value);
+                if (status.intensity[Bluetooth.DeviceRepulsors] != value) {
+                    bluetooth.setIntensity(Bluetooth.DeviceRepulsors, value);
+                    status.intensity[Bluetooth.DeviceRepulsors] = value;
+                }
             }
         }
 
@@ -910,7 +932,10 @@ ApplicationWindow {
             updateValueWhileDragging: false
 
             onValueChanged: {
-                bluetooth.setIntensity(Bluetooth.DeviceUnibeam, value);
+                if (status.intensity[Bluetooth.DeviceUnibeam] != value) {
+                    bluetooth.setIntensity(Bluetooth.DeviceUnibeam, value);
+                    status.intensity[Bluetooth.DeviceUnibeam] = value;
+                }
             }
         }
     }
