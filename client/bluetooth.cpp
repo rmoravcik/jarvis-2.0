@@ -6,7 +6,7 @@
 
 #include "bluetooth.h"
 
-const QLatin1String m_serviceUuid("41fe8d86-3cca-4710-a0e4-2f77bfc017cb");
+const QString m_serviceUuid(QStringLiteral("00001101-0000-1000-8000-00805F9B34FB"));
 const QString m_address("98:D3:31:70:14:79");
 
 Bluetooth::Bluetooth(QObject *parent) : QObject(parent)

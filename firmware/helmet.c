@@ -61,7 +61,7 @@ void helmet_init()
 
 	// open helmet only if was power on reset
 	if (mcucsr & _BV(PORF)) {
-		helmet_open();
+		helmet_close();
 	} else {
 		if (state == HELMET_OPEN) {
 			OCR1A = 2200;
